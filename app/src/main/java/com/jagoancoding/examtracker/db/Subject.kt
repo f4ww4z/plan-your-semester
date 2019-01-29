@@ -14,22 +14,6 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.examtracker
+package com.jagoancoding.examtracker.db
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import com.jagoancoding.examtracker.ui.overview.OverviewFragment
-
-class OverviewActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.overview_activity)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, OverviewFragment.newInstance())
-                .commitNow()
-        }
-    }
-
-}
+data class Subject(var id: Long, var name: String, var color: String)
