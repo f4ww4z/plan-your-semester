@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.examtracker.db
+package com.jagoancoding.planyourday.db
 
 data class Subject(var id: Long, var name: String, var color: String)

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.examtracker
+package com.jagoancoding.planyourday
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.jagoancoding.examtracker.ui.overview.OverviewFragment
+import com.jagoancoding.planyourday.ui.overview.OverviewFragment
 
 class OverviewActivity : AppCompatActivity() {
 

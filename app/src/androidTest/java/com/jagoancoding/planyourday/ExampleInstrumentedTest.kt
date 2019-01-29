@@ -1,4 +1,4 @@
-package com.jagoancoding.examtracker
+package com.jagoancoding.planyourday
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4

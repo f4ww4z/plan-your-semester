@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.examtracker.ui.overview
+package com.jagoancoding.planyourday.ui.overview
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -22,7 +22,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.jagoancoding.examtracker.R
+import com.jagoancoding.planyourday.R
 
 class OverviewFragment : Fragment() {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.examtracker.ui.overview
+package com.jagoancoding.planyourday.ui.overview
 
 import androidx.lifecycle.ViewModel
 

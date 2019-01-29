@@ -22,7 +22,7 @@
         android:id="@+id/overview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.overview.OverviewFragment">
+        tools:context="com.jagoancoding.planyourday.ui.overview.OverviewFragment">
 
     <TextView
             android:id="@+id/message"
