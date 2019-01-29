@@ -1,11 +1,12 @@
 language: android
 sudo: required
+jdk: oraclejdk8
 
 env:
   global:
   - ANDROID_API_LEVEL=28
   - ANDROID_BUILD_TOOLS_VERSION=27.0.3
-  - ANDROID_ABI=arm64-v8a
+  - ANDROID_ABI=armeabi-v7a
   - ANDROID_EMU_API_LEVEL=27
 
 android:
@@ -17,7 +18,8 @@ android:
     - android-$ANDROID_API_LEVEL
     - android-$ANDROID_EMU_API_LEVEL
     - extra-android-m2repository
-    - sys-img-${ANDROID_ABI}-android-${ANDROID_EMU_API_LEVEL}
+    - sys-img-${ANDROID_ABI}-addon-google_apis-google-$ANDROID_API_LEVEL
+    - sys-img-${ANDROID_ABI}-addon-google_apis-google-$EMULATOR_API_LEVEL
   licenses:
     - 'android-sdk-preview-license-52d11cd2'
     - 'android-sdk-license-.+'
@@ -34,7 +36,7 @@ cache:
   - $HOME/.android/build-cache
 
 before_script:
-  - echo no | android create avd --force -n test -t android-$ANDROID_EMU_API_LEVEL --abi $ANDROID_ABI -c 100M
+  - echo no | android create avd --force -n test -t android-$ANDROID_EMU_API_LEVEL --abi $ANDROID_ABI
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
