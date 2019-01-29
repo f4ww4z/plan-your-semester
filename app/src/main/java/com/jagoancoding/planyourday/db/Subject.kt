@@ -16,4 +16,17 @@
 
 package com.jagoancoding.planyourday.db
 
-data class Subject(var id: Long, var name: String, var color: String)
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "subjects")
+data class Subject(
+    @PrimaryKey
+    @ColumnInfo(name = "subject_id")
+    val id: String,
+    @ColumnInfo
+    var name: String,
+    @ColumnInfo
+    var color: String
+)

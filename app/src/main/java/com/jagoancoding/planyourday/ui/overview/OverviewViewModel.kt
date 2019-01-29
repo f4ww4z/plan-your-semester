@@ -17,7 +17,20 @@
 package com.jagoancoding.planyourday.ui.overview
 
 import androidx.lifecycle.ViewModel
+import com.jagoancoding.planyourday.db.Subject
+import com.jagoancoding.planyourday.db.SubjectDao
+import io.reactivex.Completable
+import io.reactivex.Flowable
 
-class OverviewViewModel : ViewModel() {
+class OverviewViewModel(private val subjectSource: SubjectDao) : ViewModel() {
 
+    fun getSubjects(): Flowable<List<Subject>> = subjectSource.getSubjects()
+
+    fun getSubjectNames(): Flowable<List<String>> =
+        subjectSource.getSubjectNames()
+
+    fun addOrUpdateSubject(name: String, color: String): Completable {
+        val subject = Subject(name, color)
+        return subjectSource.insertSubject()
+    }
 }

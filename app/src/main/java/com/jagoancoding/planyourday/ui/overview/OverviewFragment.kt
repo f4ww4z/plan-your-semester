@@ -44,7 +44,7 @@ class OverviewFragment : Fragment() {
         viewModel = ViewModelProviders
             .of(this)
             .get(OverviewViewModel::class.java)
-        // TODO: Use the ViewModel
+
     }
 
 }
