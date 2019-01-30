@@ -11,8 +11,6 @@ env:
 android:
   components:
     - tools
-    - platform-tools
-    - tools # appears twice as per Travis docs
     - build-tools-$ANDROID_BUILD_TOOLS_VERSION
     - android-$ANDROID_API_LEVEL
     - extra-android-m2repository

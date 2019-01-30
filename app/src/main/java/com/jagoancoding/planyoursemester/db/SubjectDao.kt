@@ -12,6 +12,9 @@ interface SubjectDao {
     @Query("SELECT * FROM subjects")
     fun getSubjects(): Flowable<List<Subject>>
 
+    @Query("SELECT * FROM subjects WHERE subject_id = :id")
+    fun getSubjectById(id: Long): Flowable<Subject>
+
     @Query("SELECT name FROM subjects")
     fun getSubjectNames(): Flowable<List<String>>
 

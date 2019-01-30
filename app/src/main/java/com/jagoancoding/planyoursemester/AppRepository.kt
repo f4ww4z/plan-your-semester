@@ -15,21 +15,19 @@ object AppRepository {
 
     // Database backend
     private lateinit var db: AppDatabase
-    private lateinit var subjectSource: SubjectDao
 
     fun init(application: Application) {
         db = AppDatabase.getInstance(application.applicationContext)
-        subjectSource = db.subjectDao()
     }
 
-    fun getSubjects(): Flowable<List<Subject>> = subjectSource.getSubjects()
+    fun getSubjects(): Flowable<List<Subject>> = db.subjectDao().getSubjects()
 
     fun getSubjectNames(): Flowable<List<String>> =
-        subjectSource.getSubjectNames()
+            db.subjectDao().getSubjectNames()
 
     fun insertSubject(subject: Subject) {
         Completable.fromAction {
-            subjectSource.insertSubject(subject)
+            db.subjectDao().insertSubject(subject)
         }.subscribeOn(Schedulers.io()).subscribe()
     }
 }

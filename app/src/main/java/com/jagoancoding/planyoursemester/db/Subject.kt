@@ -19,15 +19,15 @@ package com.jagoancoding.planyoursemester.db
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.*
+import java.util.UUID
 
 @Entity(tableName = "subjects")
 data class Subject(
-    @PrimaryKey
-    @ColumnInfo(name = "subject_id")
-    val id: String = UUID.randomUUID().toString(),
-    @ColumnInfo
-    var name: String,
-    @ColumnInfo
-    var color: String
+        @PrimaryKey
+        @ColumnInfo(name = "subject_id")
+        val id: String = UUID.randomUUID().toString(),
+        @ColumnInfo
+        var name: String,
+        @ColumnInfo
+        var color: String
 )

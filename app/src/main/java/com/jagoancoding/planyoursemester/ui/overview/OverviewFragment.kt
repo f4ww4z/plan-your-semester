@@ -16,21 +16,25 @@
 
 package com.jagoancoding.planyoursemester.ui.overview
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import com.jagoancoding.planyoursemester.R
-import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class OverviewFragment : Fragment() {
 
     companion object {
         fun newInstance() = OverviewFragment()
     }
+
+    private val disposable = CompositeDisposable()
 
     private lateinit var viewModel: OverviewViewModel
 
@@ -51,9 +55,19 @@ class OverviewFragment : Fragment() {
 
         messageTV = view?.findViewById(R.id.tv_message)
 
-        viewModel.getSubjectNames().subscribeBy { l ->
-            l.forEach { messageTV?.append(it) }
-        }.dispose()
+        disposable.add(
+            viewModel.getSubjectNames()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.newThread())
+                .subscribe({ list ->
+                    list?.forEach { messageTV?.append("$it\n") }
+                }, { error ->
+                    Log.e(
+                        "OverviewFragment",
+                        "Unable to fetch subject names, $error"
+                    )
+                })
+        )
 
         viewModel.addDemoData()
     }

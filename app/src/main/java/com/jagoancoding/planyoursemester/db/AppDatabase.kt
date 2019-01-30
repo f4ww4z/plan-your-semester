@@ -5,24 +5,33 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Subject::class], version = 1)
+@Database(entities = [
+    Subject::class,
+    Exam::class,
+    Homework::class,
+    Event::class,
+    Reminder::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun subjectDao(): SubjectDao
+    abstract fun examDao(): ExamDao
+    abstract fun homeworkDao(): HomeworkDao
+    abstract fun eventDao(): EventDao
+    abstract fun reminderDao(): ReminderDao
 
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
         fun getInstance(context: Context): AppDatabase =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
-            }
+                INSTANCE ?: synchronized(this) {
+                    INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
+                }
 
         private fun buildDatabase(context: Context) =
-            Room.databaseBuilder(
-                context.applicationContext,
-                AppDatabase::class.java, "planner.db"
-            ).build()
+                Room.databaseBuilder(
+                        context.applicationContext,
+                        AppDatabase::class.java, "planner.db"
+                ).build()
     }
 }
