@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.planyourday.ui.overview
+package com.jagoancoding.planyoursemester.ui.overview
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -22,7 +22,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.jagoancoding.planyourday.R
+import android.widget.TextView
+import com.jagoancoding.planyoursemester.R
+import io.reactivex.rxkotlin.subscribeBy
 
 class OverviewFragment : Fragment() {
 
@@ -31,6 +33,8 @@ class OverviewFragment : Fragment() {
     }
 
     private lateinit var viewModel: OverviewViewModel
+
+    private var messageTV: TextView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +49,13 @@ class OverviewFragment : Fragment() {
             .of(this)
             .get(OverviewViewModel::class.java)
 
+        messageTV = view?.findViewById(R.id.tv_message)
+
+        viewModel.getSubjectNames().subscribeBy { l ->
+            l.forEach { messageTV?.append(it) }
+        }.dispose()
+
+        viewModel.addDemoData()
     }
 
 }

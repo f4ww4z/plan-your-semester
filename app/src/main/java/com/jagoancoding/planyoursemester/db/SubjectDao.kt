@@ -1,10 +1,9 @@
-package com.jagoancoding.planyourday.db
+package com.jagoancoding.planyoursemester.db
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.reactivex.Completable
 import io.reactivex.Flowable
 
 @Dao
@@ -17,5 +16,5 @@ interface SubjectDao {
     fun getSubjectNames(): Flowable<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertSubject(): Completable
+    fun insertSubject(subject: Subject)
 }

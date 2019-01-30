@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.planyourday.db
+package com.jagoancoding.planyoursemester
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import com.jagoancoding.planyoursemester.ui.overview.OverviewFragment
 
-@Entity(tableName = "subjects")
-data class Subject(
-    @PrimaryKey
-    @ColumnInfo(name = "subject_id")
-    val id: String,
-    @ColumnInfo
-    var name: String,
-    @ColumnInfo
-    var color: String
-)
+class OverviewActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.overview_activity)
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.container, OverviewFragment.newInstance())
+                .commitNow()
+        }
+    }
+
+}

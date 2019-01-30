@@ -1,4 +1,4 @@
-package com.jagoancoding.planyourday.db
+package com.jagoancoding.planyoursemester.db
 
 import android.content.Context
 import androidx.room.Database

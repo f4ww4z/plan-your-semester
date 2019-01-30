@@ -1,4 +1,4 @@
-package com.jagoancoding.planyourday
+package com.jagoancoding.planyoursemester
 
 import org.junit.Test
 
