@@ -4,14 +4,25 @@ jdk: oraclejdk8
 
 env:
   global:
-  - ANDROID_API_LEVEL=28
+  - ANDROID_API_LEVEL=27
+  - ANDROID_BUILD_TOOLS_VERSION=27.0.3
   - ANDROID_ABI=armeabi-v7a
-  - ANDROID_EMU_API_LEVEL=27
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - tools # appears twice as per Travis docs
+    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
+    - android-$ANDROID_API_LEVEL
+    - extra-android-m2repository
+  licenses:
+    - 'android-sdk-preview-license-52d11cd2'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
 
 before_install:
-  - yes | sdkmanager "platform-tools" "tools"
-  - yes | sdkmanager "platforms;android-28" "platforms;android-27"
-  - yes | sdkmanager "extras;android;m2repository"
+  - touch $HOME/.android/repositories.cfg
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
