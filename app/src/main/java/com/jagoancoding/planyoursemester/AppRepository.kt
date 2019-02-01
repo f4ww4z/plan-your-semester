@@ -16,6 +16,7 @@
 package com.jagoancoding.planyoursemester
 
 import android.app.Application
+import android.util.Log
 import com.jagoancoding.planyoursemester.db.AppDatabase
 import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
@@ -50,7 +51,9 @@ object AppRepository {
     fun insertSubject(subject: Subject) {
         Completable.fromAction {
             db.subjectDao().insertSubject(subject)
-        }.subscribeOn(Schedulers.io()).subscribe()
+        }.subscribeOn(Schedulers.io()).subscribe({}, { error ->
+            Log.e("AppRepository", "Unable to insert subject, $error")
+        }).dispose()
     }
 
     fun getExams(): Flowable<List<Exam>> = db.examDao().getExams()

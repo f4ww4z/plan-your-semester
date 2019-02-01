@@ -30,6 +30,7 @@ import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
+import com.jagoancoding.planyoursemester.db.Subject
 import io.reactivex.Flowable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
@@ -48,10 +49,6 @@ class OverviewFragment : Fragment() {
 
     private val disposable = CompositeDisposable()
     private lateinit var viewModel: OverviewViewModel
-    private lateinit var exams: List<Exam>
-    private lateinit var homeworks: List<Homework>
-    private lateinit var events: List<Event>
-    private lateinit var reminders: List<Reminder>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,30 +74,22 @@ class OverviewFragment : Fragment() {
             (rv_overview.adapter as DateAdapter).setData(it)
         })
 
-        disposable.add(
-            viewModel.getExams()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.newThread())
-                .subscribe({ exams ->
-                    exams.forEach { exam ->
-                        getSubjectOfExam(exam, Schedulers.newThread())
-                    }
-                }, { error ->
-                    Log.e(
-                        "OverviewFragment",
-                        "Unable to fetch exam names, $error"
-                    )
-                })
-        )
+        viewModel.getExams().listSubscribe({ resultData ->
+            resultData.forEach {
+                val exam = it as Exam
+                getSubjectOfExam(exam, Schedulers.newThread())
+            }
+        }, Schedulers.newThread())
+
         viewModel.addDemoData()
     }
 
     /**
      * General subscription of items in a Flowable list
-     * TODO: Use this
      * @param f method to be executed when list is loaded
+     * @param scheduler scheduling units
      */
-    private fun Flowable<List<Any>>.listSubscribe(
+    private fun Flowable<out List<Any>>.listSubscribe(
         f: (List<Any>) -> Unit,
         scheduler: Scheduler
     ) {
@@ -112,27 +101,41 @@ class OverviewFragment : Fragment() {
                 }, { error ->
                     Log.e(
                         "OverviewFragment",
-                        "Unable to fetch, $error"
+                        "Unable to fetch list, $error"
+                    )
+                })
+        )
+    }
+
+    /**
+     * General subscription of a Flowable item
+     * @param f method to be executed when item is loaded
+     * @param scheduler scheduling units
+     */
+    private fun Flowable<out Any>.itemSubscribe(
+        f: (Any) -> Unit,
+        scheduler: Scheduler
+    ) {
+        disposable.add(
+            this.subscribeOn(scheduler)
+                .observeOn(scheduler)
+                .subscribe({
+                    f(it)
+                }, { error ->
+                    Log.e(
+                        "OverviewFragment",
+                        "Unable to fetch item, $error"
                     )
                 })
         )
     }
 
     private fun getSubjectOfExam(exam: Exam, scheduler: Scheduler) {
-        disposable.add(
-            viewModel.getSubject(exam.subjectId)
-                .subscribeOn(scheduler)
-                .observeOn(scheduler)
-                .subscribe({ subject ->
-                    // Found the subject, now add exam to dateItem's planItems
-                    viewModel.populateDateItem(exam, subject)
-                }, { error ->
-                    Log.e(
-                        "OverviewFragment",
-                        "Unable to fetch subject, $error"
-                    )
-                })
-        )
+        viewModel.getSubject(exam.subjectId).itemSubscribe({ result ->
+            // Found the subject, now add exam to dateItem's planItems
+            val subject = result as Subject
+            viewModel.populateDateItem(exam, subject)
+        }, Schedulers.newThread())
     }
 
 }
