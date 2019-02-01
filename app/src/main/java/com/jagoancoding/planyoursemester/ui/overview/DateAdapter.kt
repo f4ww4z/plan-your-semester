@@ -52,5 +52,10 @@ class DateAdapter(private var data: List<DateItem>) :
         }
     }
 
+    fun setData(newData: List<DateItem>) {
+        data = newData
+        notifyDataSetChanged()
+    }
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 }
