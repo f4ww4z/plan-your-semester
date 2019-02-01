@@ -20,25 +20,31 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
+import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.model.DateItem
+import com.jagoancoding.planyoursemester.util.DateUtil
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.overview_fragment.rv_overview
+import org.threeten.bp.Instant
+import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 class OverviewFragment : Fragment() {
 
     companion object {
         fun newInstance() = OverviewFragment()
+        val startDate = LocalDate.now().minusDays(App.DAYS_PASSED)
+        val endDate = startDate.plusDays(App.DAYS_DISPLAYED_IN_OVERVIEW)
     }
 
     private val disposable = CompositeDisposable()
@@ -69,13 +75,15 @@ class OverviewFragment : Fragment() {
             adapter = DateAdapter(dateItems)
         }
 
+        // Populate dateItems list
+
         disposable.add(
             viewModel.getExams()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.newThread())
                 .subscribe({ exams ->
                     exams.forEach { exam ->
-
+                        getSubjectOfExam(exam)
                     }
                 }, { error ->
                     Log.e(
@@ -84,8 +92,30 @@ class OverviewFragment : Fragment() {
                     )
                 })
         )
-
         viewModel.addDemoData()
+    }
+
+    private fun getSubjectOfExam(exam: Exam) {
+        disposable.add(
+            viewModel.getSubject(exam.subjectId)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.newThread())
+                .subscribe({ subject ->
+                    populateDateItem(exam, subject)
+                }, { error ->
+                    Log.e(
+                        "OverviewFragment",
+                        "Unable to fetch subject, $error"
+                    )
+                })
+        )
+    }
+
+    private fun populateDateItem(exam: Exam, subject: Subject?) {
+        val date =
+        val startDateTime = DateUtil.getDateTime(exam.startDate)
+        val endDateTime = DateUtil.getDateTime(exam.endDate)
+        dateItems
     }
 
 }

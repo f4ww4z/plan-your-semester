@@ -20,6 +20,11 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 
 class App : Application() {
 
+    companion object {
+        const val DAYS_DISPLAYED_IN_OVERVIEW: Long = 1000L
+        const val DAYS_PASSED: Long = 365L
+    }
+
     override fun onCreate() {
         super.onCreate()
         AppRepository.init(this)

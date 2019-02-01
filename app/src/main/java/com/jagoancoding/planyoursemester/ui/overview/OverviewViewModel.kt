@@ -19,14 +19,23 @@ import androidx.lifecycle.ViewModel
 import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.model.DateItem
+import org.threeten.bp.LocalDate
 
 class OverviewViewModel : ViewModel() {
 
-    //TODO: Finish fun getDates() : List<DateItem>
+    fun initalDateItems(start: LocalDate, end: LocalDate): List<DateItem> {
+        val dateItems = ArrayList<DateItem>()
+        AppRepository.datesBetween(start, end).forEach { date ->
+            val dateItem = DateItem(
+                date,
+                ArrayList()
+            )
+            dateItems.add(dateItem)
+        }
+        return dateItems
+    }
 
-    fun getSubjects() = AppRepository.getSubjects()
-
-    fun getSubjectNames() = AppRepository.getSubjectNames()
+    fun getSubject(id: Long) = AppRepository.getSubject(id)
 
     fun addOrUpdateSubject(name: String, color: String) {
         val subject = Subject(name = name, color = color)

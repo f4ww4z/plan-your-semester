@@ -19,6 +19,7 @@ import android.content.res.Resources
 import com.jagoancoding.planyoursemester.R
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -33,10 +34,10 @@ object DateUtil {
         return localDate.dayOfMonth
     }
 
-    fun getDayNameFromDate(date: Long, resources: Resources): String {
+    fun getDayNameFromDate(date: LocalDate, resources: Resources): String {
         val shortDayNames: Array<String> =
             resources.getStringArray(R.array.en_day_name_three_chars)
-        return shortDayNames[getDayOfMonthFromDate(date)]
+        return shortDayNames[date.dayOfMonth]
     }
 
     fun getFormattedTime(date: Long): String {
@@ -58,4 +59,13 @@ object DateUtil {
             getFormattedTime(startDate),
             getFormattedTime(endDate)
         )
+
+    fun getDate(epochMillis: Long): LocalDate =
+        Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault())
+            .toLocalDate()
+
+    fun getDateTime(epochMillis: Long): LocalDateTime = LocalDateTime.ofInstant(
+        Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()
+    )
+
 }

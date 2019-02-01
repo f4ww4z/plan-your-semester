@@ -41,6 +41,9 @@ object AppRepository {
 
     fun getSubjects(): Flowable<List<Subject>> = db.subjectDao().getSubjects()
 
+    fun getSubject(id: Long): Flowable<Subject> =
+        db.subjectDao().getSubjectById(id)
+
     fun getSubjectNames(): Flowable<List<String>> =
         db.subjectDao().getSubjectNames()
 
