@@ -19,6 +19,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.jagoancoding.planyoursemester.model.PlanItem
 import java.util.UUID
 
 @Entity(
@@ -41,4 +42,15 @@ data class Exam(
     var startDate: Long,
     @ColumnInfo
     var endDate: Long
-)
+) {
+    fun toPlanItem(subject: Subject?) = PlanItem(
+        PlanItem.TYPE_EXAM,
+        subject,
+        name,
+        null,
+        null,
+        startDate,
+        endDate,
+        null
+    )
+}

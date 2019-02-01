@@ -48,6 +48,7 @@ class DateAdapter(private var data: List<DateItem>) :
             rv_overview.apply {
                 adapter = PlanAdapter(dateItem.planItems)
                 layoutManager = LinearLayoutManager(this.context)
+                setHasFixedSize(false)
             }
         }
     }

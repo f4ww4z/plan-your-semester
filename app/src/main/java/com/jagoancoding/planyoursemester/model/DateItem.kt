@@ -21,7 +21,7 @@ import org.threeten.bp.LocalDate
 
 class DateItem(
     var date: LocalDate,
-    var planItems: List<PlanItem>
+    var planItems: MutableList<PlanItem>
 ) {
     fun getDayOfMonth(): String = date.dayOfMonth.toString()
 
