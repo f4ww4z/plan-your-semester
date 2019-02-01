@@ -16,15 +16,13 @@
 package com.jagoancoding.planyoursemester
 
 import android.app.Application
+import com.jakewharton.threetenabp.AndroidThreeTen
 
-class App: Application() {
-
-    companion object {
-        const val EXAM_ITEM_ID = 256
-    }
+class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
         AppRepository.init(this)
+        AndroidThreeTen.init(this)
     }
 }

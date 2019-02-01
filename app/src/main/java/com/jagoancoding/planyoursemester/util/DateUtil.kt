@@ -17,18 +17,20 @@ package com.jagoancoding.planyoursemester.util
 
 import android.content.res.Resources
 import com.jagoancoding.planyoursemester.R
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import org.threeten.bp.Instant
+import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneId
+import org.threeten.bp.format.DateTimeFormatter
 
 object DateUtil {
 
     private const val DATE_FORMAT_STANDARD = "hh:mm"
 
     fun getDayOfMonthFromDate(date: Long): Int {
-        val c = Calendar.getInstance()
-        c.timeInMillis = date
-        return c.get(Calendar.DAY_OF_MONTH)
+        val localDate: LocalDate =
+            Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault())
+                .toLocalDate()
+        return localDate.dayOfMonth
     }
 
     fun getDayNameFromDate(date: Long, resources: Resources): String {
@@ -38,23 +40,17 @@ object DateUtil {
     }
 
     fun getFormattedTime(date: Long): String {
-        val c = Calendar.getInstance()
-        c.timeInMillis = date
-        val dateFormat =
-            SimpleDateFormat(DATE_FORMAT_STANDARD, Locale.getDefault())
-        return dateFormat.format(c)
-    }
-
-    fun getStandardDisplayTime(date: Long): String {
-        val c = Calendar.getInstance()
-        c.timeInMillis = date
-        val dateFormat =
-            SimpleDateFormat(DATE_FORMAT_STANDARD, Locale.getDefault())
-        return dateFormat.format(c)
+        val localDate: LocalDate =
+            Instant.ofEpochMilli(date)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+        val dateTimeFormatter =
+            DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
+        return localDate.format(dateTimeFormatter)
     }
 
     fun getHomeworkDueTime(date: Long, r: Resources): String =
-        r.getString(R.string.homework_date, getStandardDisplayTime(date))
+        r.getString(R.string.homework_date, getFormattedTime(date))
 
     fun getTimeStartEnd(startDate: Long, endDate: Long, r: Resources): String =
         r.getString(

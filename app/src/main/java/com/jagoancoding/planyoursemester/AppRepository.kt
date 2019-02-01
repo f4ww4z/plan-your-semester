@@ -25,7 +25,7 @@ import com.jagoancoding.planyoursemester.db.Subject
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
+import org.threeten.bp.LocalDate
 
 /**
  * Enables injection of data sources
@@ -60,12 +60,12 @@ object AppRepository {
     fun getReminders(): Flowable<List<Reminder>> =
         db.reminderDao().getReminders()
 
-    fun datesBetween(start: Date, end: Date): List<Date> {
-        val ret = ArrayList<Date>()
+    fun datesBetween(start: LocalDate, end: LocalDate): List<LocalDate> {
+        val ret = ArrayList<LocalDate>()
         var date = start
-        while (date.before(end)) {
+        while (date.isBefore(end.minusDays(1))) {
             ret.add(date)
-            //TODO: Increment date by 1 day
+            date = date.plusDays(1)
         }
         return ret
     }

@@ -42,6 +42,6 @@ class PlanItem(
             TYPE_HOMEWORK -> DateUtil.getHomeworkDueTime(date!!, r)
             TYPE_EVENT -> DateUtil.getTimeStartEnd(startDate!!, endDate!!, r)
             TYPE_REMINDER -> DateUtil.getFormattedTime(date!!)
-            else -> DateUtil.getStandardDisplayTime(date ?: startDate!!)
+            else -> DateUtil.getFormattedTime(date ?: startDate!!)
         }
 }

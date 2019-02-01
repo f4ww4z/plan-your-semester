@@ -81,4 +81,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+
+    // JSR-310 backport for Android
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
 }
