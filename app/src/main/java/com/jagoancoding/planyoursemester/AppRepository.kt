@@ -16,10 +16,16 @@
 package com.jagoancoding.planyoursemester
 
 import android.app.Application
-import com.jagoancoding.planyoursemester.db.*
+import com.jagoancoding.planyoursemester.db.AppDatabase
+import com.jagoancoding.planyoursemester.db.Event
+import com.jagoancoding.planyoursemester.db.Exam
+import com.jagoancoding.planyoursemester.db.Homework
+import com.jagoancoding.planyoursemester.db.Reminder
+import com.jagoancoding.planyoursemester.db.Subject
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
+import java.util.Date
 
 /**
  * Enables injection of data sources
@@ -36,7 +42,7 @@ object AppRepository {
     fun getSubjects(): Flowable<List<Subject>> = db.subjectDao().getSubjects()
 
     fun getSubjectNames(): Flowable<List<String>> =
-            db.subjectDao().getSubjectNames()
+        db.subjectDao().getSubjectNames()
 
     fun insertSubject(subject: Subject) {
         Completable.fromAction {
@@ -46,9 +52,21 @@ object AppRepository {
 
     fun getExams(): Flowable<List<Exam>> = db.examDao().getExams()
 
-    fun getHomeworks(): Flowable<List<Homework>> = db.homeworkDao().getHomeworks()
+    fun getHomeworks(): Flowable<List<Homework>> =
+        db.homeworkDao().getHomeworks()
 
     fun getEvents(): Flowable<List<Event>> = db.eventDao().getEvents()
 
-    fun getReminders(): Flowable<List<Reminder>> = db.reminderDao().getReminders()
+    fun getReminders(): Flowable<List<Reminder>> =
+        db.reminderDao().getReminders()
+
+    fun datesBetween(start: Date, end: Date): List<Date> {
+        val ret = ArrayList<Date>()
+        var date = start
+        while (date.before(end)) {
+            ret.add(date)
+            //TODO: Increment date by 1 day
+        }
+        return ret
+    }
 }

@@ -43,7 +43,7 @@ class DateAdapter(private var data: List<DateItem>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val dateItem = data[position]
         with(holder.itemView) {
-            tv_day.text = dateItem.getDayOfMonth(resources)
+            tv_day.text = dateItem.getDayOfMonth()
             tv_day2.text = dateItem.getDayName(resources)
             rv_overview.apply {
                 adapter = PlanAdapter(dateItem.planItems)

@@ -23,14 +23,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
+import com.jagoancoding.planyoursemester.model.DateItem
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.overview_fragment.rv_overview
 
 class OverviewFragment : Fragment() {
 
@@ -44,8 +47,7 @@ class OverviewFragment : Fragment() {
     private lateinit var homeworks: List<Homework>
     private lateinit var events: List<Event>
     private lateinit var reminders: List<Reminder>
-
-    private var overviewRV: RecyclerView? = null
+    private lateinit var dateItems: List<DateItem>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,14 +62,19 @@ class OverviewFragment : Fragment() {
             .of(this)
             .get(OverviewViewModel::class.java)
 
-        overviewRV = view?.findViewById(R.id.rv_overview)
+        dateItems = ArrayList()
+
+        rv_overview.apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = DateAdapter(dateItems)
+        }
 
         disposable.add(
             viewModel.getExams()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.newThread())
                 .subscribe({ exams ->
-                    exams?.forEach {
+                    exams.forEach { exam ->
 
                     }
                 }, { error ->

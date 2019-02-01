@@ -22,7 +22,7 @@ class DateItem(
     var date: Long,
     var planItems: List<PlanItem>
 ) {
-    fun getDayOfMonth(r: Resources): String =
+    fun getDayOfMonth(): String =
         DateUtil.getDayOfMonthFromDate(date).toString()
 
     fun getDayName(r: Resources): String = DateUtil.getDayNameFromDate(date, r)

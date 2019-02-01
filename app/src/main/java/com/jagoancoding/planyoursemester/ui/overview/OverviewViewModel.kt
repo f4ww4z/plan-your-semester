@@ -18,8 +18,11 @@ package com.jagoancoding.planyoursemester.ui.overview
 import androidx.lifecycle.ViewModel
 import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.db.Subject
+import com.jagoancoding.planyoursemester.model.DateItem
 
 class OverviewViewModel : ViewModel() {
+
+    //TODO: Finish fun getDates() : List<DateItem>
 
     fun getSubjects() = AppRepository.getSubjects()
 
