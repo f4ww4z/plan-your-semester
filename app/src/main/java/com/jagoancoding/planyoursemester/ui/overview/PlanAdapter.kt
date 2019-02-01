@@ -24,10 +24,13 @@ import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
 import kotlinx.android.synthetic.main.new_plan.view.tv_date
 import kotlinx.android.synthetic.main.new_plan.view.tv_desc
+import kotlinx.android.synthetic.main.new_plan.view.tv_subject
 import kotlinx.android.synthetic.main.new_plan.view.tv_title
 
 class PlanAdapter(private var data: List<PlanItem>) :
     RecyclerView.Adapter<PlanAdapter.ViewHolder>() {
+
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -45,7 +48,8 @@ class PlanAdapter(private var data: List<PlanItem>) :
         with(holder.itemView) {
             tv_title.text = planItem.name
             tv_desc.setTextAndGoneIfEmpty(planItem.description)
-            tv_date.setTextAndGoneIfEmpty(planItem.description)
+            tv_date.text = planItem.getDateToDisplay(resources)
+            tv_subject.setTextAndGoneIfEmpty(planItem.subject?.name)
         }
     }
 
@@ -57,7 +61,8 @@ class PlanAdapter(private var data: List<PlanItem>) :
         }
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
+    fun setData(newData: List<PlanItem>) {
+        data = newData
+        notifyDataSetChanged()
     }
 }

@@ -16,11 +16,14 @@
 package com.jagoancoding.planyoursemester.model
 
 import com.jagoancoding.planyoursemester.util.DateUtil
+import android.content.res.Resources
 
 class DateItem(
     var date: Long,
-    var planItem: List<PlanItem>
+    var planItems: List<PlanItem>
 ) {
-    var dayOfMonth: String = DateUtil.getDayOfMonthFromDate(date).toString()
-    var dayName: String = DateUtil.getDayNameFromDate(date)
+    fun getDayOfMonth(r: Resources): String =
+        DateUtil.getDayOfMonthFromDate(date).toString()
+
+    fun getDayName(r: Resources): String = DateUtil.getDayNameFromDate(date, r)
 }
