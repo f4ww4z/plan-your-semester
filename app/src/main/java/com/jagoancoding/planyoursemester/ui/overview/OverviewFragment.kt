@@ -96,18 +96,16 @@ class OverviewFragment : Fragment() {
     }
 
     /**
-     * General subscription of items in a list
+     * General subscription of items in a Flowable list
      * TODO: Use this
-     * @param observedData the list to subscribe
      * @param f method to be executed when list is loaded
      */
-    private fun listSubscribe(
-        observedData: Flowable<List<Any>>,
+    private fun Flowable<List<Any>>.listSubscribe(
         f: (List<Any>) -> Unit,
         scheduler: Scheduler
     ) {
         disposable.add(
-            observedData.subscribeOn(scheduler)
+            this.subscribeOn(scheduler)
                 .observeOn(scheduler)
                 .subscribe({
                     f(it)
