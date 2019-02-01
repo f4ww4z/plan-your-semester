@@ -13,26 +13,14 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.planyoursemester.db
+package com.jagoancoding.planyoursemester.model
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import io.reactivex.Flowable
+import com.jagoancoding.planyoursemester.util.DateUtil
 
-@Dao
-interface ExamDao {
-
-    @Query("SELECT * FROM exams")
-    fun getExams(): Flowable<List<Exam>>
-
-    @Query("SELECT * FROM exams WHERE exam_id = :id")
-    fun getExamById(id: Long): Flowable<Exam>
-
-    @Query("SELECT name FROM exams")
-    fun getExamNames(): Flowable<List<String>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertExam(exam: Exam)
+class DateItem(
+    var date: Long,
+    var planItem: List<PlanItem>
+) {
+    var dayOfMonth: String = DateUtil.getDayOfMonthFromDate(date).toString()
+    var dayName: String = DateUtil.getDayNameFromDate(date)
 }

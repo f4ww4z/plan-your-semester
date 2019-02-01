@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright 2019 Maharaj Fawwaz Almuqaddim Yusran
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +15,13 @@
   -->
 
 <resources>
-    <string name="app_name">Plan Your Day</string>
-    <string name="date_start_end">%1$s - %2$s</string>
-    <string name="homework_date">Due %1$s</string>
+    <string-array name="en_day_name_three_chars">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
 </resources>

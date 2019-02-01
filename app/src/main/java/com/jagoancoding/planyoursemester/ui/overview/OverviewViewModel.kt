@@ -1,6 +1,5 @@
 /*
  * Copyright 2019 Maharaj Fawwaz Almuqaddim Yusran
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +29,14 @@ class OverviewViewModel : ViewModel() {
         val subject = Subject(name = name, color = color)
         AppRepository.insertSubject(subject)
     }
+
+    fun getExams() = AppRepository.getExams()
+
+    fun getHomeworks() = AppRepository.getHomeworks()
+
+    fun getEvents() = AppRepository.getEvents()
+
+    fun getReminders() = AppRepository.getReminders()
 
     fun addDemoData() {
         addOrUpdateSubject("Maths", "blue")

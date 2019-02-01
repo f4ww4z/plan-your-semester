@@ -1,6 +1,5 @@
 /*
  * Copyright 2019 Maharaj Fawwaz Almuqaddim Yusran
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +23,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.R
+import com.jagoancoding.planyoursemester.db.Event
+import com.jagoancoding.planyoursemester.db.Exam
+import com.jagoancoding.planyoursemester.db.Homework
+import com.jagoancoding.planyoursemester.db.Reminder
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
@@ -35,10 +39,13 @@ class OverviewFragment : Fragment() {
     }
 
     private val disposable = CompositeDisposable()
-
     private lateinit var viewModel: OverviewViewModel
+    private lateinit var exams: List<Exam>
+    private lateinit var homeworks: List<Homework>
+    private lateinit var events: List<Event>
+    private lateinit var reminders: List<Reminder>
 
-    private var messageTV: TextView? = null
+    private var overviewRV: RecyclerView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,18 +60,20 @@ class OverviewFragment : Fragment() {
             .of(this)
             .get(OverviewViewModel::class.java)
 
-        messageTV = view?.findViewById(R.id.tv_message)
+        overviewRV = view?.findViewById(R.id.rv_overview)
 
         disposable.add(
-            viewModel.getSubjectNames()
+            viewModel.getExams()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.newThread())
-                .subscribe({ list ->
-                    list?.forEach { messageTV?.append("$it\n") }
+                .subscribe({ exams ->
+                    exams?.forEach {
+
+                    }
                 }, { error ->
                     Log.e(
                         "OverviewFragment",
-                        "Unable to fetch subject names, $error"
+                        "Unable to fetch exam names, $error"
                     )
                 })
         )
