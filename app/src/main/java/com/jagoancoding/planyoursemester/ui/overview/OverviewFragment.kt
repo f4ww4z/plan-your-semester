@@ -31,6 +31,7 @@ import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
 import io.reactivex.Flowable
+import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.overview_fragment.rv_overview
@@ -82,7 +83,7 @@ class OverviewFragment : Fragment() {
                 .observeOn(Schedulers.newThread())
                 .subscribe({ exams ->
                     exams.forEach { exam ->
-                        getSubjectOfExam(exam)
+                        getSubjectOfExam(exam, Schedulers.newThread())
                     }
                 }, { error ->
                     Log.e(
@@ -100,11 +101,14 @@ class OverviewFragment : Fragment() {
      * @param observedData the list to subscribe
      * @param f method to be executed when list is loaded
      */
-    private fun listSubscribe(observedData: Flowable<List<Any>>,
-                                            f: (List<Any>) -> Unit) {
+    private fun listSubscribe(
+        observedData: Flowable<List<Any>>,
+        f: (List<Any>) -> Unit,
+        scheduler: Scheduler
+    ) {
         disposable.add(
-            observedData.subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.newThread())
+            observedData.subscribeOn(scheduler)
+                .observeOn(scheduler)
                 .subscribe({
                     f(it)
                 }, { error ->
@@ -116,11 +120,11 @@ class OverviewFragment : Fragment() {
         )
     }
 
-    private fun getSubjectOfExam(exam: Exam) {
+    private fun getSubjectOfExam(exam: Exam, scheduler: Scheduler) {
         disposable.add(
             viewModel.getSubject(exam.subjectId)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.newThread())
+                .subscribeOn(scheduler)
+                .observeOn(scheduler)
                 .subscribe({ subject ->
                     // Found the subject, now add exam to dateItem's planItems
                     viewModel.populateDateItem(exam, subject)
