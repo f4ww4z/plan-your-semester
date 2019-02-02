@@ -26,18 +26,13 @@ import org.threeten.bp.format.DateTimeFormatter
 object DateUtil {
 
     private const val DATE_FORMAT_STANDARD = "hh:mm"
+    private const val DATE_FORMAT_DAY = "EEE"
 
-    fun getDayOfMonthFromDate(date: Long): Int {
-        val localDate: LocalDate =
-            Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault())
-                .toLocalDate()
-        return localDate.dayOfMonth
-    }
+    fun getDayOfWeek(date: LocalDate): String = date.dayOfMonth.toString()
 
-    fun getDayNameFromDate(date: LocalDate, resources: Resources): String {
-        val shortDayNames: Array<String> =
-            resources.getStringArray(R.array.en_day_name_three_chars)
-        return shortDayNames[date.dayOfMonth]
+    fun getDayNameFromDate(date: LocalDate): String {
+        val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_DAY)
+        return formatter.format(date)
     }
 
     fun getFormattedTime(date: Long): String {

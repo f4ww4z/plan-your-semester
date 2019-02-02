@@ -22,9 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
+import kotlinx.android.synthetic.main.date_card.view.rv_plan_items
 import kotlinx.android.synthetic.main.date_card.view.tv_day
 import kotlinx.android.synthetic.main.date_card.view.tv_day2
-import kotlinx.android.synthetic.main.overview_fragment.view.rv_overview
 
 class DateAdapter(private var data: List<DateItem>) :
     RecyclerView.Adapter<DateAdapter.ViewHolder>() {
@@ -43,11 +43,11 @@ class DateAdapter(private var data: List<DateItem>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val dateItem = data[position]
         with(holder.itemView) {
-            tv_day.text = dateItem.getDayOfMonth()
-            tv_day2.text = dateItem.getDayName(resources)
-            rv_overview.apply {
+            tv_day.text = dateItem.dayOfWeek()
+            tv_day2.text = dateItem.dayName()
+            rv_plan_items.apply {
+                layoutManager = LinearLayoutManager(rootView.context)
                 adapter = PlanAdapter(dateItem.planItems)
-                layoutManager = LinearLayoutManager(this.context)
                 setHasFixedSize(false)
             }
         }

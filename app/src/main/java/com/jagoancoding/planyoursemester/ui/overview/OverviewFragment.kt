@@ -42,9 +42,6 @@ class OverviewFragment : Fragment() {
 
     companion object {
         fun newInstance() = OverviewFragment()
-        val startDate: LocalDate = LocalDate.now().minusDays(App.DAYS_PASSED)
-        val endDate: LocalDate =
-            startDate.plusDays(App.DAYS_DISPLAYED_IN_OVERVIEW)
     }
 
     private val disposable = CompositeDisposable()
@@ -63,10 +60,17 @@ class OverviewFragment : Fragment() {
             .of(this)
             .get(OverviewViewModel::class.java)
 
+        val dateAdapter =
+            DateAdapter(
+                viewModel.initialDateItems(
+                    viewModel.startDate,
+                    viewModel.endDate
+                )
+            )
+
         rv_overview.apply {
             layoutManager = LinearLayoutManager(this.context)
-            adapter =
-                DateAdapter(viewModel.initialDateItems(startDate, endDate))
+            adapter = dateAdapter
         }
 
         // Set recylerview adapter's data to updated data

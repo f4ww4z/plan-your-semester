@@ -16,14 +16,13 @@
 package com.jagoancoding.planyoursemester.model
 
 import com.jagoancoding.planyoursemester.util.DateUtil
-import android.content.res.Resources
 import org.threeten.bp.LocalDate
 
 class DateItem(
     var date: LocalDate,
     var planItems: MutableList<PlanItem>
 ) {
-    fun getDayOfMonth(): String = date.dayOfMonth.toString()
+    fun dayOfWeek(): String = DateUtil.getDayOfWeek(date)
 
-    fun getDayName(r: Resources): String = DateUtil.getDayNameFromDate(date, r)
+    fun dayName(): String = DateUtil.getDayNameFromDate(date)
 }

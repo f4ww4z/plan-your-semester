@@ -18,6 +18,7 @@ package com.jagoancoding.planyoursemester.ui.overview
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Subject
@@ -26,6 +27,10 @@ import com.jagoancoding.planyoursemester.util.DateUtil
 import org.threeten.bp.LocalDate
 
 class OverviewViewModel : ViewModel() {
+
+    val startDate: LocalDate = LocalDate.now().minusDays(App.DAYS_PASSED)
+    val endDate: LocalDate =
+        startDate.plusDays(App.DAYS_DISPLAYED_IN_OVERVIEW)
 
     private var _dateItems = MutableLiveData<List<DateItem>>()
     val dateItems: LiveData<List<DateItem>>
