@@ -20,7 +20,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.AppRepository
+import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
+import com.jagoancoding.planyoursemester.db.Homework
+import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.util.DateUtil
@@ -57,11 +60,6 @@ class OverviewViewModel : ViewModel() {
 
     fun getSubject(id: Long) = AppRepository.getSubject(id)
 
-    fun addOrUpdateSubject(name: String, color: String) {
-        val subject = Subject(name = name, color = color)
-        AppRepository.insertSubject(subject)
-    }
-
     fun getExams() = AppRepository.getExams()
 
     fun getHomeworks() = AppRepository.getHomeworks()
@@ -70,11 +68,72 @@ class OverviewViewModel : ViewModel() {
 
     fun getReminders() = AppRepository.getReminders()
 
+    fun addOrUpdateSubject(name: String, color: String) {
+        val subject = Subject(name = name, color = color)
+        AppRepository.insertSubject(subject)
+    }
+
+    fun addOrUpdateExam(
+        name: String,
+        subjectId: Long,
+        startDate: Long,
+        endDate: Long
+    ) {
+        val exam = Exam(
+            name = name,
+            subjectId = subjectId,
+            startDate = startDate,
+            endDate = endDate
+        )
+        AppRepository.insertExam(exam)
+    }
+
+    fun addOrUpdateHomework(
+        name: String,
+        subjectId: Long,
+        dueDate: Long,
+        description: String,
+        isDone: Boolean
+    ) {
+        val homework = Homework(
+            name = name,
+            subjectId = subjectId,
+            dueDate = dueDate,
+            description = description,
+            isDone = isDone
+        )
+        AppRepository.insertHomework(homework)
+    }
+
+    fun addOrUpdateEvent(
+        name: String,
+        startDate: Long,
+        endDate: Long,
+        description: String
+    ) {
+        val event = Event(
+            name = name,
+            startDate = startDate,
+            endDate = endDate,
+            description = description
+        )
+        AppRepository.insertEvent(event)
+    }
+
+    fun addOrUpdateReminder(reminder: String, date: Long, isDone: Boolean) {
+        val reminderEntity =
+            Reminder(reminder = reminder, date = date, isDone = isDone)
+        AppRepository.insertReminder(reminderEntity)
+    }
+
     fun addDemoData() {
+        /*
         addOrUpdateSubject("Maths", "blue")
         addOrUpdateSubject("Science", "green")
         addOrUpdateSubject("Music", "red")
         addOrUpdateSubject("Culture", "orange")
         addOrUpdateSubject("Bler", "pink")
+        */
+
     }
 }

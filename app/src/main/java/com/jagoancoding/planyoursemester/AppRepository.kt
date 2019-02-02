@@ -48,14 +48,6 @@ object AppRepository {
     fun getSubjectNames(): Flowable<List<String>> =
         db.subjectDao().getSubjectNames()
 
-    fun insertSubject(subject: Subject) {
-        Completable.fromAction {
-            db.subjectDao().insertSubject(subject)
-        }.subscribeOn(Schedulers.io()).subscribe({}, { error ->
-            Log.e("AppRepository", "Unable to insert subject, $error")
-        }).dispose()
-    }
-
     fun getExams(): Flowable<List<Exam>> = db.examDao().getExams()
 
     fun getHomeworks(): Flowable<List<Homework>> =
@@ -65,6 +57,34 @@ object AppRepository {
 
     fun getReminders(): Flowable<List<Reminder>> =
         db.reminderDao().getReminders()
+
+    fun insertSubject(subject: Subject) {
+        insert { db.subjectDao().insertSubject(subject) }
+    }
+
+    fun insertExam(exam: Exam) {
+        insert { db.examDao().insertExam(exam) }
+    }
+
+    fun insertHomework(homework: Homework) {
+        insert { db.homeworkDao().insertHomework(homework) }
+    }
+
+    fun insertEvent(event: Event) {
+        insert { db.eventDao().insertEvent(event) }
+    }
+
+    fun insertReminder(reminder: Reminder) {
+        insert { db.reminderDao().insertReminder(reminder) }
+    }
+
+    fun insert(f: () -> Unit) {
+        Completable.fromAction {
+            f()
+        }.subscribeOn(Schedulers.io()).subscribe({}, { error ->
+            Log.e("AppRepository", "Unable to insert entity, $error")
+        }).dispose()
+    }
 
     fun datesBetween(start: LocalDate, end: LocalDate): List<LocalDate> {
         val ret = ArrayList<LocalDate>()

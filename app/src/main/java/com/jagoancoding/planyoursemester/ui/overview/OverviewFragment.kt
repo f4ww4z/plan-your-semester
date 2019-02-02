@@ -86,7 +86,6 @@ class OverviewFragment : Fragment() {
             }
         }, Schedulers.newThread())
 
-        viewModel.addDemoData()
     }
 
     private fun RecyclerView.scrollToToday() {
