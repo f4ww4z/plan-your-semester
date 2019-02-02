@@ -28,9 +28,9 @@ import org.threeten.bp.LocalDate
 
 class OverviewViewModel : ViewModel() {
 
-    val startDate: LocalDate = LocalDate.now().minusDays(App.DAYS_PASSED)
-    val endDate: LocalDate =
-        startDate.plusDays(App.DAYS_DISPLAYED_IN_OVERVIEW)
+    val today: LocalDate = LocalDate.now()
+    val startDate: LocalDate = today.minusDays(App.DAYS_PASSED)
+    val endDate: LocalDate = startDate.plusDays(App.DAYS_SINCE_PASSED)
 
     private var _dateItems = MutableLiveData<List<DateItem>>()
     val dateItems: LiveData<List<DateItem>>
