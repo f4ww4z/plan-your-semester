@@ -27,10 +27,10 @@ interface SubjectDao {
     @Query("SELECT * FROM subjects")
     fun getSubjects(): LiveData<List<Subject>>
 
-    @Query("SELECT * FROM subjects WHERE name = :name")
+    @Query("SELECT * FROM subjects WHERE s_name = :name")
     fun getSubjectByName(name: String): LiveData<Subject>
 
-    @Query("SELECT name FROM subjects")
+    @Query("SELECT s_name FROM subjects")
     fun getSubjectNames(): LiveData<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

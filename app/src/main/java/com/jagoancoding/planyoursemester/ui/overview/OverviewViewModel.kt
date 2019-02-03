@@ -22,10 +22,12 @@ import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
+import com.jagoancoding.planyoursemester.db.ExamWithSubject
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.model.DateItem
+import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.util.DateUtil
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -41,6 +43,10 @@ class OverviewViewModel : ViewModel() {
     val dateItems: LiveData<List<DateItem>>
         get() = _dateItems
 
+    init {
+        _dateItems.value = initialDateItems(startDate, endDate)
+    }
+
     fun initialDateItems(start: LocalDate, end: LocalDate): List<DateItem> {
         val dateItems = ArrayList<DateItem>()
         AppRepository.datesBetween(start, end).forEach { date ->
@@ -53,11 +59,30 @@ class OverviewViewModel : ViewModel() {
         return dateItems
     }
 
-    fun populateDateItem(exam: Exam, subject: Subject?) {
-        val date = DateUtil.getDate(exam.startDate)
+    fun addNewPlan(plan: PlanItem) {
+        val dateItems = _dateItems.value
 
-        _dateItems.value?.first { it.date.isEqual(date) }
-            ?.planItems?.add(exam.toPlanItem(subject))
+        // Check the type of plan, which determines if either date or startDate
+        // should be used
+        val date: LocalDate = if (plan.itemType == PlanItem.TYPE_REMINDER ||
+            plan.itemType == PlanItem.TYPE_HOMEWORK
+        ) {
+            DateUtil.getDate(plan.date!!)
+        } else {
+            DateUtil.getDate(plan.startDate!!)
+        }
+
+        val dateItemToUpdateIndex =
+            dateItems?.indexOfFirst { it.date.isEqual(date) }!!
+
+        dateItems[dateItemToUpdateIndex].planItems.add(plan)
+
+        _dateItems.value = dateItems
+    }
+
+    fun populateDateItem(exam: ExamWithSubject) {
+        val newPlan = exam.toPlanItem()
+        addNewPlan(newPlan)
     }
 
     fun getSubject(name: String) = AppRepository.getSubject(name)
@@ -73,6 +98,9 @@ class OverviewViewModel : ViewModel() {
 
     val reminders: LiveData<List<Reminder>>
         get() = AppRepository.getReminders()
+
+    fun getExamWithSubject(id: String): LiveData<ExamWithSubject> =
+        AppRepository.getExamWithSubject(id)
 
     //TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
 

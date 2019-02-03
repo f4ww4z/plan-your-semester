@@ -21,9 +21,12 @@ import androidx.lifecycle.LiveData
 import com.jagoancoding.planyoursemester.db.AppDatabase
 import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
+import com.jagoancoding.planyoursemester.db.ExamDao
+import com.jagoancoding.planyoursemester.db.ExamWithSubject
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.db.Subject
+import com.jagoancoding.planyoursemester.db.SubjectDao
 import org.threeten.bp.LocalDate
 
 /**
@@ -45,6 +48,9 @@ object AppRepository {
 
     fun getExams(): LiveData<List<Exam>> = db.examDao().getExams()
 
+    fun getExamWithSubject(id: String): LiveData<ExamWithSubject> =
+        db.examDao().getExamWithSubject(id)
+
     fun getHomeworks(): LiveData<List<Homework>> =
         db.homeworkDao().getHomeworks()
 
@@ -54,11 +60,11 @@ object AppRepository {
         db.reminderDao().getReminders()
 
     fun insertSubject(subject: Subject) {
-        DaoAsyncTask { db.subjectDao().insertSubject(subject) }.execute()
+        InsertSubjectAsyncTask(db.subjectDao()).execute(subject)
     }
 
     fun insertExam(exam: Exam) {
-        DaoAsyncTask { db.examDao().insertExam(exam) }.execute()
+        InsertExamAsyncTask(db.examDao()).execute(exam)
     }
 
     //TODO: Replace keyword to 'Assignment'
@@ -89,6 +95,22 @@ object AppRepository {
 
         override fun doInBackground(vararg params: Any): Void? {
             daoMethod
+            return null
+        }
+    }
+
+    class InsertSubjectAsyncTask(private val dao: SubjectDao) :
+        AsyncTask<Subject, Void, Void>() {
+        override fun doInBackground(vararg params: Subject): Void? {
+            dao.insertSubject(params[0])
+            return null
+        }
+    }
+
+    class InsertExamAsyncTask(private val dao: ExamDao) :
+        AsyncTask<Exam, Void, Void>() {
+        override fun doInBackground(vararg params: Exam): Void? {
+            dao.insertExam(params[0])
             return null
         }
     }

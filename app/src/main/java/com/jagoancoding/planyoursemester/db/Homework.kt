@@ -25,7 +25,7 @@ import java.util.UUID
 @Entity(
     tableName = "homework", foreignKeys = [ForeignKey(
         entity = Subject::class,
-        parentColumns = arrayOf("name"),
+        parentColumns = arrayOf("s_name"),
         childColumns = arrayOf("subject_name"),
         onDelete = ForeignKey.CASCADE
     )], indices = [Index(value = ["subject_name"], unique = true)]

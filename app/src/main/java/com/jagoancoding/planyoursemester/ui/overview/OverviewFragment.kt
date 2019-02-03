@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.db.Exam
+import com.jagoancoding.planyoursemester.model.DateItem
 import kotlinx.android.synthetic.main.overview_fragment.rv_overview
 
 class OverviewFragment : Fragment() {
@@ -52,13 +53,9 @@ class OverviewFragment : Fragment() {
             .of(this)
             .get(OverviewViewModel::class.java)
 
-        val dateAdapter = DateAdapter(
-            viewModel.initialDateItems(viewModel.startDate, viewModel.endDate)
-        )
-
         rv_overview.apply {
             layoutManager = LinearLayoutManager(this.context)
-            adapter = dateAdapter
+            adapter = DateAdapter(ArrayList())
         }.scrollToToday()
 
         // Set recylerview adapter's data to updated data
@@ -68,7 +65,7 @@ class OverviewFragment : Fragment() {
 
         viewModel.exams.observe(this, Observer { exams ->
             exams.forEach { exam ->
-                getSubjectOfExamAndAdd(exam)
+                addExam(exam)
             }
         })
 
@@ -77,6 +74,12 @@ class OverviewFragment : Fragment() {
 
     private fun RecyclerView.scrollToToday() {
         scrollToPosition(App.DAYS_PASSED.toInt())
+    }
+
+    private fun addExam(exam: Exam) {
+        viewModel.getExamWithSubject(exam.id).observe(this, Observer {
+            viewModel.populateDateItem(it)
+        })
     }
 
     /**
@@ -99,18 +102,6 @@ class OverviewFragment : Fragment() {
         this.observe(this@OverviewFragment, Observer { obj ->
             obj.forEach {
                 toExecute(it)
-            }
-        })
-    }
-
-    private fun getSubjectOfExamAndAdd(exam: Exam) {
-        val subjectToGet = viewModel.getSubject(exam.name)
-
-        subjectToGet.observe(this@OverviewFragment, Observer { subject ->
-            if (subject == null) {
-                Log.w("OverviewFragment", "Subject of exam is null")
-            } else {
-                viewModel.populateDateItem(exam, subject)
             }
         })
     }

@@ -26,7 +26,7 @@ import java.util.UUID
 @Entity(
     tableName = "exams", foreignKeys = [ForeignKey(
         entity = Subject::class,
-        parentColumns = arrayOf("name"),
+        parentColumns = arrayOf("s_name"),
         childColumns = arrayOf("subject_name"),
         onDelete = ForeignKey.CASCADE
     )], indices = [Index(value = ["subject_name"], unique = true)]
@@ -43,15 +43,4 @@ data class Exam(
     var startDate: Long,
     @ColumnInfo
     var endDate: Long
-) {
-    fun toPlanItem(subject: Subject?) = PlanItem(
-        PlanItem.TYPE_EXAM,
-        subject,
-        name,
-        null,
-        null,
-        startDate,
-        endDate,
-        null
-    )
-}
+)

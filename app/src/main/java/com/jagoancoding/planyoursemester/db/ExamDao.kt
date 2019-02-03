@@ -33,6 +33,13 @@ interface ExamDao {
     @Query("SELECT name FROM exams")
     fun getExamNames(): LiveData<List<String>>
 
+    @Query(
+        """SELECT exam_id, subject_name, color, name, startDate, endDate
+        FROM exams INNER JOIN subjects
+        WHERE subject_name = s_name AND exam_id = :id"""
+    )
+    fun getExamWithSubject(id: String): LiveData<ExamWithSubject>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertExam(exam: Exam)
 }

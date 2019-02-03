@@ -16,15 +16,30 @@
 package com.jagoancoding.planyoursemester.db
 
 import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import java.util.UUID
+import com.jagoancoding.planyoursemester.model.PlanItem
 
-@Entity(tableName = "subjects")
-data class Subject(
-        @PrimaryKey
-        @ColumnInfo(name = "s_name")
-        var name: String,
-        @ColumnInfo
-        var color: String
-)
+data class ExamWithSubject(
+    @ColumnInfo(name = "exam_id")
+    val id: String,
+    @ColumnInfo(name = "subject_name")
+    val subjectName: String,
+    @ColumnInfo(name = "color")
+    val subjectColor: String,
+    @ColumnInfo
+    var name: String,
+    @ColumnInfo
+    var startDate: Long,
+    @ColumnInfo
+    var endDate: Long
+) {
+    fun toPlanItem() = PlanItem(
+        PlanItem.TYPE_EXAM,
+        Subject(subjectName, subjectColor),
+        name,
+        null,
+        null,
+        startDate,
+        endDate,
+        null
+    )
+}

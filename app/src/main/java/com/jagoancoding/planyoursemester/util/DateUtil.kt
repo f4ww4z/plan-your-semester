@@ -36,10 +36,10 @@ object DateUtil {
     }
 
     fun getFormattedTime(date: Long): String {
-        val localDate: LocalDate =
+        val localDate: LocalDateTime =
             Instant.ofEpochMilli(date)
                 .atZone(ZoneId.systemDefault())
-                .toLocalDate()
+                .toLocalDateTime()
         val dateTimeFormatter =
             DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
         return localDate.format(dateTimeFormatter)

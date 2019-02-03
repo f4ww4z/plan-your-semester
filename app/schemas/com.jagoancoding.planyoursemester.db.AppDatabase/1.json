@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d61ee6994a66f5afc58e05a1355c3acc",
+    "identityHash": "117d21b9d07276c3f7146d22aa7d8819",
     "entities": [
       {
         "tableName": "subjects",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `color` TEXT NOT NULL, PRIMARY KEY(`name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`s_name` TEXT NOT NULL, `color` TEXT NOT NULL, PRIMARY KEY(`s_name`))",
         "fields": [
           {
             "fieldPath": "name",
-            "columnName": "name",
+            "columnName": "s_name",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -23,7 +23,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "name"
+            "s_name"
           ],
           "autoGenerate": false
         },
@@ -32,7 +32,7 @@
       },
       {
         "tableName": "exams",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`exam_id` TEXT NOT NULL, `subject_name` TEXT NOT NULL, `name` TEXT NOT NULL, `startDate` INTEGER NOT NULL, `endDate` INTEGER NOT NULL, PRIMARY KEY(`exam_id`), FOREIGN KEY(`subject_name`) REFERENCES `subjects`(`name`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`exam_id` TEXT NOT NULL, `subject_name` TEXT NOT NULL, `name` TEXT NOT NULL, `startDate` INTEGER NOT NULL, `endDate` INTEGER NOT NULL, PRIMARY KEY(`exam_id`), FOREIGN KEY(`subject_name`) REFERENCES `subjects`(`s_name`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -90,14 +90,14 @@
               "subject_name"
             ],
             "referencedColumns": [
-              "name"
+              "s_name"
             ]
           }
         ]
       },
       {
         "tableName": "homework",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`homework_id` TEXT NOT NULL, `subject_name` TEXT NOT NULL, `name` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `description` TEXT NOT NULL, `isDone` INTEGER NOT NULL, PRIMARY KEY(`homework_id`), FOREIGN KEY(`subject_name`) REFERENCES `subjects`(`name`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`homework_id` TEXT NOT NULL, `subject_name` TEXT NOT NULL, `name` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `description` TEXT NOT NULL, `isDone` INTEGER NOT NULL, PRIMARY KEY(`homework_id`), FOREIGN KEY(`subject_name`) REFERENCES `subjects`(`s_name`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -161,7 +161,7 @@
               "subject_name"
             ],
             "referencedColumns": [
-              "name"
+              "s_name"
             ]
           }
         ]
@@ -251,7 +251,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"d61ee6994a66f5afc58e05a1355c3acc\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"117d21b9d07276c3f7146d22aa7d8819\")"
     ]
   }
 }
