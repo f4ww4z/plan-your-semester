@@ -16,16 +16,14 @@
 package com.jagoancoding.planyoursemester
 
 import android.app.Application
-import android.util.Log
+import android.os.AsyncTask
+import androidx.lifecycle.LiveData
 import com.jagoancoding.planyoursemester.db.AppDatabase
 import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.db.Subject
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.LocalDate
 
 /**
@@ -40,50 +38,40 @@ object AppRepository {
         db = AppDatabase.getInstance(application.applicationContext)
     }
 
-    fun getSubjects(): Flowable<List<Subject>> = db.subjectDao().getSubjects()
+    fun getSubjects(): LiveData<List<Subject>> = db.subjectDao().getSubjects()
 
-    fun getSubject(name: String): Flowable<Subject> =
+    fun getSubject(name: String): LiveData<Subject> =
         db.subjectDao().getSubjectByName(name)
 
-    fun getSubjectNames(): Flowable<List<String>> =
-        db.subjectDao().getSubjectNames()
+    fun getExams(): LiveData<List<Exam>> = db.examDao().getExams()
 
-    fun getExams(): Flowable<List<Exam>> = db.examDao().getExams()
-
-    fun getHomeworks(): Flowable<List<Homework>> =
+    fun getHomeworks(): LiveData<List<Homework>> =
         db.homeworkDao().getHomeworks()
 
-    fun getEvents(): Flowable<List<Event>> = db.eventDao().getEvents()
+    fun getEvents(): LiveData<List<Event>> = db.eventDao().getEvents()
 
-    fun getReminders(): Flowable<List<Reminder>> =
+    fun getReminders(): LiveData<List<Reminder>> =
         db.reminderDao().getReminders()
 
     fun insertSubject(subject: Subject) {
-        insert { db.subjectDao().insertSubject(subject) }
+        DaoAsyncTask { db.subjectDao().insertSubject(subject) }.execute()
     }
 
     fun insertExam(exam: Exam) {
-        insert { db.examDao().insertExam(exam) }
+        DaoAsyncTask { db.examDao().insertExam(exam) }.execute()
     }
 
+    //TODO: Replace keyword to 'Assignment'
     fun insertHomework(homework: Homework) {
-        insert { db.homeworkDao().insertHomework(homework) }
+        DaoAsyncTask { db.homeworkDao().insertHomework(homework) }.execute()
     }
 
     fun insertEvent(event: Event) {
-        insert { db.eventDao().insertEvent(event) }
+        DaoAsyncTask { db.eventDao().insertEvent(event) }.execute()
     }
 
     fun insertReminder(reminder: Reminder) {
-        insert { db.reminderDao().insertReminder(reminder) }
-    }
-
-    fun insert(f: () -> Unit) {
-        Completable.fromAction {
-            f()
-        }.subscribeOn(Schedulers.io()).subscribe({}, { error ->
-            Log.e("AppRepository", "Unable to insert entity, $error")
-        }).dispose()
+        DaoAsyncTask { db.reminderDao().insertReminder(reminder) }.execute()
     }
 
     fun datesBetween(start: LocalDate, end: LocalDate): List<LocalDate> {
@@ -94,5 +82,14 @@ object AppRepository {
             date = date.plusDays(1)
         }
         return ret
+    }
+
+    class DaoAsyncTask(private val daoMethod: () -> Unit) :
+        AsyncTask<Any, Void?, Void?>() {
+
+        override fun doInBackground(vararg params: Any): Void? {
+            daoMethod
+            return null
+        }
     }
 }

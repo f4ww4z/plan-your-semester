@@ -21,6 +21,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,11 +29,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.db.Exam
-import com.jagoancoding.planyoursemester.db.Subject
-import io.reactivex.Flowable
-import io.reactivex.Scheduler
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.overview_fragment.rv_overview
 
 class OverviewFragment : Fragment() {
@@ -41,7 +37,6 @@ class OverviewFragment : Fragment() {
         fun newInstance() = OverviewFragment()
     }
 
-    private val disposable = CompositeDisposable()
     private lateinit var viewModel: OverviewViewModel
 
     override fun onCreateView(
@@ -57,13 +52,9 @@ class OverviewFragment : Fragment() {
             .of(this)
             .get(OverviewViewModel::class.java)
 
-        val dateAdapter =
-            DateAdapter(
-                viewModel.initialDateItems(
-                    viewModel.startDate,
-                    viewModel.endDate
-                )
-            )
+        val dateAdapter = DateAdapter(
+            viewModel.initialDateItems(viewModel.startDate, viewModel.endDate)
+        )
 
         rv_overview.apply {
             layoutManager = LinearLayoutManager(this.context)
@@ -75,27 +66,11 @@ class OverviewFragment : Fragment() {
             (rv_overview.adapter as DateAdapter).setData(it)
         })
 
-        subscribeToExams(
-            viewModel.getExams(),
-            Schedulers.newThread()
-        )
-
-        /*
-        val scheduler = Schedulers.newThread()
-        disposable.add(
-            viewModel.getExams().observeOn(scheduler)
-                .subscribe({ exams ->
-                    exams.forEach {
-                        getSubjectOfExamAndAdd(it, Schedulers.newThread())
-                    }
-                }, { error ->
-                    Log.e(
-                        "OverviewFragment",
-                        "Unable to fetch list, $error"
-                    )
-                })
-        )
-        */
+        viewModel.exams.observe(this, Observer { exams ->
+            exams.forEach { exam ->
+                getSubjectOfExamAndAdd(exam)
+            }
+        })
 
         viewModel.addDemoData()
     }
@@ -105,44 +80,38 @@ class OverviewFragment : Fragment() {
     }
 
     /**
-     * General subscription of Flowable exams examList
-     * @param examList Flowable exam examList to listen to
-     * @param scheduler scheduling units
+     * Observation of LiveData item
+     * Executes a function with updated data as its argument
+     * @param toExecute function to execute once data is retrieved
      */
-    private fun subscribeToExams(
-        examList: Flowable<List<Exam>>,
-        scheduler: Scheduler
-    ) {
-        disposable.add(
-            examList.observeOn(scheduler)
-                .subscribe({ exams ->
-                    exams.forEach { exam ->
-                        getSubjectOfExamAndAdd(exam, Schedulers.newThread())
-                    }
-                }, { error ->
-                    Log.e(
-                        "OverviewFragment",
-                        "Unable to fetch examList, $error"
-                    )
-                })
-        )
+    private fun <T> LiveData<out T>.runOnDataUpdate(toExecute: (T) -> Unit) {
+        this.observe(this@OverviewFragment, Observer { obj ->
+            toExecute(obj)
+        })
     }
 
-    private fun getSubjectOfExamAndAdd(exam: Exam, scheduler: Scheduler) {
-        val subjectFlowable = viewModel.getSubject(exam.name)
-
-        disposable.add(
-            subjectFlowable.observeOn(scheduler)
-                .subscribe({ subject ->
-                    // Found the subject, now add exam to dateItem's planItems
-                    viewModel.populateDateItem(exam, subject)
-                }, { error ->
-                    Log.e(
-                        "OverviewFragment",
-                        "Unable to fetch item, $error"
-                    )
-                })
-        )
+    /**
+     * Observation of LiveData list of items
+     * Executes a function with an updated item in a list as its argument
+     * @param toExecute function to execute once data is retrieved
+     */
+    private fun <T> LiveData<out List<T>>.runOnEachElement(toExecute: (T) -> Unit) {
+        this.observe(this@OverviewFragment, Observer { obj ->
+            obj.forEach {
+                toExecute(it)
+            }
+        })
     }
 
+    private fun getSubjectOfExamAndAdd(exam: Exam) {
+        val subjectToGet = viewModel.getSubject(exam.name)
+
+        subjectToGet.observe(this@OverviewFragment, Observer { subject ->
+            if (subject == null) {
+                Log.w("OverviewFragment", "Subject of exam is null")
+            } else {
+                viewModel.populateDateItem(exam, subject)
+            }
+        })
+    }
 }

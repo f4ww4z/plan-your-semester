@@ -29,7 +29,6 @@ import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.util.DateUtil
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
 import org.threeten.bp.ZoneOffset
 
 class OverviewViewModel : ViewModel() {
@@ -63,13 +62,17 @@ class OverviewViewModel : ViewModel() {
 
     fun getSubject(name: String) = AppRepository.getSubject(name)
 
-    fun getExams() = AppRepository.getExams()
+    val exams: LiveData<List<Exam>>
+        get() = AppRepository.getExams()
 
-    fun getHomeworks() = AppRepository.getHomeworks()
+    val homeworks: LiveData<List<Homework>>
+        get() = AppRepository.getHomeworks()
 
-    fun getEvents() = AppRepository.getEvents()
+    val events: LiveData<List<Event>>
+        get() = AppRepository.getEvents()
 
-    fun getReminders() = AppRepository.getReminders()
+    val reminders: LiveData<List<Reminder>>
+        get() = AppRepository.getReminders()
 
     //TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
 

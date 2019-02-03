@@ -15,23 +15,23 @@
 
 package com.jagoancoding.planyoursemester.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.reactivex.Flowable
 
 @Dao
 interface SubjectDao {
 
     @Query("SELECT * FROM subjects")
-    fun getSubjects(): Flowable<List<Subject>>
+    fun getSubjects(): LiveData<List<Subject>>
 
     @Query("SELECT * FROM subjects WHERE name = :name")
-    fun getSubjectByName(name: String): Flowable<Subject>
+    fun getSubjectByName(name: String): LiveData<Subject>
 
     @Query("SELECT name FROM subjects")
-    fun getSubjectNames(): Flowable<List<String>>
+    fun getSubjectNames(): LiveData<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSubject(subject: Subject)
