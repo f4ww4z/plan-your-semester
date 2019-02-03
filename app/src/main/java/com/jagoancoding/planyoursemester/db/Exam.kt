@@ -18,6 +18,7 @@ package com.jagoancoding.planyoursemester.db
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.jagoancoding.planyoursemester.model.PlanItem
 import java.util.UUID
@@ -25,17 +26,17 @@ import java.util.UUID
 @Entity(
     tableName = "exams", foreignKeys = [ForeignKey(
         entity = Subject::class,
-        parentColumns = arrayOf("subject_id"),
-        childColumns = arrayOf("subject_id"),
+        parentColumns = arrayOf("name"),
+        childColumns = arrayOf("subject_name"),
         onDelete = ForeignKey.CASCADE
-    )]
+    )], indices = [Index(value = ["subject_name"], unique = true)]
 )
 data class Exam(
     @PrimaryKey
     @ColumnInfo(name = "exam_id")
     val id: String = UUID.randomUUID().toString(),
-    @ColumnInfo(name = "subject_id")
-    val subjectId: Long,
+    @ColumnInfo(name = "subject_name")
+    val subjectName: String,
     @ColumnInfo
     var name: String,
     @ColumnInfo

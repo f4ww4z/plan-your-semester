@@ -28,6 +28,9 @@ import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.util.DateUtil
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZoneOffset
 
 class OverviewViewModel : ViewModel() {
 
@@ -58,7 +61,7 @@ class OverviewViewModel : ViewModel() {
             ?.planItems?.add(exam.toPlanItem(subject))
     }
 
-    fun getSubject(id: Long) = AppRepository.getSubject(id)
+    fun getSubject(name: String) = AppRepository.getSubject(name)
 
     fun getExams() = AppRepository.getExams()
 
@@ -68,6 +71,8 @@ class OverviewViewModel : ViewModel() {
 
     fun getReminders() = AppRepository.getReminders()
 
+    //TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
+
     fun addOrUpdateSubject(name: String, color: String) {
         val subject = Subject(name = name, color = color)
         AppRepository.insertSubject(subject)
@@ -75,13 +80,13 @@ class OverviewViewModel : ViewModel() {
 
     fun addOrUpdateExam(
         name: String,
-        subjectId: Long,
+        subjectName: String,
         startDate: Long,
         endDate: Long
     ) {
         val exam = Exam(
             name = name,
-            subjectId = subjectId,
+            subjectName = subjectName,
             startDate = startDate,
             endDate = endDate
         )
@@ -90,14 +95,14 @@ class OverviewViewModel : ViewModel() {
 
     fun addOrUpdateHomework(
         name: String,
-        subjectId: Long,
+        subjectName: String,
         dueDate: Long,
         description: String,
         isDone: Boolean
     ) {
         val homework = Homework(
             name = name,
-            subjectId = subjectId,
+            subjectName = subjectName,
             dueDate = dueDate,
             description = description,
             isDone = isDone
@@ -127,13 +132,33 @@ class OverviewViewModel : ViewModel() {
     }
 
     fun addDemoData() {
-        /*
+        val startDate1: Long =
+            LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()
+        val endDate1: Long =
+            LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.UTC)
+                .toEpochMilli()
+        val startDate2: Long =
+            LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC)
+                .toEpochMilli()
+        val endDate2: Long =
+            LocalDateTime.now().plusDays(1).plusHours(2)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli()
+        //TODO: Covert this to a test
         addOrUpdateSubject("Maths", "blue")
         addOrUpdateSubject("Science", "green")
         addOrUpdateSubject("Music", "red")
         addOrUpdateSubject("Culture", "orange")
         addOrUpdateSubject("Bler", "pink")
-        */
-
+        addOrUpdateExam(
+            "Maths test", "Maths",
+            startDate1,
+            endDate1
+        )
+        addOrUpdateExam(
+            "Piano daily test", "Music",
+            startDate2,
+            endDate2
+        )
     }
 }

@@ -23,9 +23,6 @@ import java.util.UUID
 @Entity(tableName = "subjects")
 data class Subject(
         @PrimaryKey
-        @ColumnInfo(name = "subject_id")
-        val id: String = UUID.randomUUID().toString(),
-        @ColumnInfo
         var name: String,
         @ColumnInfo
         var color: String

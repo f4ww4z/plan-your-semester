@@ -27,17 +27,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.R
-import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
-import com.jagoancoding.planyoursemester.db.Homework
-import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.db.Subject
 import io.reactivex.Flowable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.overview_fragment.rv_overview
-import org.threeten.bp.LocalDate
 
 class OverviewFragment : Fragment() {
 
@@ -79,33 +75,19 @@ class OverviewFragment : Fragment() {
             (rv_overview.adapter as DateAdapter).setData(it)
         })
 
-        viewModel.getExams().listSubscribe({ resultData ->
-            resultData.forEach {
-                val exam = it as Exam
-                getSubjectOfExam(exam, Schedulers.newThread())
-            }
-        }, Schedulers.newThread())
+        subscribeToExams(
+            viewModel.getExams(),
+            Schedulers.newThread()
+        )
 
-    }
-
-    private fun RecyclerView.scrollToToday() {
-        scrollToPosition(App.DAYS_PASSED.toInt())
-    }
-
-    /**
-     * General subscription of items in a Flowable list
-     * @param f method to be executed when list is loaded
-     * @param scheduler scheduling units
-     */
-    private fun Flowable<out List<Any>>.listSubscribe(
-        f: (List<Any>) -> Unit,
-        scheduler: Scheduler
-    ) {
+        /*
+        val scheduler = Schedulers.newThread()
         disposable.add(
-            this.subscribeOn(scheduler)
-                .observeOn(scheduler)
-                .subscribe({
-                    f(it)
+            viewModel.getExams().observeOn(scheduler)
+                .subscribe({ exams ->
+                    exams.forEach {
+                        getSubjectOfExamAndAdd(it, Schedulers.newThread())
+                    }
                 }, { error ->
                     Log.e(
                         "OverviewFragment",
@@ -113,22 +95,47 @@ class OverviewFragment : Fragment() {
                     )
                 })
         )
+        */
+
+        viewModel.addDemoData()
+    }
+
+    private fun RecyclerView.scrollToToday() {
+        scrollToPosition(App.DAYS_PASSED.toInt())
     }
 
     /**
-     * General subscription of a Flowable item
-     * @param f method to be executed when item is loaded
+     * General subscription of Flowable exams examList
+     * @param examList Flowable exam examList to listen to
      * @param scheduler scheduling units
      */
-    private fun Flowable<out Any>.itemSubscribe(
-        f: (Any) -> Unit,
+    private fun subscribeToExams(
+        examList: Flowable<List<Exam>>,
         scheduler: Scheduler
     ) {
         disposable.add(
-            this.subscribeOn(scheduler)
-                .observeOn(scheduler)
-                .subscribe({
-                    f(it)
+            examList.observeOn(scheduler)
+                .subscribe({ exams ->
+                    exams.forEach { exam ->
+                        getSubjectOfExamAndAdd(exam, Schedulers.newThread())
+                    }
+                }, { error ->
+                    Log.e(
+                        "OverviewFragment",
+                        "Unable to fetch examList, $error"
+                    )
+                })
+        )
+    }
+
+    private fun getSubjectOfExamAndAdd(exam: Exam, scheduler: Scheduler) {
+        val subjectFlowable = viewModel.getSubject(exam.name)
+
+        disposable.add(
+            subjectFlowable.observeOn(scheduler)
+                .subscribe({ subject ->
+                    // Found the subject, now add exam to dateItem's planItems
+                    viewModel.populateDateItem(exam, subject)
                 }, { error ->
                     Log.e(
                         "OverviewFragment",
@@ -136,14 +143,6 @@ class OverviewFragment : Fragment() {
                     )
                 })
         )
-    }
-
-    private fun getSubjectOfExam(exam: Exam, scheduler: Scheduler) {
-        viewModel.getSubject(exam.subjectId).itemSubscribe({ result ->
-            // Found the subject, now add exam to dateItem's planItems
-            val subject = result as Subject
-            viewModel.populateDateItem(exam, subject)
-        }, Schedulers.newThread())
     }
 
 }
