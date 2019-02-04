@@ -23,4 +23,18 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="TitleText" parent="TextAppearance.AppCompat.Body2">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="LabelText" parent="TextAppearance.AppCompat.Body2">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="ThinLabelText" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
 </resources>

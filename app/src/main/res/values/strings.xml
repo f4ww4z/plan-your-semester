@@ -14,7 +14,7 @@
   -->
 
 <resources>
-    <string name="app_name">Plan Your Day</string>
+    <string name="app_name">Plan Your Semester</string>
     <string name="date_start_end">%1$s - %2$s</string>
     <string name="homework_date">Due %1$s</string>
 </resources>

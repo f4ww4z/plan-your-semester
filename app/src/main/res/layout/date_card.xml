@@ -32,8 +32,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:text="31"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:textColor="#000000"
+            android:textAppearance="@style/TitleText"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -44,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="44dp"
             android:text="Sun"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textAppearance="@style/ThinLabelText"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@+id/tv_day"
             app:layout_constraintTop_toTopOf="parent" />

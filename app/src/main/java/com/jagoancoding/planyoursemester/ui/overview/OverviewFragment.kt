@@ -16,7 +16,6 @@
 package com.jagoancoding.planyoursemester.ui.overview
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.db.Exam
-import com.jagoancoding.planyoursemester.model.DateItem
+import com.jagoancoding.planyoursemester.db.Homework
 import kotlinx.android.synthetic.main.overview_fragment.rv_overview
 
 class OverviewFragment : Fragment() {
@@ -65,18 +64,18 @@ class OverviewFragment : Fragment() {
 
         viewModel.exams.observe(this, Observer { exams ->
             exams.forEach { exam ->
-                addExam(exam)
+                add(exam)
             }
         })
 
-        // viewModel.addDemoData()
+        viewModel.addDemoData()
     }
 
     private fun RecyclerView.scrollToToday() {
         scrollToPosition(App.DAYS_PASSED.toInt())
     }
 
-    private fun addExam(exam: Exam) {
+    private fun add(exam: Exam) {
         viewModel.getExamWithSubject(exam.id).observe(this, Observer {
             viewModel.populateDateItem(it)
         })

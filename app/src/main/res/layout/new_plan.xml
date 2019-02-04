@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2019 Maharaj Fawwaz Almuqaddim Yusran
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -26,7 +25,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="Homework"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textAppearance="@style/TitleText"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tv_subject"
@@ -43,6 +42,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="description of event here"
+        android:textAppearance="@style/LabelText"
         app:layout_constraintEnd_toStartOf="@+id/tv_subject"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +59,7 @@
         android:background="@drawable/subject_circle"
         android:gravity="center"
         android:text="CS"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textAppearance="@style/LabelText"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/tv_date"
@@ -74,7 +74,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="10:00 - 12:00"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textAppearance="@style/LabelText"
         android:textColor="@android:color/tertiary_text_light"
         android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@+id/tv_subject"

@@ -176,13 +176,18 @@ class OverviewViewModel : ViewModel() {
                 .toInstant(ZoneOffset.UTC)
                 .toEpochMilli()
         val startDate3: Long =
-            LocalDateTime.now().plusDays(1)
+            LocalDateTime.now().plusDays(2)
                 .plusHours(3)
                 .toInstant(ZoneOffset.UTC)
                 .toEpochMilli()
         val endDate3: Long =
-            LocalDateTime.now().plusDays(1)
+            LocalDateTime.now().plusDays(2)
                 .plusHours(6)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli()
+        val date4: Long =
+            LocalDateTime.now().plusDays(3)
+                .plusHours(7)
                 .toInstant(ZoneOffset.UTC)
                 .toEpochMilli()
         //TODO: Covert this to a test
@@ -206,7 +211,6 @@ class OverviewViewModel : ViewModel() {
             startDate3,
             endDate3
         )
-        /*
         addOrUpdateHomework(
             "Algebra sheet 2",
             "Maths",
@@ -215,6 +219,6 @@ class OverviewViewModel : ViewModel() {
             false
         )
         addOrUpdateEvent("Party", startDate3, endDate3, "Get friends together")
-        */
+        addOrUpdateReminder("Buy eggs", date4, false)
     }
 }
