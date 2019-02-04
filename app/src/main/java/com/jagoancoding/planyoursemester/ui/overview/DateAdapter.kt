@@ -15,28 +15,44 @@
 
 package com.jagoancoding.planyoursemester.ui.overview
 
+import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
-import kotlinx.android.synthetic.main.date_card.view.rv_plan_items
+import com.jagoancoding.planyoursemester.model.PlanItem
+import com.jagoancoding.planyoursemester.util.ViewUtil
+import com.jagoancoding.planyoursemester.util.ViewUtil.calculatePx
+import com.jagoancoding.planyoursemester.util.ViewUtil.setTextAndGoneIfEmpty
+import kotlinx.android.synthetic.main.date_card.view.rl_plan_items
 import kotlinx.android.synthetic.main.date_card.view.tv_day
 import kotlinx.android.synthetic.main.date_card.view.tv_day2
+import kotlinx.android.synthetic.main.new_plan.view.tv_date
+import kotlinx.android.synthetic.main.new_plan.view.tv_desc
+import kotlinx.android.synthetic.main.new_plan.view.tv_subject
+import kotlinx.android.synthetic.main.new_plan.view.tv_title
 
 class DateAdapter(private var data: List<DateItem>) :
     RecyclerView.Adapter<DateAdapter.ViewHolder>() {
 
+    companion object {
+        private const val BASE_PLAN_ITEM_ID = 164
+    }
+
+    private lateinit var inflater: LayoutInflater
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ViewHolder = LayoutInflater.from(parent.context)
-        .inflate(R.layout.date_card, parent, false)
-        .run {
-            ViewHolder(this)
-        }
+    ): ViewHolder {
+        inflater = LayoutInflater.from(parent.context)
+        val view = inflater.inflate(R.layout.date_card, parent, false)
+        return ViewHolder(view)
+    }
 
     override fun getItemCount() = data.size
 
@@ -45,10 +61,9 @@ class DateAdapter(private var data: List<DateItem>) :
         with(holder.itemView) {
             tv_day.text = dateItem.dayOfWeek()
             tv_day2.text = dateItem.dayName()
-            rv_plan_items.apply {
-                layoutManager = LinearLayoutManager(rootView.context)
-                adapter = PlanAdapter(dateItem.planItems)
-                setHasFixedSize(false)
+
+            for (i in dateItem.planItems.indices) {
+                dateItem.planItems[i].addToRootView(rl_plan_items, i, resources)
             }
         }
     }
@@ -56,6 +71,45 @@ class DateAdapter(private var data: List<DateItem>) :
     fun setData(newData: List<DateItem>) {
         data = newData
         notifyDataSetChanged()
+    }
+
+    private fun PlanItem.addToRootView(
+        rootView: RelativeLayout,
+        pos: Int,
+        r: Resources
+    ) {
+        val planItemView: ConstraintLayout = inflater
+            .inflate(R.layout.new_plan, rootView, false) as ConstraintLayout
+
+        planItemView.id = BASE_PLAN_ITEM_ID + pos
+
+        with(planItemView) {
+            tv_title.text = name
+            tv_desc.setTextAndGoneIfEmpty(description)
+            tv_date.text = getDateToDisplay(resources)
+            tv_subject.setTextAndGoneIfEmpty(subject?.name)
+        }
+
+        val params = planItemView.layoutParams as RelativeLayout.LayoutParams
+
+        val idOfBelow: Int
+
+        if (planItemView.id > BASE_PLAN_ITEM_ID) {
+            idOfBelow = planItemView.id - 1
+
+            // If it is the 2nd or more item in the list, add a margin above it
+            params.setMargins(
+                params.leftMargin,
+                calculatePx(16, r),
+                params.rightMargin,
+                params.bottomMargin
+            )
+        } else {
+            idOfBelow = rootView.id
+        }
+        params.addRule(RelativeLayout.BELOW, idOfBelow)
+
+        rootView.addView(planItemView, params)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)

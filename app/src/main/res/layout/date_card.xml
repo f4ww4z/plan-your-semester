@@ -48,8 +48,8 @@
             app:layout_constraintStart_toStartOf="@+id/tv_day"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_plan_items"
+        <RelativeLayout
+            android:id="@+id/rl_plan_items"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="64dp"
@@ -61,7 +61,7 @@
             app:layout_constraintStart_toEndOf="@+id/tv_day2"
             app:layout_constraintTop_toTopOf="parent">
 
-        </androidx.recyclerview.widget.RecyclerView>
+        </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
