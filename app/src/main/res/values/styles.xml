@@ -35,6 +35,6 @@
 
     <style name="ThinLabelText" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/secondaryText</item>
+        <item name="android:textColor">@color/primaryText</item>
     </style>
 </resources>
