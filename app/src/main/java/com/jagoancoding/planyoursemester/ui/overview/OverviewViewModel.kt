@@ -175,6 +175,16 @@ class OverviewViewModel : ViewModel() {
             LocalDateTime.now().plusDays(1).plusHours(2)
                 .toInstant(ZoneOffset.UTC)
                 .toEpochMilli()
+        val startDate3: Long =
+            LocalDateTime.now().plusDays(1)
+                .plusHours(3)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli()
+        val endDate3: Long =
+            LocalDateTime.now().plusDays(1)
+                .plusHours(6)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli()
         //TODO: Covert this to a test
         addOrUpdateSubject("Maths", "blue")
         addOrUpdateSubject("Science", "green")
@@ -191,5 +201,20 @@ class OverviewViewModel : ViewModel() {
             startDate2,
             endDate2
         )
+        addOrUpdateExam(
+            "Physics mid sem", "Science",
+            startDate3,
+            endDate3
+        )
+        /*
+        addOrUpdateHomework(
+            "Algebra sheet 2",
+            "Maths",
+            startDate2,
+            "Need help from John",
+            false
+        )
+        addOrUpdateEvent("Party", startDate3, endDate3, "Get friends together")
+        */
     }
 }

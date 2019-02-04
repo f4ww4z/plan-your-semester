@@ -69,7 +69,7 @@ class OverviewFragment : Fragment() {
             }
         })
 
-        viewModel.addDemoData()
+        // viewModel.addDemoData()
     }
 
     private fun RecyclerView.scrollToToday() {
