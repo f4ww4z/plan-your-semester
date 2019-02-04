@@ -20,11 +20,15 @@ import android.os.AsyncTask
 import androidx.lifecycle.LiveData
 import com.jagoancoding.planyoursemester.db.AppDatabase
 import com.jagoancoding.planyoursemester.db.Event
+import com.jagoancoding.planyoursemester.db.EventDao
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.ExamDao
 import com.jagoancoding.planyoursemester.db.ExamWithSubject
 import com.jagoancoding.planyoursemester.db.Homework
+import com.jagoancoding.planyoursemester.db.HomeworkDao
+import com.jagoancoding.planyoursemester.db.HomeworkWithSubject
 import com.jagoancoding.planyoursemester.db.Reminder
+import com.jagoancoding.planyoursemester.db.ReminderDao
 import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.db.SubjectDao
 import org.threeten.bp.LocalDate
@@ -51,13 +55,20 @@ object AppRepository {
     fun getExamWithSubject(id: String): LiveData<ExamWithSubject> =
         db.examDao().getExamWithSubject(id)
 
-    fun getHomeworks(): LiveData<List<Homework>> =
-        db.homeworkDao().getHomeworks()
+    fun getHomeworks() = db.homeworkDao().getHomeworks()
 
-    fun getEvents(): LiveData<List<Event>> = db.eventDao().getEvents()
+    fun getHomeworkWithSubject(id: String): LiveData<HomeworkWithSubject> =
+        db.homeworkDao().getHomeworkWithSubject(id)
+
+    fun getEvents() = db.eventDao().getEvents()
+
+    fun getEventById(id: String): LiveData<Event> =
+        db.eventDao().getEventById(id)
 
     fun getReminders(): LiveData<List<Reminder>> =
         db.reminderDao().getReminders()
+
+    fun getReminderById(id: String) = db.reminderDao().getReminderById(id)
 
     fun insertSubject(subject: Subject) {
         InsertSubjectAsyncTask(db.subjectDao()).execute(subject)
@@ -69,15 +80,15 @@ object AppRepository {
 
     //TODO: Replace keyword to 'Assignment'
     fun insertHomework(homework: Homework) {
-        DaoAsyncTask { db.homeworkDao().insertHomework(homework) }.execute()
+        InsertHomeworkAsyncTask(db.homeworkDao()).execute(homework)
     }
 
     fun insertEvent(event: Event) {
-        DaoAsyncTask { db.eventDao().insertEvent(event) }.execute()
+        InsertEventAsyncTask(db.eventDao()).execute(event)
     }
 
     fun insertReminder(reminder: Reminder) {
-        DaoAsyncTask { db.reminderDao().insertReminder(reminder) }.execute()
+        InsertReminderAsyncTask(db.reminderDao()).execute(reminder)
     }
 
     fun datesBetween(start: LocalDate, end: LocalDate): List<LocalDate> {
@@ -88,15 +99,6 @@ object AppRepository {
             date = date.plusDays(1)
         }
         return ret
-    }
-
-    class DaoAsyncTask(private val daoMethod: () -> Unit) :
-        AsyncTask<Any, Void?, Void?>() {
-
-        override fun doInBackground(vararg params: Any): Void? {
-            daoMethod
-            return null
-        }
     }
 
     class InsertSubjectAsyncTask(private val dao: SubjectDao) :
@@ -111,6 +113,30 @@ object AppRepository {
         AsyncTask<Exam, Void, Void>() {
         override fun doInBackground(vararg params: Exam): Void? {
             dao.insertExam(params[0])
+            return null
+        }
+    }
+
+    class InsertHomeworkAsyncTask(private val dao: HomeworkDao) :
+        AsyncTask<Homework, Void, Void>() {
+        override fun doInBackground(vararg params: Homework): Void? {
+            dao.insertHomework(params[0])
+            return null
+        }
+    }
+
+    class InsertEventAsyncTask(private val dao: EventDao) :
+        AsyncTask<Event, Void, Void>() {
+        override fun doInBackground(vararg params: Event): Void? {
+            dao.insertEvent(params[0])
+            return null
+        }
+    }
+
+    class InsertReminderAsyncTask(private val dao: ReminderDao) :
+        AsyncTask<Reminder, Void, Void>() {
+        override fun doInBackground(vararg params: Reminder): Void? {
+            dao.insertReminder(params[0])
             return null
         }
     }

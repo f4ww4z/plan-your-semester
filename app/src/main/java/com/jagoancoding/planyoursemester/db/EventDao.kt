@@ -28,7 +28,7 @@ interface EventDao {
     fun getEvents(): LiveData<List<Event>>
 
     @Query("SELECT * FROM events WHERE event_id = :id")
-    fun getEventById(id: Long): LiveData<Event>
+    fun getEventById(id: String): LiveData<Event>
 
     @Query("SELECT name FROM events")
     fun getEventNames(): LiveData<List<String>>

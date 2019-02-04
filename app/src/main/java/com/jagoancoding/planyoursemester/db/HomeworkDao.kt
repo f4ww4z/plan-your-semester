@@ -33,6 +33,13 @@ interface HomeworkDao {
     @Query("SELECT name FROM homework")
     fun getHomeworkNames(): LiveData<List<String>>
 
+    @Query(
+        """SELECT homework_id, subject_name, color, name, dueDate, description, isDone
+        FROM homework INNER JOIN subjects
+        WHERE subject_name = s_name AND homework_id = :id"""
+    )
+    fun getHomeworkWithSubject(id: String): LiveData<HomeworkWithSubject>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertHomework(homework: Homework)
 }

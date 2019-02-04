@@ -27,8 +27,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.R
+import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
+import com.jagoancoding.planyoursemester.db.Reminder
 import kotlinx.android.synthetic.main.overview_fragment.rv_overview
 
 class OverviewFragment : Fragment() {
@@ -64,20 +66,60 @@ class OverviewFragment : Fragment() {
 
         viewModel.exams.observe(this, Observer { exams ->
             exams.forEach { exam ->
-                add(exam)
+                addToView(exam)
             }
         })
 
-        viewModel.addDemoData()
+        viewModel.homeworks.observe(this, Observer { homeworks ->
+            homeworks.forEach { homework ->
+                addToView(homework)
+            }
+        })
+
+        viewModel.events.observe(this, Observer { events ->
+            events.forEach { event ->
+                addToView(event)
+            }
+        })
+
+        viewModel.reminders.observe(this, Observer { reminders ->
+            reminders.forEach { reminder ->
+                addToView(reminder)
+            }
+        })
+
+        //viewModel.addDemoData()
     }
 
     private fun RecyclerView.scrollToToday() {
         scrollToPosition(App.DAYS_PASSED.toInt())
     }
 
-    private fun add(exam: Exam) {
+    private fun addToView(exam: Exam) {
         viewModel.getExamWithSubject(exam.id).observe(this, Observer {
-            viewModel.populateDateItem(it)
+            val newExam = it.toPlanItem()
+            viewModel.addNewPlan(newExam)
+        })
+    }
+
+    private fun addToView(homework: Homework) {
+        viewModel.getHomeworkWithSubject(homework.id).observe(this, Observer {
+            val newHomework = it.toPlanItem()
+            viewModel.addNewPlan(newHomework)
+        })
+    }
+
+    private fun addToView(event: Event) {
+        viewModel.event(event.id).observe(this, Observer {
+            val newEvent = it.toPlanItem()
+            viewModel.addNewPlan(newEvent)
+        })
+    }
+
+    private fun addToView(reminder: Reminder) {
+        viewModel.reminder(reminder.id).observe(this, Observer {
+            val newReminder = it.toPlanItem()
+            viewModel.addNewPlan(newReminder)
         })
     }
 

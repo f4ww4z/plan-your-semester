@@ -24,6 +24,7 @@ import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.ExamWithSubject
 import com.jagoancoding.planyoursemester.db.Homework
+import com.jagoancoding.planyoursemester.db.HomeworkWithSubject
 import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.model.DateItem
@@ -80,11 +81,6 @@ class OverviewViewModel : ViewModel() {
         _dateItems.value = dateItems
     }
 
-    fun populateDateItem(exam: ExamWithSubject) {
-        val newPlan = exam.toPlanItem()
-        addNewPlan(newPlan)
-    }
-
     fun getSubject(name: String) = AppRepository.getSubject(name)
 
     val exams: LiveData<List<Exam>>
@@ -101,6 +97,14 @@ class OverviewViewModel : ViewModel() {
 
     fun getExamWithSubject(id: String): LiveData<ExamWithSubject> =
         AppRepository.getExamWithSubject(id)
+
+    fun getHomeworkWithSubject(id: String): LiveData<HomeworkWithSubject> =
+        AppRepository.getHomeworkWithSubject(id)
+
+    fun event(id: String): LiveData<Event> = AppRepository.getEventById(id)
+
+    fun reminder(id: String): LiveData<Reminder> =
+        AppRepository.getReminderById(id)
 
     //TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
 

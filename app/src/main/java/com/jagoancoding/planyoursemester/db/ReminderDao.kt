@@ -28,7 +28,7 @@ interface ReminderDao {
     fun getReminders(): LiveData<List<Reminder>>
 
     @Query("SELECT * FROM reminders WHERE reminder_id = :id")
-    fun getReminderById(id: Long): LiveData<Reminder>
+    fun getReminderById(id: String): LiveData<Reminder>
 
     @Query("SELECT reminder FROM reminders")
     fun getReminderNames(): LiveData<List<String>>
