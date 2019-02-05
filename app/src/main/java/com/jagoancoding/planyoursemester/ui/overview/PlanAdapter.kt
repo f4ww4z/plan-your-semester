@@ -27,6 +27,9 @@ import kotlinx.android.synthetic.main.new_plan.view.tv_desc
 import kotlinx.android.synthetic.main.new_plan.view.tv_subject
 import kotlinx.android.synthetic.main.new_plan.view.tv_title
 
+/**
+ * LOL. Deprecated.
+ */
 class PlanAdapter(private var data: List<PlanItem>) :
     RecyclerView.Adapter<PlanAdapter.ViewHolder>() {
 

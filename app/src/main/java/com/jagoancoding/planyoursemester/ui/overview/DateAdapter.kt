@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
@@ -82,7 +83,21 @@ class DateAdapter(private var data: List<DateItem>) :
 
         planItemView.id = BASE_PLAN_ITEM_ID + pos
 
+        val planType = itemType
+
         with(planItemView) {
+            // Background color depends on type of plan
+            val bgColor = ContextCompat.getColor(
+                context, when (planType) {
+                    PlanItem.TYPE_EXAM -> R.color.colorBgExam
+                    PlanItem.TYPE_HOMEWORK -> R.color.colorBgHomework
+                    PlanItem.TYPE_EVENT -> R.color.colorBgEvent
+                    PlanItem.TYPE_REMINDER -> R.color.colorBgReminder
+                    else -> R.color.colorPrimaryLight
+                }
+            )
+            setBackgroundColor(bgColor)
+
             tv_title.text = name
             tv_desc.setTextAndGoneIfEmpty(description)
             tv_date.text = getDateToDisplay(resources)
@@ -99,7 +114,7 @@ class DateAdapter(private var data: List<DateItem>) :
             // If it is the 2nd or more item in the list, add a margin above it
             params.setMargins(
                 params.leftMargin,
-                calculatePx(16, r),
+                calculatePx(8, r),
                 params.rightMargin,
                 params.bottomMargin
             )
