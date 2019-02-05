@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.model.PlanItem
-import com.jagoancoding.planyoursemester.util.ViewUtil
 import com.jagoancoding.planyoursemester.util.ViewUtil.calculatePx
 import com.jagoancoding.planyoursemester.util.ViewUtil.setTextAndGoneIfEmpty
 import kotlinx.android.synthetic.main.date_card.view.rl_plan_items
