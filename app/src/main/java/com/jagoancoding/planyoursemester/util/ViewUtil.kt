@@ -15,10 +15,12 @@
 
 package com.jagoancoding.planyoursemester.util
 
+import android.content.Context
 import android.content.res.Resources
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 
 object ViewUtil {
 
@@ -35,4 +37,7 @@ object ViewUtil {
         dp.toFloat(),
         r.displayMetrics
     ).toInt()
+
+    fun Context.getColorByResId(resId: Int) =
+        ContextCompat.getColor(this, resId)
 }

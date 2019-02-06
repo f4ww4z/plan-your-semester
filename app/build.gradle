@@ -78,4 +78,7 @@ dependencies {
 
     // JSR-310 backport for Android
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
+
+    // Rapid (Extended) Floating Action Button
+    implementation 'com.github.wangjiegulu:rfab:2.0.0'
 }

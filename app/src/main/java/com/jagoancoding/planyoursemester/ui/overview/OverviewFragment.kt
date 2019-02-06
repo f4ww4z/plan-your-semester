@@ -15,6 +15,7 @@
 
 package com.jagoancoding.planyoursemester.ui.overview
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,15 +32,26 @@ import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
+import com.jagoancoding.planyoursemester.util.ToastUtil.showShortToast
+import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
+import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem
+import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList
 import kotlinx.android.synthetic.main.overview_fragment.rv_overview
 
-class OverviewFragment : Fragment() {
+class OverviewFragment : Fragment(),
+    RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener<Int> {
 
     companion object {
         fun newInstance() = OverviewFragment()
     }
 
     private lateinit var viewModel: OverviewViewModel
+
+    private var rfal: RapidFloatingActionLayout? = null
+    private var rfab: RapidFloatingActionButton? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +70,19 @@ class OverviewFragment : Fragment() {
             layoutManager = LinearLayoutManager(this.context)
             adapter = DateAdapter(ArrayList())
         }.scrollToToday()
+
+        // Set up extended FAB
+        with(view) {
+            rfal = this?.findViewById(R.id.rfal_overview)
+            rfab = this?.findViewById(R.id.rfab_add_plan)
+        }
+
+        val rfabItems = getRfabItems(context!!)
+        val rfaContent = RapidFloatingActionContentLabelList(context)
+        rfaContent.setOnRapidFloatingActionContentLabelListListener(this)
+        rfaContent.items = rfabItems
+        RapidFloatingActionHelper(context!!, rfal, rfab, rfaContent)
+            .build()
 
         // Set recylerview adapter's data to updated data
         viewModel.dateItems.observe(this, Observer {
@@ -90,6 +115,61 @@ class OverviewFragment : Fragment() {
 
         //viewModel.addDemoData()
     }
+
+    override fun onRFACItemIconClick(position: Int, item: RFACLabelItem<Int>?) {
+        showShortToast("Icon $position clicked")
+    }
+
+    override fun onRFACItemLabelClick(
+        position: Int,
+        item: RFACLabelItem<Int>?
+    ) {
+        showShortToast("Label ${item?.label} clicked")
+    }
+
+    private fun getRfabItems(context: Context): List<RFACLabelItem<Int>> =
+        arrayListOf(
+            RFACLabelItem<Int>()
+                .setLabel(getString(R.string.exam_label))
+                .setResId(R.drawable.ic_class_white_24dp)
+                .setIconNormalColor(
+                    context.getColorByResId(R.color.colorIconExam)
+                )
+                .setIconPressedColor(
+                    context.getColorByResId(R.color.colorIconPressedExam)
+                )
+                .setWrapper(0),
+            RFACLabelItem<Int>()
+                .setLabel(getString(R.string.homework_label))
+                .setResId(R.drawable.ic_description_white_24dp)
+                .setIconNormalColor(
+                    context.getColorByResId(R.color.colorIconHomework)
+                )
+                .setIconPressedColor(
+                    context.getColorByResId(R.color.colorIconPressedHomework)
+                )
+                .setWrapper(1),
+            RFACLabelItem<Int>()
+                .setLabel(getString(R.string.event_label))
+                .setResId(R.drawable.ic_insert_invitation_white_24dp)
+                .setIconNormalColor(
+                    context.getColorByResId(R.color.colorIconEvent)
+                )
+                .setIconPressedColor(
+                    context.getColorByResId(R.color.colorIconPressedEvent)
+                )
+                .setWrapper(2),
+            RFACLabelItem<Int>()
+                .setLabel(getString(R.string.reminder_label))
+                .setResId(R.drawable.ic_access_time_white_24dp)
+                .setIconNormalColor(
+                    context.getColorByResId(R.color.colorIconReminder)
+                )
+                .setIconPressedColor(
+                    context.getColorByResId(R.color.colorIconPressedReminder)
+                )
+                .setWrapper(3)
+        )
 
     private fun RecyclerView.scrollToToday() {
         scrollToPosition(App.DAYS_PASSED.toInt())

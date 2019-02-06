@@ -13,23 +13,28 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.planyoursemester
+package com.jagoancoding.planyoursemester.util
 
-import android.app.Application
-import com.jagoancoding.planyoursemester.util.ToastUtil
-import com.jakewharton.threetenabp.AndroidThreeTen
+import android.content.Context
+import android.widget.Toast
 
-class App : Application() {
+object ToastUtil {
 
-    companion object {
-        const val DAYS_SINCE_PASSED: Long = 730L
-        const val DAYS_PASSED: Long = 365L
+    private lateinit var mToast: Toast
+
+    fun init(applicationContext: Context) {
+        mToast = Toast.makeText(applicationContext, null, Toast.LENGTH_SHORT)
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        AppRepository.init(this)
-        AndroidThreeTen.init(this)
-        ToastUtil.init(this)
+    fun showShortToast(message: String) {
+        mToast.cancel()
+        mToast.setText(message)
+        mToast.show()
+    }
+
+    fun showShortToast(messageId: Int) {
+        mToast.cancel()
+        mToast.setText(messageId)
+        mToast.show()
     }
 }
