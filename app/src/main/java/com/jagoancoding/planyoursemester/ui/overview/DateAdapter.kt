@@ -20,28 +20,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.util.ViewUtil.calculatePx
 import com.jagoancoding.planyoursemester.util.ViewUtil.setTextAndGoneIfEmpty
+import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import kotlinx.android.synthetic.main.date_card.view.rl_plan_items
 import kotlinx.android.synthetic.main.date_card.view.tv_day
 import kotlinx.android.synthetic.main.date_card.view.tv_day2
-import kotlinx.android.synthetic.main.new_plan.view.tv_date
-import kotlinx.android.synthetic.main.new_plan.view.tv_desc
-import kotlinx.android.synthetic.main.new_plan.view.tv_subject
-import kotlinx.android.synthetic.main.new_plan.view.tv_title
 
 class DateAdapter(private var data: List<DateItem>) :
     RecyclerView.Adapter<DateAdapter.ViewHolder>() {
 
     companion object {
-        private const val BASE_PLAN_ITEM_ID = 164
+        private const val BASE_PLAN_ITEM_ID = 250601
     }
 
     private lateinit var inflater: LayoutInflater
@@ -62,9 +59,11 @@ class DateAdapter(private var data: List<DateItem>) :
         with(holder.itemView) {
             tv_day.text = dateItem.dayOfWeek()
             tv_day2.text = dateItem.dayName()
+            rl_plan_items.removeAllViewsInLayout()
 
             for (i in dateItem.planItems.indices) {
-                dateItem.planItems[i].addToRootView(rl_plan_items, i, resources)
+                //TODO: Remove every plan item view first, then create it
+                rl_plan_items.addItemView(dateItem.planItems[i], i, resources)
             }
         }
     }
@@ -74,24 +73,26 @@ class DateAdapter(private var data: List<DateItem>) :
         notifyDataSetChanged()
     }
 
-    private fun PlanItem.addToRootView(
-        rootView: RelativeLayout,
+    private fun RelativeLayout.addItemView(
+        planItem: PlanItem,
         pos: Int,
         r: Resources
     ) {
         val id = BASE_PLAN_ITEM_ID + pos
 
-        val planItemView: ConstraintLayout = inflater
-            .inflate(R.layout.new_plan, rootView, false) as ConstraintLayout
+        var planItemView: ConstraintLayout? = this.findViewById(id)
+        this.removeView(planItemView)
 
+        planItemView = inflater
+            .inflate(R.layout.new_plan, this, false) as ConstraintLayout
         planItemView.id = id
 
-        val planType = itemType
+        val planType = planItem.itemType
 
         with(planItemView) {
             // Background color depends on type of plan
-            val bgColor = ContextCompat.getColor(
-                context, when (planType) {
+            val bgColor = context.getColorByResId(
+                when (planType) {
                     PlanItem.TYPE_EXAM -> R.color.colorBgExam
                     PlanItem.TYPE_HOMEWORK -> R.color.colorBgHomework
                     PlanItem.TYPE_EVENT -> R.color.colorBgEvent
@@ -99,15 +100,23 @@ class DateAdapter(private var data: List<DateItem>) :
                     else -> R.color.colorPrimaryLight
                 }
             )
-            setBackgroundColor(bgColor)
+            this.setBackgroundColor(bgColor)
 
-            tv_title.text = name
-            tv_desc.setTextAndGoneIfEmpty(description)
-            tv_date.text = getDateToDisplay(resources)
-            tv_subject.setTextAndGoneIfEmpty(subject?.name)
+            val titleTV: TextView = this.findViewById(R.id.tv_title)
+            val descriptionTV: TextView = this.findViewById(R.id.tv_desc)
+            val dateTV: TextView = this.findViewById(R.id.tv_date)
+            val subjectTV: TextView = this.findViewById(R.id.tv_subject)
+
+            with(planItem) {
+                titleTV.text = name
+                descriptionTV.setTextAndGoneIfEmpty(description)
+                dateTV.text = getDateToDisplay(resources)
+                subjectTV.setTextAndGoneIfEmpty(subject?.name)
+            }
         }
 
-        val params = planItemView.layoutParams as RelativeLayout.LayoutParams
+        val params =
+            planItemView.layoutParams as RelativeLayout.LayoutParams
 
         val idOfBelow: Int
 
@@ -126,7 +135,7 @@ class DateAdapter(private var data: List<DateItem>) :
         }
         params.addRule(RelativeLayout.BELOW, idOfBelow)
 
-        rootView.addView(planItemView, params)
+        this.addView(planItemView, params)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)

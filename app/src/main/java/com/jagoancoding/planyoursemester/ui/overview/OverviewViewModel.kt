@@ -60,7 +60,7 @@ class OverviewViewModel : ViewModel() {
         return dateItems
     }
 
-    fun addNewPlan(plan: PlanItem) {
+    fun displayPlan(plan: PlanItem) {
         val dateItems = _dateItems.value
 
         // Check the type of plan, which determines if either date or startDate
@@ -76,7 +76,17 @@ class OverviewViewModel : ViewModel() {
         val dateItemToUpdateIndex =
             dateItems?.indexOfFirst { it.date.isEqual(date) }!!
 
-        dateItems[dateItemToUpdateIndex].planItems.add(plan)
+        val planList = dateItems[dateItemToUpdateIndex].planItems
+        // Find the plan item to update
+        // If item is found, update it, else create a new plan item and add it
+        val planToUpdateIndex = planList.indexOfFirst { it.name == plan.name }
+        if (planToUpdateIndex != -1) {
+            planList[planToUpdateIndex] = plan
+        } else {
+            planList.add(plan)
+        }
+
+        dateItems[dateItemToUpdateIndex].planItems = planList
 
         _dateItems.value = dateItems
     }

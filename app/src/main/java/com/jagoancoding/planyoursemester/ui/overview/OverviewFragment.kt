@@ -40,7 +40,6 @@ import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList
-import kotlinx.android.synthetic.main.overview_fragment.rv_overview
 
 class OverviewFragment : Fragment(),
     RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener<Int> {
@@ -53,6 +52,8 @@ class OverviewFragment : Fragment(),
 
     private var rfal: RapidFloatingActionLayout? = null
     private var rfab: RapidFloatingActionButton? = null
+    private var overviewRV: RecyclerView? = null
+    private lateinit var dateAdapter: DateAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,10 +73,13 @@ class OverviewFragment : Fragment(),
             .of(this)
             .get(OverviewViewModel::class.java)
 
-        rv_overview.apply {
+        overviewRV = view?.findViewById(R.id.rv_overview)
+        dateAdapter = DateAdapter(ArrayList())
+
+        overviewRV?.apply {
             layoutManager = LinearLayoutManager(this.context)
-            adapter = DateAdapter(ArrayList())
-        }.scrollToToday()
+            adapter = dateAdapter
+        }?.scrollToToday()
 
         // Set up extended FAB
         with(view) {
@@ -92,7 +96,7 @@ class OverviewFragment : Fragment(),
 
         // Set recylerview adapter's data to updated data
         viewModel.dateItems.observe(this, Observer {
-            (rv_overview.adapter as DateAdapter).setData(it)
+            (overviewRV?.adapter as DateAdapter).setData(it)
         })
 
         viewModel.exams.observe(this, Observer { exams ->
@@ -120,6 +124,11 @@ class OverviewFragment : Fragment(),
         })
 
         //viewModel.addDemoData()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        overviewRV?.adapter = null
     }
 
     override fun onRFACItemIconClick(position: Int, item: RFACLabelItem<Int>?) {
@@ -185,28 +194,28 @@ class OverviewFragment : Fragment(),
     private fun addToView(exam: Exam) {
         viewModel.getExamWithSubject(exam.id).observe(this, Observer {
             val newExam = it.toPlanItem()
-            viewModel.addNewPlan(newExam)
+            viewModel.displayPlan(newExam)
         })
     }
 
     private fun addToView(homework: Homework) {
         viewModel.getHomeworkWithSubject(homework.id).observe(this, Observer {
             val newHomework = it.toPlanItem()
-            viewModel.addNewPlan(newHomework)
+            viewModel.displayPlan(newHomework)
         })
     }
 
     private fun addToView(event: Event) {
         viewModel.event(event.id).observe(this, Observer {
             val newEvent = it.toPlanItem()
-            viewModel.addNewPlan(newEvent)
+            viewModel.displayPlan(newEvent)
         })
     }
 
     private fun addToView(reminder: Reminder) {
         viewModel.reminder(reminder.id).observe(this, Observer {
             val newReminder = it.toPlanItem()
-            viewModel.addNewPlan(newReminder)
+            viewModel.displayPlan(newReminder)
         })
     }
 
