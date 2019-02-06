@@ -15,20 +15,21 @@
 
 package com.jagoancoding.planyoursemester
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
+import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.ui.overview.OverviewFragment
 
-class OverviewActivity : AppCompatActivity() {
-
+class OverviewActivity : AppCompatActivity(), AddPlanFragment.OnFragmentInteractionListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.overview_activity)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, OverviewFragment.newInstance())
-                .commitNow()
-        }
     }
 
+    override fun onFragmentInteraction(uri: Uri) {
+
+    }
 }

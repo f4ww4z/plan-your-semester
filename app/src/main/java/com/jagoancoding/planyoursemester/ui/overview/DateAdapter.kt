@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
@@ -78,10 +79,12 @@ class DateAdapter(private var data: List<DateItem>) :
         pos: Int,
         r: Resources
     ) {
+        val id = BASE_PLAN_ITEM_ID + pos
+
         val planItemView: ConstraintLayout = inflater
             .inflate(R.layout.new_plan, rootView, false) as ConstraintLayout
 
-        planItemView.id = BASE_PLAN_ITEM_ID + pos
+        planItemView.id = id
 
         val planType = itemType
 

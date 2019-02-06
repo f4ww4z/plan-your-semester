@@ -50,11 +50,13 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
     testImplementation 'junit:junit:4.12'
 
     // AndroidX
     def lifecycle_version = "2.0.0"
     def room_version = "2.0.0"
+    def nav_version = "1.0.0-beta01"
 
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.core:core-ktx:1.1.0-alpha03'
@@ -65,6 +67,13 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
+    // Navigation
+    implementation "android.arch.navigation:navigation-fragment-ktx:$nav_version"
+    // use -ktx for Kotlin
+    implementation "android.arch.navigation:navigation-ui-ktx:$nav_version"
+    // use -ktx for Kotlin
+
 
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version" // use kapt for Kotlin

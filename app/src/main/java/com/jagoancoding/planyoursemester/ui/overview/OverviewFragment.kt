@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.App
@@ -52,6 +53,11 @@ class OverviewFragment : Fragment(),
 
     private var rfal: RapidFloatingActionLayout? = null
     private var rfab: RapidFloatingActionButton? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -118,6 +124,7 @@ class OverviewFragment : Fragment(),
 
     override fun onRFACItemIconClick(position: Int, item: RFACLabelItem<Int>?) {
         showShortToast("Icon $position clicked")
+        view?.findNavController()?.navigate(R.id.addPlanFragment)
     }
 
     override fun onRFACItemLabelClick(

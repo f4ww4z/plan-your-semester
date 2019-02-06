@@ -22,4 +22,7 @@
     <string name="homework_label">Assignment</string>
     <string name="event_label">Event</string>
     <string name="reminder_label">Reminder</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

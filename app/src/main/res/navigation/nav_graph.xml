@@ -14,19 +14,24 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.jagoancoding.planyoursemester.OverviewActivity" >
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/overviewFragment">
 
     <fragment
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph" />
-</FrameLayout>
+        android:id="@+id/overviewFragment"
+        android:name="com.jagoancoding.planyoursemester.ui.overview.OverviewFragment"
+        android:label="overview_fragment"
+        tools:layout="@layout/overview_fragment" >
+        <action
+            android:id="@+id/action_overviewFragment_to_addPlanFragment"
+            app:destination="@id/addPlanFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPlanFragment"
+        android:name="com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment"
+        android:label="fragment_add_plan"
+        tools:layout="@layout/fragment_add_plan" />
+</navigation>
