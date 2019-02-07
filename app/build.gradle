@@ -90,4 +90,7 @@ dependencies {
     implementation 'com.github.wangjiegulu:rfab:2.0.0'
 
     implementation 'com.google.android.material:material:1.0.0'
+
+    // Date time picker
+    implementation 'com.code-troopers.betterpickers:library:3.1.0'
 }

@@ -20,6 +20,7 @@ import com.jagoancoding.planyoursemester.R
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -27,6 +28,7 @@ object DateUtil {
 
     private const val DATE_FORMAT_STANDARD = "hh:mm"
     private const val DATE_FORMAT_DAY = "EEE"
+    private const val DATE_TIME_FORMAT_STANDARD = "dd/mm/yyyy hh:mm"
 
     fun getDayOfWeek(date: LocalDate): String = date.dayOfMonth.toString()
 
@@ -63,4 +65,14 @@ object DateUtil {
         Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()
     )
 
+    fun toEpochMili(date: LocalDate): Long =
+        LocalDateTime.of(
+            date,
+            LocalTime.MIDNIGHT
+        ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+    fun parseDateTime(date: String): LocalDateTime {
+        val formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_STANDARD)
+        return LocalDateTime.parse(date, formatter)
+    }
 }

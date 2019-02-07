@@ -37,6 +37,7 @@ import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
+import com.jagoancoding.planyoursemester.util.DateUtil
 import com.jagoancoding.planyoursemester.util.ToastUtil.showShortToast
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
@@ -141,8 +142,13 @@ class OverviewFragment : Fragment(),
     override fun onRFACItemIconClick(position: Int, item: RFACLabelItem<Int>?) {
         showShortToast("Icon $position clicked")
 
+        val minDate = DateUtil.toEpochMili(viewModel.startDate)
+        val maxDate = DateUtil.toEpochMili(viewModel.endDate)
+
         val bundle = Bundle().apply {
             putInt(AddPlanFragment.PLAN_ITEM_TYPE, position)
+            putLong(AddPlanFragment.MiNIMUM_DATE, minDate)
+            putLong(AddPlanFragment.MAXIMUM_DATE, maxDate)
         }
         view?.findNavController()?.navigate(R.id.addPlanFragment, bundle)
     }

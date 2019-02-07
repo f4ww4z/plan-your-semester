@@ -24,10 +24,15 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
+import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment
+import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter
 import com.google.android.material.textfield.TextInputLayout
-import com.jagoancoding.planyoursemester.util.ViewUtil.getTextNotifyIfEmpty
+import com.jagoancoding.planyoursemester.util.ViewUtil.validateAndGetText
+import com.jagoancoding.planyoursemester.util.ViewUtil.getDateTimeFromPicker
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
 
@@ -41,8 +46,36 @@ import com.jagoancoding.planyoursemester.model.PlanItem
  *
  */
 class AddPlanFragment : Fragment() {
-    private var planItemType: Int? = null
+
+    companion object {
+        const val PLAN_ITEM_TYPE = "PLAN_ITEM_TYPE"
+        const val MiNIMUM_DATE = "MINIMUM_DATE"
+        const val MAXIMUM_DATE = "MAXIMUM_DATE"
+
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param planItemType Plan Item Type (can be of 4 values)
+         * @param minDate minimum date in Date Picker
+         * @param maxDate maximum date allowed in Date Picker
+         * @return A new instance of fragment AddPlanFragment.
+         */
+        @JvmStatic
+        fun newInstance(planItemType: Int, minDate: Long, maxDate: Long) =
+            AddPlanFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(PLAN_ITEM_TYPE, planItemType)
+                    putLong(MiNIMUM_DATE, minDate)
+                    putLong(MAXIMUM_DATE, maxDate)
+                }
+            }
+    }
+
+    private lateinit var vm: AddPlanViewModel
+
     private var listener: OnFragmentInteractionListener? = null
+
     private lateinit var nameTIL: TextInputLayout
     private lateinit var descTIL: TextInputLayout
     private lateinit var startDateET: EditText
@@ -53,7 +86,9 @@ class AddPlanFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            planItemType = it.getInt(PLAN_ITEM_TYPE)
+            vm.planItemType = it.getInt(PLAN_ITEM_TYPE)
+            vm.minimumDate = it.getLong(MiNIMUM_DATE)
+            vm.maximumDate = it.getLong(MAXIMUM_DATE)
         }
     }
 
@@ -61,6 +96,10 @@ class AddPlanFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        vm = ViewModelProviders
+            .of(this)
+            .get(AddPlanViewModel::class.java)
+
         // Inflate the layout for this fragment
         val view =
             inflater.inflate(R.layout.fragment_add_plan, container, false)
@@ -69,7 +108,7 @@ class AddPlanFragment : Fragment() {
         val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
         toolbar?.menu?.clear()
 
-        toolbar?.title = when (planItemType) {
+        toolbar?.title = when (vm.planItemType) {
             PlanItem.TYPE_EXAM -> getString(
                 R.string.add_new, getString(R.string.exam_label)
             )
@@ -106,29 +145,66 @@ class AddPlanFragment : Fragment() {
             subjectTIL = findViewById(R.id.til_plan_subject)
         }
 
-        when (planItemType) {
+        setupViews(fragmentManager!!)
+
+        return view
+    }
+
+    private fun setupViews(fm: FragmentManager) {
+        val minDateForPicker = MonthAdapter.CalendarDay(vm.minimumDate)
+        val maxDateForPicker = MonthAdapter.CalendarDay(vm.maximumDate)
+
+        when (vm.planItemType) {
             PlanItem.TYPE_EXAM -> {
                 descTIL.isEnabled = false
                 dateTIL.isEnabled = false
+                startDateET.getDateTimeFromPicker(
+                    fm,
+                    minDateForPicker,
+                    maxDateForPicker
+                )
+                endDateET.getDateTimeFromPicker(
+                    fm,
+                    minDateForPicker,
+                    maxDateForPicker
+                )
             }
             PlanItem.TYPE_HOMEWORK -> {
+                dateTIL.editText?.getDateTimeFromPicker(
+                    fm,
+                    minDateForPicker,
+                    maxDateForPicker
+                )
                 startDateET.isEnabled = false
                 endDateET.isEnabled = false
             }
             PlanItem.TYPE_EVENT -> {
                 dateTIL.isEnabled = false
+                startDateET.getDateTimeFromPicker(
+                    fm,
+                    minDateForPicker,
+                    maxDateForPicker
+                )
+                endDateET.getDateTimeFromPicker(
+                    fm,
+                    minDateForPicker,
+                    maxDateForPicker
+                )
                 subjectTIL.isEnabled = false
             }
             PlanItem.TYPE_REMINDER -> {
                 descTIL.isEnabled = false
+                dateTIL.editText?.getDateTimeFromPicker(
+                    fm,
+                    minDateForPicker,
+                    maxDateForPicker
+                )
                 startDateET.isEnabled = false
                 endDateET.isEnabled = false
                 subjectTIL.isEnabled = false
                 //TODO: Reminder.isDone()
             }
         }
-
-        return view
     }
 
     /**
@@ -142,27 +218,35 @@ class AddPlanFragment : Fragment() {
         var date: String = ""
         var subject: String = ""
 
-        name = nameTIL.getTextNotifyIfEmpty()
+        name = nameTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
 
-        when (planItemType) {
+        when (vm.planItemType) {
             PlanItem.TYPE_EXAM -> {
-                startDate = startDateET.getTextNotifyIfEmpty()
-                endDate = endDateET.getTextNotifyIfEmpty()
+                startDate = startDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                endDate = endDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
                 //TODO: get subject names and make sure subject is one of them
-                subject = subjectTIL.getTextNotifyIfEmpty()
+                subject = subjectTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+
+                vm.validateData(
+                    vm.planItemType,
+                    name = name,
+                    startDate = startDate,
+                    endDate = endDate,
+                    subject = subject
+                )
             }
             PlanItem.TYPE_HOMEWORK -> {
-                desc = descTIL.getTextNotifyIfEmpty()
-                date = dateTIL.getTextNotifyIfEmpty()
-                subject = subjectTIL.getTextNotifyIfEmpty()
+                desc = descTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                date = dateTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                subject = subjectTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
             }
             PlanItem.TYPE_EVENT -> {
-                desc = descTIL.getTextNotifyIfEmpty()
-                startDate = startDateET.getTextNotifyIfEmpty()
-                endDate = endDateET.getTextNotifyIfEmpty()
+                desc = descTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                startDate = startDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                endDate = endDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
             }
             PlanItem.TYPE_REMINDER -> {
-                date = dateTIL.getTextNotifyIfEmpty()
+                date = dateTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
             }
         }
 
@@ -197,24 +281,5 @@ class AddPlanFragment : Fragment() {
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
-    }
-
-    companion object {
-        const val PLAN_ITEM_TYPE = "PLAN_ITEM_TYPE"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Plan Item Type (can be of 4 values)
-         * @return A new instance of fragment AddPlanFragment.
-         */
-        @JvmStatic
-        fun newInstance(param1: Int) =
-            AddPlanFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(PLAN_ITEM_TYPE, param1)
-                }
-            }
     }
 }

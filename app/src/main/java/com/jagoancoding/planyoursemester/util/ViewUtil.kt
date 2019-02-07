@@ -22,10 +22,17 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentManager
+import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment
+import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter
+import com.codetroopers.betterpickers.timepicker.TimePickerBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.jagoancoding.planyoursemester.R
+import java.util.Calendar
 
 object ViewUtil {
+
+    private var calDateTimePicker: CalendarDatePickerDialogFragment? = null
 
     fun TextView.setTextAndGoneIfEmpty(text: String?) {
         if (text.isNullOrEmpty() || text.isNullOrBlank()) {
@@ -44,21 +51,79 @@ object ViewUtil {
     fun Context.getColorByResId(resId: Int) =
         ContextCompat.getColor(this, resId)
 
-    fun TextInputLayout.getTextNotifyIfEmpty(): String {
+    fun TextInputLayout.validateAndGetText(
+        minDate: Long,
+        maxDate: Long
+    ): String {
         val tilText = editText?.text
+        val min = DateUtil.getDate(minDate)
+        val max = DateUtil.getDate(maxDate)
         if (tilText.isNullOrEmpty()) {
             error = this.resources.getString(R.string.error_text_empty)
             return ""
+        } else {
+            val date = DateUtil.parseDateTime("$tilText")
+            if (date.toLocalDate().isAfter(max)
+                || date.toLocalDate().isBefore(min)
+            ) {
+                error = context.getString(R.string.error_date_format)
+                return ""
+            }
         }
-        return tilText.toString()
+        return "$tilText"
     }
 
-    fun EditText.getTextNotifyIfEmpty(): String {
-        val text = text
-        if (text.isNullOrEmpty()) {
+    fun EditText.validateAndGetText(
+        minDate: Long,
+        maxDate: Long
+    ): String {
+        val editText = text
+        val min = DateUtil.getDate(minDate)
+        val max = DateUtil.getDate(maxDate)
+        if (editText.isNullOrEmpty()) {
             error = this.resources.getString(R.string.error_text_empty)
             return ""
+        } else {
+            val date = DateUtil.parseDateTime("$editText")
+            if (date.toLocalDate().isAfter(max)
+                || date.toLocalDate().isBefore(min)
+            ) {
+                error = context.getString(R.string.error_date_format)
+                return ""
+            }
         }
-        return text.toString()
+        return "$editText"
+    }
+
+    fun EditText.getDateTimeFromPicker(
+        fm: FragmentManager,
+        minDate: MonthAdapter.CalendarDay, maxDate: MonthAdapter.CalendarDay
+    ) {
+        var dateString = ""
+        if (calDateTimePicker == null) {
+            calDateTimePicker = CalendarDatePickerDialogFragment()
+                .setFirstDayOfWeek(Calendar.SUNDAY)
+                .setDoneText("Select")
+                .setCancelText("Cancel")
+                .setDateRange(minDate, maxDate)
+                .setOnDateSetListener { dialog, year, monthOfYear, dayOfMonth ->
+                    dateString = "$dayOfMonth/$monthOfYear/$year"
+
+                    calDateTimePicker?.dismiss()
+                }
+        }
+
+        calDateTimePicker?.setOnDismissListener {
+            // When date picker is dismissed, show time picker
+            val tpb: TimePickerBuilder = TimePickerBuilder()
+                .setFragmentManager(fm)
+                .setOnDismissListener {
+                    this.setText(dateString)
+                }
+                .addTimePickerDialogHandler { reference, hourOfDay, minute ->
+                    dateString = "$dateString $hourOfDay:$minute"
+                }
+            tpb.show()
+        }
     }
 }
