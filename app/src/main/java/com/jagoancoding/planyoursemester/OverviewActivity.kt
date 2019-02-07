@@ -16,17 +16,36 @@
 package com.jagoancoding.planyoursemester
 
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
-import com.jagoancoding.planyoursemester.ui.overview.OverviewFragment
 
-class OverviewActivity : AppCompatActivity(), AddPlanFragment.OnFragmentInteractionListener {
+class OverviewActivity : AppCompatActivity(),
+    AddPlanFragment.OnFragmentInteractionListener {
+
+    private var navController: NavController? = null
+    private var toolbar: Toolbar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.overview_activity)
+
+        // Set up app toolbar
+        toolbar = findViewById(R.id.overview_toolbar)
+
+        navController = findNavController(R.id.nav_host_fragment)
+        if (navController != null) {
+            val appBarConfiguration = AppBarConfiguration(navController!!.graph)
+            toolbar?.setupWithNavController(
+                navController!!,
+                appBarConfiguration
+            )
+        }
     }
 
     override fun onFragmentInteraction(uri: Uri) {

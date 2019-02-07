@@ -23,15 +23,25 @@
     <fragment
         android:id="@+id/overviewFragment"
         android:name="com.jagoancoding.planyoursemester.ui.overview.OverviewFragment"
-        android:label="overview_fragment"
-        tools:layout="@layout/overview_fragment" >
+        android:label="@string/app_name"
+        tools:layout="@layout/overview_fragment">
         <action
             android:id="@+id/action_overviewFragment_to_addPlanFragment"
-            app:destination="@id/addPlanFragment" />
+            app:destination="@id/addPlanFragment"
+            app:enterAnim="@anim/nav_default_pop_enter_anim"
+            app:exitAnim="@anim/nav_default_pop_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/addPlanFragment" />
     </fragment>
     <fragment
         android:id="@+id/addPlanFragment"
         android:name="com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment"
         android:label="fragment_add_plan"
-        tools:layout="@layout/fragment_add_plan" />
+        tools:layout="@layout/fragment_add_plan" >
+        <argument
+            android:name="planItemType"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 </navigation>

@@ -30,10 +30,10 @@ class PlanItem(
     var isDone: Boolean? = null
 ) {
     companion object {
-        const val TYPE_EXAM = 1
-        const val TYPE_HOMEWORK = 2
-        const val TYPE_EVENT = 3
-        const val TYPE_REMINDER = 4
+        const val TYPE_EXAM = 0
+        const val TYPE_HOMEWORK = 1
+        const val TYPE_EVENT = 2
+        const val TYPE_REMINDER = 3
     }
 
     fun getDateToDisplay(r: Resources): String =

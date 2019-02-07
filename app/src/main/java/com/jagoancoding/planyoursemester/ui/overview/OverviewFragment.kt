@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +34,8 @@ import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
+import com.jagoancoding.planyoursemester.model.PlanItem
+import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.util.ToastUtil.showShortToast
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
@@ -133,7 +136,11 @@ class OverviewFragment : Fragment(),
 
     override fun onRFACItemIconClick(position: Int, item: RFACLabelItem<Int>?) {
         showShortToast("Icon $position clicked")
-        view?.findNavController()?.navigate(R.id.addPlanFragment)
+
+        val bundle = Bundle().apply {
+            putInt(AddPlanFragment.PLAN_ITEM_TYPE, position)
+        }
+        view?.findNavController()?.navigate(R.id.addPlanFragment, bundle)
     }
 
     override fun onRFACItemLabelClick(
@@ -154,7 +161,7 @@ class OverviewFragment : Fragment(),
                 .setIconPressedColor(
                     context.getColorByResId(R.color.colorIconPressedExam)
                 )
-                .setWrapper(0),
+                .setWrapper(PlanItem.TYPE_EXAM),
             RFACLabelItem<Int>()
                 .setLabel(getString(R.string.homework_label))
                 .setResId(R.drawable.ic_description_white_24dp)
@@ -164,7 +171,7 @@ class OverviewFragment : Fragment(),
                 .setIconPressedColor(
                     context.getColorByResId(R.color.colorIconPressedHomework)
                 )
-                .setWrapper(1),
+                .setWrapper(PlanItem.TYPE_HOMEWORK),
             RFACLabelItem<Int>()
                 .setLabel(getString(R.string.event_label))
                 .setResId(R.drawable.ic_insert_invitation_white_24dp)
@@ -174,7 +181,7 @@ class OverviewFragment : Fragment(),
                 .setIconPressedColor(
                     context.getColorByResId(R.color.colorIconPressedEvent)
                 )
-                .setWrapper(2),
+                .setWrapper(PlanItem.TYPE_EVENT),
             RFACLabelItem<Int>()
                 .setLabel(getString(R.string.reminder_label))
                 .setResId(R.drawable.ic_access_time_white_24dp)
@@ -184,7 +191,7 @@ class OverviewFragment : Fragment(),
                 .setIconPressedColor(
                     context.getColorByResId(R.color.colorIconPressedReminder)
                 )
-                .setWrapper(3)
+                .setWrapper(PlanItem.TYPE_REMINDER)
         )
 
     private fun RecyclerView.scrollToToday() {

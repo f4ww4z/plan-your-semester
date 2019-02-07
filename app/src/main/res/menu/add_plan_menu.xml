@@ -1,4 +1,4 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2019 Maharaj Fawwaz Almuqaddim Yusran
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -13,19 +13,13 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <string name="app_name">Plan Your Semester</string>
-    <string name="date_start_end">%1$s - %2$s</string>
-    <string name="homework_date">Due %1$s</string>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <string name="exam_label">Exam</string>
-    <string name="homework_label">Assignment</string>
-    <string name="event_label">Event</string>
-    <string name="reminder_label">Reminder</string>
+    <item
+        android:id="@+id/action_add_plan"
+        android:icon="@drawable/ic_done_white_24dp"
+        android:title="@string/add_plan"
+        app:showAsAction="ifRoom" />
 
-    <string name="add_new">Add %1$s</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="add_plan">Add Plan</string>
-</resources>
+</menu>

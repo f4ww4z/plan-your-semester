@@ -16,9 +16,7 @@
 apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
-
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -90,4 +88,6 @@ dependencies {
 
     // Rapid (Extended) Floating Action Button
     implementation 'com.github.wangjiegulu:rfab:2.0.0'
+
+    implementation 'com.google.android.material:material:1.0.0'
 }
