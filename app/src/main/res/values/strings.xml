@@ -25,7 +25,6 @@
 
     <string name="add_new">Add %1$s</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_plan">Add Plan</string>
+    <string name="error_text_empty">Must not be empty</string>
 </resources>

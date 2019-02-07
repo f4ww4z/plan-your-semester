@@ -17,7 +17,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_add_plan"
+        android:id="@+id/overviewFragment"
         android:icon="@drawable/ic_done_white_24dp"
         android:title="@string/add_plan"
         app:showAsAction="ifRoom" />

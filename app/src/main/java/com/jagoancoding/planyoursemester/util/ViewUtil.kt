@@ -19,8 +19,11 @@ import android.content.Context
 import android.content.res.Resources
 import android.util.TypedValue
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.google.android.material.textfield.TextInputLayout
+import com.jagoancoding.planyoursemester.R
 
 object ViewUtil {
 
@@ -40,4 +43,22 @@ object ViewUtil {
 
     fun Context.getColorByResId(resId: Int) =
         ContextCompat.getColor(this, resId)
+
+    fun TextInputLayout.getTextNotifyIfEmpty(): String {
+        val tilText = editText?.text
+        if (tilText.isNullOrEmpty()) {
+            error = this.resources.getString(R.string.error_text_empty)
+            return ""
+        }
+        return tilText.toString()
+    }
+
+    fun EditText.getTextNotifyIfEmpty(): String {
+        val text = text
+        if (text.isNullOrEmpty()) {
+            error = this.resources.getString(R.string.error_text_empty)
+            return ""
+        }
+        return text.toString()
+    }
 }

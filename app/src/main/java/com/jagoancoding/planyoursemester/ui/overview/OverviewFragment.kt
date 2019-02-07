@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -75,6 +76,9 @@ class OverviewFragment : Fragment(),
         viewModel = ViewModelProviders
             .of(this)
             .get(OverviewViewModel::class.java)
+
+        val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
+        toolbar?.menu?.clear()
 
         overviewRV = view?.findViewById(R.id.rv_overview)
         dateAdapter = DateAdapter(ArrayList())

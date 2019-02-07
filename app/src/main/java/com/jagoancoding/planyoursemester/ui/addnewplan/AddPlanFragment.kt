@@ -15,18 +15,21 @@
 
 package com.jagoancoding.planyoursemester.ui.addnewplan
 
-import android.app.ActionBar
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
+import androidx.navigation.ui.onNavDestinationSelected
+import com.google.android.material.textfield.TextInputLayout
+import com.jagoancoding.planyoursemester.util.ViewUtil.getTextNotifyIfEmpty
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
-import kotlinx.android.synthetic.main.overview_activity.view.overview_toolbar
 
 /**
  * A simple [Fragment] subclass.
@@ -40,6 +43,12 @@ import kotlinx.android.synthetic.main.overview_activity.view.overview_toolbar
 class AddPlanFragment : Fragment() {
     private var planItemType: Int? = null
     private var listener: OnFragmentInteractionListener? = null
+    private lateinit var nameTIL: TextInputLayout
+    private lateinit var descTIL: TextInputLayout
+    private lateinit var startDateET: EditText
+    private lateinit var endDateET: EditText
+    private lateinit var dateTIL: TextInputLayout
+    private lateinit var subjectTIL: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +65,9 @@ class AddPlanFragment : Fragment() {
         val view =
             inflater.inflate(R.layout.fragment_add_plan, container, false)
 
+        // Set up the app bar
         val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
+        toolbar?.menu?.clear()
 
         toolbar?.title = when (planItemType) {
             PlanItem.TYPE_EXAM -> getString(
@@ -73,13 +84,89 @@ class AddPlanFragment : Fragment() {
             )
             else -> getString(R.string.add_new, "")
         }
+        toolbar?.inflateMenu(R.menu.add_plan_menu)
+        toolbar?.setOnMenuItemClickListener { item ->
+
+            if (item.itemId == R.menu.add_plan_menu) {
+                validateInput()
+            }
+
+            val navController = view.findNavController()
+            item.onNavDestinationSelected(navController)
+                    || super.onOptionsItemSelected(item)
+        }
+
+        // Reference views
+        with(view) {
+            nameTIL = findViewById(R.id.til_plan_name)
+            descTIL = findViewById(R.id.til_plan_desc)
+            dateTIL = findViewById(R.id.til_plan_desc)
+            startDateET = findViewById(R.id.et_plan_start_date)
+            endDateET = findViewById(R.id.et_plan_end_date)
+            subjectTIL = findViewById(R.id.til_plan_subject)
+        }
+
+        when (planItemType) {
+            PlanItem.TYPE_EXAM -> {
+                descTIL.isEnabled = false
+                dateTIL.isEnabled = false
+            }
+            PlanItem.TYPE_HOMEWORK -> {
+                startDateET.isEnabled = false
+                endDateET.isEnabled = false
+            }
+            PlanItem.TYPE_EVENT -> {
+                dateTIL.isEnabled = false
+                subjectTIL.isEnabled = false
+            }
+            PlanItem.TYPE_REMINDER -> {
+                descTIL.isEnabled = false
+                startDateET.isEnabled = false
+                endDateET.isEnabled = false
+                subjectTIL.isEnabled = false
+                //TODO: Reminder.isDone()
+            }
+        }
 
         return view
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
+    /**
+     * Validate the data according to plan type
+     */
+    private fun validateInput() {
+        var name: String = ""
+        var desc: String = ""
+        var startDate: String = ""
+        var endDate: String = ""
+        var date: String = ""
+        var subject: String = ""
+
+        name = nameTIL.getTextNotifyIfEmpty()
+
+        when (planItemType) {
+            PlanItem.TYPE_EXAM -> {
+                startDate = startDateET.getTextNotifyIfEmpty()
+                endDate = endDateET.getTextNotifyIfEmpty()
+                //TODO: get subject names and make sure subject is one of them
+                subject = subjectTIL.getTextNotifyIfEmpty()
+            }
+            PlanItem.TYPE_HOMEWORK -> {
+                desc = descTIL.getTextNotifyIfEmpty()
+                date = dateTIL.getTextNotifyIfEmpty()
+                subject = subjectTIL.getTextNotifyIfEmpty()
+            }
+            PlanItem.TYPE_EVENT -> {
+                desc = descTIL.getTextNotifyIfEmpty()
+                startDate = startDateET.getTextNotifyIfEmpty()
+                endDate = endDateET.getTextNotifyIfEmpty()
+            }
+            PlanItem.TYPE_REMINDER -> {
+                date = dateTIL.getTextNotifyIfEmpty()
+            }
+        }
+
+        //TODO: Finish validation
     }
 
     override fun onAttach(context: Context) {
