@@ -30,8 +30,8 @@
     <string name="error_date_format">Must be of format: dd/MM/yyyy hh:mm</string>
     <string name="plan_name">Name</string>
     <string name="plan_description">Description (optional)</string>
-    <string name="plan_start_date">Start Date (format: dd/MM/yyyy hh:mm)</string>
-    <string name="plan_end_date">End Date (format: dd/MM/yyyy hh:mm)</string>
+    <string name="plan_start_date">Start Date</string>
+    <string name="plan_end_date">End Date</string>
     <string name="plan_date">Date (format: dd/MM/yyyy hh:mm)</string>
     <string name="plan_subject">Subject</string>
 </resources>

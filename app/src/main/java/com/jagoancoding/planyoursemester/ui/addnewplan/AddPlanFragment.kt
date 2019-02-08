@@ -34,7 +34,7 @@ import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.util.DateUtil
-import com.jagoancoding.planyoursemester.util.ViewUtil.getDateTimeFromPicker
+import com.jagoancoding.planyoursemester.util.ViewUtil
 import com.jagoancoding.planyoursemester.util.ViewUtil.validateAndGetText
 
 /**
@@ -84,15 +84,6 @@ class AddPlanFragment : Fragment() {
     private lateinit var dateTIL: TextInputLayout
     private lateinit var subjectTIL: TextInputLayout
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            vm.planTypeToAdd = it.getInt(PLAN_ITEM_TYPE)
-            vm.minimumDate = it.getLong(MiNIMUM_DATE)
-            vm.maximumDate = it.getLong(MAXIMUM_DATE)
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -100,6 +91,12 @@ class AddPlanFragment : Fragment() {
         vm = ViewModelProviders
             .of(this)
             .get(MainViewModel::class.java)
+
+        arguments?.apply {
+            vm.planTypeToAdd = getInt(PLAN_ITEM_TYPE)
+            vm.minimumDate = getLong(MiNIMUM_DATE)
+            vm.maximumDate = getLong(MAXIMUM_DATE)
+        }
 
         // Inflate the layout for this fragment
         val view =
@@ -160,47 +157,59 @@ class AddPlanFragment : Fragment() {
         when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> {
                 descTIL.isEnabled = false
-                dateTIL.isEnabled = false
-                startDateET.getDateTimeFromPicker(
+                dateTIL.editText?.isEnabled = false
+                ViewUtil.getDateAndTimeWithPicker(
+                    startDateET,
                     fm,
                     minDateForPicker,
-                    maxDateForPicker
+                    maxDateForPicker,
+                    vm.today
                 )
-                endDateET.getDateTimeFromPicker(
+                ViewUtil.getDateAndTimeWithPicker(
+                    endDateET,
                     fm,
                     minDateForPicker,
-                    maxDateForPicker
+                    maxDateForPicker,
+                    vm.today
                 )
             }
             PlanItem.TYPE_HOMEWORK -> {
-                dateTIL.editText?.getDateTimeFromPicker(
+                ViewUtil.getDateAndTimeWithPicker(
+                    dateTIL.editText!!,
                     fm,
                     minDateForPicker,
-                    maxDateForPicker
+                    maxDateForPicker,
+                    vm.today
                 )
                 startDateET.isEnabled = false
                 endDateET.isEnabled = false
             }
             PlanItem.TYPE_EVENT -> {
                 dateTIL.isEnabled = false
-                startDateET.getDateTimeFromPicker(
+                ViewUtil.getDateAndTimeWithPicker(
+                    startDateET,
                     fm,
                     minDateForPicker,
-                    maxDateForPicker
+                    maxDateForPicker,
+                    vm.today
                 )
-                endDateET.getDateTimeFromPicker(
+                ViewUtil.getDateAndTimeWithPicker(
+                    endDateET,
                     fm,
                     minDateForPicker,
-                    maxDateForPicker
+                    maxDateForPicker,
+                    vm.today
                 )
                 subjectTIL.isEnabled = false
             }
             PlanItem.TYPE_REMINDER -> {
                 descTIL.isEnabled = false
-                dateTIL.editText?.getDateTimeFromPicker(
+                ViewUtil.getDateAndTimeWithPicker(
+                    dateTIL.editText!!,
                     fm,
                     minDateForPicker,
-                    maxDateForPicker
+                    maxDateForPicker,
+                    vm.today
                 )
                 startDateET.isEnabled = false
                 endDateET.isEnabled = false

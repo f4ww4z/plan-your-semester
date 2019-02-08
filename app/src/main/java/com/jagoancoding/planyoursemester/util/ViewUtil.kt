@@ -15,9 +15,11 @@
 
 package com.jagoancoding.planyoursemester.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -28,9 +30,12 @@ import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter
 import com.codetroopers.betterpickers.timepicker.TimePickerBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.jagoancoding.planyoursemester.R
+import org.threeten.bp.LocalDate
 import java.util.Calendar
 
 object ViewUtil {
+
+    const val DATE_TIME_PICKER_TAG = "DateTimePicker"
 
     private var calDateTimePicker: CalendarDatePickerDialogFragment? = null
 
@@ -81,7 +86,7 @@ object ViewUtil {
         val min = DateUtil.getDate(minDate)
         val max = DateUtil.getDate(maxDate)
         if (editText.isNullOrEmpty()) {
-            error = this.resources.getString(R.string.error_text_empty)
+            error = resources.getString(R.string.error_text_empty)
             return ""
         } else {
             val date = DateUtil.parseDateTime("$editText")
@@ -95,35 +100,49 @@ object ViewUtil {
         return "$editText"
     }
 
-    fun EditText.getDateTimeFromPicker(
+    @SuppressLint("ClickableViewAccessibility")
+    fun getDateAndTimeWithPicker(
+        editText: EditText,
         fm: FragmentManager,
-        minDate: MonthAdapter.CalendarDay, maxDate: MonthAdapter.CalendarDay
+        minDate: MonthAdapter.CalendarDay,
+        maxDate: MonthAdapter.CalendarDay,
+        pre: LocalDate
     ) {
-        var dateString = ""
-        if (calDateTimePicker == null) {
-            calDateTimePicker = CalendarDatePickerDialogFragment()
-                .setFirstDayOfWeek(Calendar.SUNDAY)
-                .setDoneText("Select")
-                .setCancelText("Cancel")
-                .setDateRange(minDate, maxDate)
-                .setOnDateSetListener { dialog, year, monthOfYear, dayOfMonth ->
-                    dateString = "$dayOfMonth/$monthOfYear/$year"
+        var dateString: String
+        lateinit var tpb: TimePickerBuilder
 
-                    calDateTimePicker?.dismiss()
-                }
-        }
+        editText.setOnTouchListener { _, event ->
 
-        calDateTimePicker?.setOnDismissListener {
-            // When date picker is dismissed, show time picker
-            val tpb: TimePickerBuilder = TimePickerBuilder()
-                .setFragmentManager(fm)
-                .setOnDismissListener {
-                    this.setText(dateString)
-                }
-                .addTimePickerDialogHandler { reference, hourOfDay, minute ->
-                    dateString = "$dateString $hourOfDay:$minute"
-                }
-            tpb.show()
+            if (event.action == MotionEvent.ACTION_UP) {
+                calDateTimePicker = CalendarDatePickerDialogFragment()
+                    .setFirstDayOfWeek(Calendar.SUNDAY)
+                    .setDoneText("Select")
+                    .setCancelText("Cancel")
+                    .setDateRange(minDate, maxDate)
+                    .setPreselectedDate(
+                        pre.year,
+                        pre.month.value,
+                        pre.dayOfMonth
+                    )
+                    .setOnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                        dateString = "$dayOfMonth/$monthOfYear/$year"
+
+                        // When date picker is dismissed, show the time picker
+                        tpb = TimePickerBuilder()
+                            .setFragmentManager(fm)
+                            .setStyleResId(R.style.BetterPickersDialogFragment)
+                            .addTimePickerDialogHandler { _, hourOfDay, minute ->
+                                // Time is selected, set it in EditText
+                                dateString = "$dateString $hourOfDay:$minute"
+                                editText.setText(dateString)
+                            }
+                        tpb.show()
+                    }
+
+                calDateTimePicker?.show(fm, DATE_TIME_PICKER_TAG)
+            }
+
+            true
         }
     }
 }
