@@ -25,7 +25,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +35,7 @@ import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.model.PlanItem
+import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.util.DateUtil
 import com.jagoancoding.planyoursemester.util.ToastUtil.showShortToast
@@ -53,7 +53,7 @@ class OverviewFragment : Fragment(),
         fun newInstance() = OverviewFragment()
     }
 
-    private lateinit var viewModel: OverviewViewModel
+    private lateinit var viewModel: MainViewModel
 
     private var rfal: RapidFloatingActionLayout? = null
     private var rfab: RapidFloatingActionButton? = null
@@ -76,7 +76,7 @@ class OverviewFragment : Fragment(),
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders
             .of(this)
-            .get(OverviewViewModel::class.java)
+            .get(MainViewModel::class.java)
 
         val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
         toolbar?.menu?.clear()

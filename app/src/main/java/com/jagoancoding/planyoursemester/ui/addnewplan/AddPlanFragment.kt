@@ -28,13 +28,14 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
-import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment
 import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter
 import com.google.android.material.textfield.TextInputLayout
-import com.jagoancoding.planyoursemester.util.ViewUtil.validateAndGetText
-import com.jagoancoding.planyoursemester.util.ViewUtil.getDateTimeFromPicker
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
+import com.jagoancoding.planyoursemester.ui.MainViewModel
+import com.jagoancoding.planyoursemester.util.DateUtil
+import com.jagoancoding.planyoursemester.util.ViewUtil.getDateTimeFromPicker
+import com.jagoancoding.planyoursemester.util.ViewUtil.validateAndGetText
 
 /**
  * A simple [Fragment] subclass.
@@ -72,7 +73,7 @@ class AddPlanFragment : Fragment() {
             }
     }
 
-    private lateinit var vm: AddPlanViewModel
+    private lateinit var vm: MainViewModel
 
     private var listener: OnFragmentInteractionListener? = null
 
@@ -86,7 +87,7 @@ class AddPlanFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            vm.planItemType = it.getInt(PLAN_ITEM_TYPE)
+            vm.planTypeToAdd = it.getInt(PLAN_ITEM_TYPE)
             vm.minimumDate = it.getLong(MiNIMUM_DATE)
             vm.maximumDate = it.getLong(MAXIMUM_DATE)
         }
@@ -98,7 +99,7 @@ class AddPlanFragment : Fragment() {
     ): View? {
         vm = ViewModelProviders
             .of(this)
-            .get(AddPlanViewModel::class.java)
+            .get(MainViewModel::class.java)
 
         // Inflate the layout for this fragment
         val view =
@@ -108,7 +109,7 @@ class AddPlanFragment : Fragment() {
         val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
         toolbar?.menu?.clear()
 
-        toolbar?.title = when (vm.planItemType) {
+        toolbar?.title = when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> getString(
                 R.string.add_new, getString(R.string.exam_label)
             )
@@ -127,12 +128,14 @@ class AddPlanFragment : Fragment() {
         toolbar?.setOnMenuItemClickListener { item ->
 
             if (item.itemId == R.menu.add_plan_menu) {
-                validateInput()
+
+                if (validateInput()) {
+                    val navController = view.findNavController()
+                    item.onNavDestinationSelected(navController)
+                }
             }
 
-            val navController = view.findNavController()
-            item.onNavDestinationSelected(navController)
-                    || super.onOptionsItemSelected(item)
+            super.onOptionsItemSelected(item)
         }
 
         // Reference views
@@ -154,7 +157,7 @@ class AddPlanFragment : Fragment() {
         val minDateForPicker = MonthAdapter.CalendarDay(vm.minimumDate)
         val maxDateForPicker = MonthAdapter.CalendarDay(vm.maximumDate)
 
-        when (vm.planItemType) {
+        when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> {
                 descTIL.isEnabled = false
                 dateTIL.isEnabled = false
@@ -210,25 +213,34 @@ class AddPlanFragment : Fragment() {
     /**
      * Validate the data according to plan type
      */
-    private fun validateInput() {
-        var name: String = ""
-        var desc: String = ""
-        var startDate: String = ""
-        var endDate: String = ""
-        var date: String = ""
-        var subject: String = ""
+    private fun validateInput(): Boolean {
+        val name: String
+        var desc = ""
+        var startDate = ""
+        var endDate = ""
+        var date = ""
+        var subject = ""
+
+        var isValidated = false
 
         name = nameTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
 
-        when (vm.planItemType) {
+        when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> {
-                startDate = startDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
-                endDate = endDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                startDate = startDateET.validateAndGetText(
+                    vm.minimumDate,
+                    vm.maximumDate
+                )
+                endDate =
+                    endDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
                 //TODO: get subject names and make sure subject is one of them
-                subject = subjectTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                subject = subjectTIL.validateAndGetText(
+                    vm.minimumDate,
+                    vm.maximumDate
+                )
 
-                vm.validateData(
-                    vm.planItemType,
+                isValidated = vm.validateData(
+                    vm.planTypeToAdd,
                     name = name,
                     startDate = startDate,
                     endDate = endDate,
@@ -236,21 +248,81 @@ class AddPlanFragment : Fragment() {
                 )
             }
             PlanItem.TYPE_HOMEWORK -> {
-                desc = descTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
-                date = dateTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
-                subject = subjectTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                desc =
+                    descTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                date =
+                    dateTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                subject = subjectTIL.validateAndGetText(
+                    vm.minimumDate,
+                    vm.maximumDate
+                )
+
+                isValidated = vm.validateData(
+                    vm.planTypeToAdd,
+                    name = name,
+                    desc = desc,
+                    date = date,
+                    subject = subject
+                )
             }
             PlanItem.TYPE_EVENT -> {
-                desc = descTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
-                startDate = startDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
-                endDate = endDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                desc =
+                    descTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                startDate = startDateET.validateAndGetText(
+                    vm.minimumDate,
+                    vm.maximumDate
+                )
+                endDate =
+                    endDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
+
+                isValidated = vm.validateData(
+                    vm.planTypeToAdd,
+                    name = name,
+                    desc = desc,
+                    startDate = startDate,
+                    endDate = endDate
+                )
             }
             PlanItem.TYPE_REMINDER -> {
-                date = dateTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                date =
+                    dateTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+
+                isValidated = vm.validateData(
+                    vm.planTypeToAdd,
+                    name = name,
+                    date = date
+                )
             }
         }
 
-        //TODO: Finish validation
+        if (isValidated) {
+
+            // All input fields are valid, add the plan to database
+            when (vm.planTypeToAdd) {
+                PlanItem.TYPE_EXAM -> {
+                    val startEpoch: Long = DateUtil.toEpochMili(startDate)
+                    val endEpoch: Long = DateUtil.toEpochMili(endDate)
+                    vm.addOrUpdateExam(name, subject, startEpoch, endEpoch)
+                }
+                PlanItem.TYPE_HOMEWORK -> {
+                    val epoch: Long = DateUtil.toEpochMili(date)
+                    vm.addOrUpdateHomework(name, subject, epoch, desc, false)
+                }
+                PlanItem.TYPE_EVENT -> {
+                    val startEpoch: Long = DateUtil.toEpochMili(startDate)
+                    val endEpoch: Long = DateUtil.toEpochMili(endDate)
+                    vm.addOrUpdateEvent(name, startEpoch, endEpoch, desc)
+                }
+                PlanItem.TYPE_REMINDER -> {
+                    val epoch: Long = DateUtil.toEpochMili(date)
+                    vm.addOrUpdateReminder(name, epoch, false)
+                }
+            }
+
+            return true
+        }
+
+        return false
     }
 
     override fun onAttach(context: Context) {

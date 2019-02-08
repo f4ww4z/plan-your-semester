@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.planyoursemester.ui.overview
+package com.jagoancoding.planyoursemester.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -34,11 +34,15 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneOffset
 
-class OverviewViewModel : ViewModel() {
+class MainViewModel : ViewModel() {
 
     val today: LocalDate = LocalDate.now()
     val startDate: LocalDate = today.minusDays(App.DAYS_PASSED)
     val endDate: LocalDate = startDate.plusDays(App.DAYS_SINCE_PASSED)
+
+    var planTypeToAdd: Int = 0
+    var minimumDate: Long = DateUtil.toEpochMili(startDate)
+    var maximumDate: Long = DateUtil.toEpochMili(endDate)
 
     private var _dateItems = MutableLiveData<List<DateItem>>()
     val dateItems: LiveData<List<DateItem>>
@@ -174,6 +178,42 @@ class OverviewViewModel : ViewModel() {
         val reminderEntity =
             Reminder(reminder = reminder, date = date, isDone = isDone)
         AppRepository.insertReminder(reminderEntity)
+    }
+
+    fun validateData(
+        type: Int,
+        name: String = "",
+        desc: String = "",
+        startDate: String = "",
+        endDate: String = "",
+        date: String = "",
+        subject: String = ""
+    ): Boolean {
+        when (type) {
+            PlanItem.TYPE_EXAM -> {
+                return (name.isNotBlank()
+                        && startDate.isNotBlank()
+                        && endDate.isNotBlank()
+                        && subject.isNotBlank())
+            }
+            PlanItem.TYPE_HOMEWORK -> {
+                return (name.isNotBlank()
+                        && desc.isNotBlank()
+                        && date.isNotBlank()
+                        && subject.isNotBlank())
+            }
+            PlanItem.TYPE_EVENT -> {
+                return (name.isNotBlank()
+                        && desc.isNotBlank()
+                        && startDate.isNotBlank()
+                        && endDate.isNotBlank())
+            }
+            PlanItem.TYPE_REMINDER -> {
+                return (name.isNotBlank() && date.isNotBlank())
+            }
+        }
+
+        return false
     }
 
     fun addDemoData() {

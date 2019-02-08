@@ -71,6 +71,12 @@ object DateUtil {
             LocalTime.MIDNIGHT
         ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
+    fun toEpochMili(date: String): Long =
+        LocalDateTime.of(
+            DateUtil.parseDateTime(date).toLocalDate(),
+            LocalTime.MIDNIGHT
+        ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
     fun parseDateTime(date: String): LocalDateTime {
         val formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_STANDARD)
         return LocalDateTime.parse(date, formatter)
