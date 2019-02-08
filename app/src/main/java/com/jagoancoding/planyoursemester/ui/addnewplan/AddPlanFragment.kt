@@ -149,7 +149,7 @@ class AddPlanFragment : Fragment() {
         with(view) {
             nameTIL = findViewById(R.id.til_plan_name)
             descTIL = findViewById(R.id.til_plan_desc)
-            dateTIL = findViewById(R.id.til_plan_desc)
+            dateTIL = findViewById(R.id.til_plan_date)
             startDateET = findViewById(R.id.et_plan_start_date)
             endDateET = findViewById(R.id.et_plan_end_date)
             subjectTIL = findViewById(R.id.til_plan_subject)
@@ -178,13 +178,7 @@ class AddPlanFragment : Fragment() {
                     maxDateForPicker,
                     vm.today
                 )
-                ViewUtil.getDateAndTimeWithPicker(
-                    endDateET,
-                    fm,
-                    minDateForPicker,
-                    maxDateForPicker,
-                    vm.today
-                )
+                ViewUtil.getTimeWithPicker(endDateET, fm)
 
                 subjectTIL.isEnabled = true
             }
@@ -215,13 +209,7 @@ class AddPlanFragment : Fragment() {
                     maxDateForPicker,
                     vm.today
                 )
-                ViewUtil.getDateAndTimeWithPicker(
-                    endDateET,
-                    fm,
-                    minDateForPicker,
-                    maxDateForPicker,
-                    vm.today
-                )
+                ViewUtil.getTimeWithPicker(endDateET, fm)
             }
             PlanItem.TYPE_REMINDER -> {
                 dateTIL.isEnabled = true

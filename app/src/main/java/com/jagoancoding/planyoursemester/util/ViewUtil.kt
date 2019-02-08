@@ -31,6 +31,7 @@ import com.codetroopers.betterpickers.timepicker.TimePickerBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.jagoancoding.planyoursemester.R
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 import java.util.Calendar
 
 object ViewUtil {
@@ -109,7 +110,6 @@ object ViewUtil {
         pre: LocalDate
     ) {
         var dateString: String
-        lateinit var tpb: TimePickerBuilder
 
         editText.setOnTouchListener { _, event ->
 
@@ -125,15 +125,22 @@ object ViewUtil {
                         pre.dayOfMonth
                     )
                     .setOnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                        dateString = "$dayOfMonth/$monthOfYear/$year"
 
                         // When date picker is dismissed, show the time picker
-                        tpb = TimePickerBuilder()
+                        val tpb = TimePickerBuilder()
                             .setFragmentManager(fm)
                             .setStyleResId(R.style.BetterPickersDialogFragment)
                             .addTimePickerDialogHandler { _, hourOfDay, minute ->
                                 // Time is selected, set it in EditText
-                                dateString = "$dateString $hourOfDay:$minute"
+                                val dateTime = LocalDateTime.of(
+                                    year,
+                                    monthOfYear,
+                                    dayOfMonth,
+                                    hourOfDay,
+                                    minute
+                                )
+                                dateString =
+                                    DateUtil.formatDateWithTime(dateTime)
                                 editText.setText(dateString)
                             }
                         tpb.show()
@@ -142,6 +149,27 @@ object ViewUtil {
                 calDateTimePicker?.show(fm, DATE_TIME_PICKER_TAG)
             }
 
+            true
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun getTimeWithPicker(editText: EditText, fm: FragmentManager) {
+
+        editText.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                val tpb = TimePickerBuilder()
+                    .setFragmentManager(fm)
+                    .setStyleResId(R.style.BetterPickersDialogFragment)
+                    .addTimePickerDialogHandler { _, hourOfDay, minute ->
+                        // Time is selected, set it in EditText
+                        val time = DateUtil.formatTime(hourOfDay, minute)
+                        editText.setText(time)
+                    }
+                tpb.show()
+            }
+            //TODO: Make input field just for adding date, and below it an input field for start time and end time
+            //TODO: If homework or reminder, make date input field accept date AND time, else just date
             true
         }
     }

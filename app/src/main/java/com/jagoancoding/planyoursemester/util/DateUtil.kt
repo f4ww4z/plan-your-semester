@@ -81,4 +81,14 @@ object DateUtil {
         val formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_STANDARD)
         return LocalDateTime.parse(date, formatter)
     }
+
+    fun formatDateWithTime(dateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
+        return dateTime.format(formatter)
+    }
+
+    fun formatTime(hour: Int, minute: Int): String {
+        val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
+        return LocalTime.of(hour, minute).format(formatter)
+    }
 }
