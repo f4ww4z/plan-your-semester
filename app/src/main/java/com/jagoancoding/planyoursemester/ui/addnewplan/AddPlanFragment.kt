@@ -23,6 +23,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProviders
@@ -100,7 +102,15 @@ class AddPlanFragment : Fragment() {
 
         // Inflate the layout for this fragment
         val view =
-            inflater.inflate(R.layout.fragment_add_plan, container, false)
+            inflater.inflate(
+                R.layout.fragment_add_plan,
+                container,
+                false
+            ) as ConstraintLayout
+        // Initially disable all input fields
+        for (child in view.children) {
+            child.isEnabled = false
+        }
 
         // Set up the app bar
         val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
@@ -154,10 +164,13 @@ class AddPlanFragment : Fragment() {
         val minDateForPicker = MonthAdapter.CalendarDay(vm.minimumDate)
         val maxDateForPicker = MonthAdapter.CalendarDay(vm.maximumDate)
 
+        nameTIL.isEnabled = true
+
         when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> {
-                descTIL.isEnabled = false
-                dateTIL.editText?.isEnabled = false
+                startDateET.isEnabled = true
+                endDateET.isEnabled = true
+
                 ViewUtil.getDateAndTimeWithPicker(
                     startDateET,
                     fm,
@@ -172,8 +185,13 @@ class AddPlanFragment : Fragment() {
                     maxDateForPicker,
                     vm.today
                 )
+
+                subjectTIL.isEnabled = true
             }
             PlanItem.TYPE_HOMEWORK -> {
+                descTIL.isEnabled = true
+                dateTIL.isEnabled = true
+
                 ViewUtil.getDateAndTimeWithPicker(
                     dateTIL.editText!!,
                     fm,
@@ -181,11 +199,15 @@ class AddPlanFragment : Fragment() {
                     maxDateForPicker,
                     vm.today
                 )
-                startDateET.isEnabled = false
-                endDateET.isEnabled = false
+
+                subjectTIL.isEnabled = true
             }
             PlanItem.TYPE_EVENT -> {
-                dateTIL.isEnabled = false
+
+                descTIL.isEnabled = true
+                startDateET.isEnabled = true
+                endDateET.isEnabled = true
+
                 ViewUtil.getDateAndTimeWithPicker(
                     startDateET,
                     fm,
@@ -200,10 +222,9 @@ class AddPlanFragment : Fragment() {
                     maxDateForPicker,
                     vm.today
                 )
-                subjectTIL.isEnabled = false
             }
             PlanItem.TYPE_REMINDER -> {
-                descTIL.isEnabled = false
+                dateTIL.isEnabled = true
                 ViewUtil.getDateAndTimeWithPicker(
                     dateTIL.editText!!,
                     fm,
@@ -211,9 +232,6 @@ class AddPlanFragment : Fragment() {
                     maxDateForPicker,
                     vm.today
                 )
-                startDateET.isEnabled = false
-                endDateET.isEnabled = false
-                subjectTIL.isEnabled = false
                 //TODO: Reminder.isDone()
             }
         }

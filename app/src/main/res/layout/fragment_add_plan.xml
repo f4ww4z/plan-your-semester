@@ -29,6 +29,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_plan_name">
@@ -49,6 +50,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -70,6 +72,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:ems="10"
+        android:enabled="false"
         android:hint="@string/plan_start_date"
         android:inputType="datetime"
         app:layout_constraintEnd_toStartOf="@+id/et_plan_end_date"
@@ -88,6 +91,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:ems="10"
+        android:enabled="false"
         android:hint="@string/plan_end_date"
         android:inputType="datetime"
         app:layout_constraintEnd_toEndOf="parent"
@@ -105,6 +109,7 @@
         android:layout_marginTop="84dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
+        android:enabled="false"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_plan_desc">
@@ -125,6 +130,7 @@
         android:layout_marginTop="84dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/til_plan_desc">
