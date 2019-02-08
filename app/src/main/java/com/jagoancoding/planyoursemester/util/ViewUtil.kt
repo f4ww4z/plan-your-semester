@@ -38,8 +38,6 @@ object ViewUtil {
 
     const val DATE_TIME_PICKER_TAG = "DateTimePicker"
 
-    private var calDateTimePicker: CalendarDatePickerDialogFragment? = null
-
     fun TextView.setTextAndGoneIfEmpty(text: String?) {
         if (text.isNullOrEmpty() || text.isNullOrBlank()) {
             visibility = View.GONE
@@ -83,14 +81,17 @@ object ViewUtil {
         minDate: Long,
         maxDate: Long
     ): String {
-        val editText = text
+        val textInputted = text
         val min = DateUtil.getDate(minDate)
         val max = DateUtil.getDate(maxDate)
-        if (editText.isNullOrEmpty()) {
+        if (textInputted.isNullOrEmpty()) {
             error = resources.getString(R.string.error_text_empty)
             return ""
+        } else if (minDate >= maxDate) {
+            error = resources.getString(R.string.error_date_not_possible)
+            return ""
         } else {
-            val date = DateUtil.parseDateTime("$editText")
+            val date = DateUtil.parseDateTime("$textInputted")
             if (date.toLocalDate().isAfter(max)
                 || date.toLocalDate().isBefore(min)
             ) {
@@ -98,8 +99,28 @@ object ViewUtil {
                 return ""
             }
         }
-        return "$editText"
+        return "$textInputted"
     }
+
+    private fun baseDatePicker(
+        minDate: MonthAdapter.CalendarDay,
+        maxDate: MonthAdapter.CalendarDay,
+        preselectedDate: LocalDate
+    ): CalendarDatePickerDialogFragment = CalendarDatePickerDialogFragment()
+        .setFirstDayOfWeek(Calendar.SUNDAY)
+        .setDoneText("Select")
+        .setCancelText("Cancel")
+        .setDateRange(minDate, maxDate)
+        .setPreselectedDate(
+            preselectedDate.year,
+            preselectedDate.month.value,
+            preselectedDate.dayOfMonth
+        )
+
+    private fun baseTimePicker(fm: FragmentManager): TimePickerBuilder =
+        TimePickerBuilder()
+            .setFragmentManager(fm)
+            .setStyleResId(R.style.BetterPickersDialogFragment)
 
     @SuppressLint("ClickableViewAccessibility")
     fun getDateAndTimeWithPicker(
@@ -114,22 +135,11 @@ object ViewUtil {
         editText.setOnTouchListener { _, event ->
 
             if (event.action == MotionEvent.ACTION_UP) {
-                calDateTimePicker = CalendarDatePickerDialogFragment()
-                    .setFirstDayOfWeek(Calendar.SUNDAY)
-                    .setDoneText("Select")
-                    .setCancelText("Cancel")
-                    .setDateRange(minDate, maxDate)
-                    .setPreselectedDate(
-                        pre.year,
-                        pre.month.value,
-                        pre.dayOfMonth
-                    )
+                val dtp = baseDatePicker(minDate, maxDate, pre)
                     .setOnDateSetListener { _, year, monthOfYear, dayOfMonth ->
 
                         // When date picker is dismissed, show the time picker
-                        val tpb = TimePickerBuilder()
-                            .setFragmentManager(fm)
-                            .setStyleResId(R.style.BetterPickersDialogFragment)
+                        val tpb = baseTimePicker(fm)
                             .addTimePickerDialogHandler { _, hourOfDay, minute ->
                                 // Time is selected, set it in EditText
                                 val dateTime = LocalDateTime.of(
@@ -146,7 +156,33 @@ object ViewUtil {
                         tpb.show()
                     }
 
-                calDateTimePicker?.show(fm, DATE_TIME_PICKER_TAG)
+                dtp?.show(fm, DATE_TIME_PICKER_TAG)
+            }
+
+            true
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun getDateWithPicker(
+        editText: EditText,
+        fm: FragmentManager,
+        minDate: MonthAdapter.CalendarDay,
+        maxDate: MonthAdapter.CalendarDay,
+        pre: LocalDate
+    ) {
+        editText.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+
+                val dtp = baseDatePicker(minDate, maxDate, pre)
+                    .setOnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+
+                        val dateString =
+                            DateUtil.formatDate(year, monthOfYear, dayOfMonth)
+                        editText.setText(dateString)
+                    }
+
+                dtp?.show(fm, DATE_TIME_PICKER_TAG)
             }
 
             true
@@ -158,9 +194,7 @@ object ViewUtil {
 
         editText.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                val tpb = TimePickerBuilder()
-                    .setFragmentManager(fm)
-                    .setStyleResId(R.style.BetterPickersDialogFragment)
+                val tpb = baseTimePicker(fm)
                     .addTimePickerDialogHandler { _, hourOfDay, minute ->
                         // Time is selected, set it in EditText
                         val time = DateUtil.formatTime(hourOfDay, minute)
@@ -168,8 +202,7 @@ object ViewUtil {
                     }
                 tpb.show()
             }
-            //TODO: Make input field just for adding date, and below it an input field for start time and end time
-            //TODO: If homework or reminder, make date input field accept date AND time, else just date
+
             true
         }
     }

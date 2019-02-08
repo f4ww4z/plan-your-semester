@@ -29,7 +29,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:enabled="false"
+        
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_plan_name">
@@ -50,7 +50,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -68,17 +67,16 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:ems="10"
-        android:enabled="false"
         android:hint="@string/plan_start_date"
         android:inputType="datetime"
         app:layout_constraintEnd_toStartOf="@+id/et_plan_end_date"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_plan_desc"
+        app:layout_constraintTop_toBottomOf="@+id/til_plan_date"
         tools:ignore="Autofill" />
 
     <EditText
@@ -87,30 +85,24 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:ems="10"
-        android:enabled="false"
         android:hint="@string/plan_end_date"
         android:inputType="datetime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/et_plan_start_date"
-        app:layout_constraintTop_toBottomOf="@+id/til_plan_desc"
+        app:layout_constraintTop_toBottomOf="@+id/til_plan_date"
         tools:ignore="Autofill" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_plan_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="84dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:enabled="false"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_plan_desc">
 
@@ -127,13 +119,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/til_plan_desc">
+        app:layout_constraintTop_toBottomOf="@+id/et_plan_start_date">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiet_plan_subject"
@@ -147,6 +139,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.43" />
+        app:layout_constraintGuide_percent="0.3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

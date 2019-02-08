@@ -43,5 +43,8 @@
             android:name="planItemType"
             app:argType="integer"
             android:defaultValue="0" />
+        <action
+            android:id="@+id/action_addPlanFragment_to_overviewFragment"
+            app:destination="@id/overviewFragment" />
     </fragment>
 </navigation>

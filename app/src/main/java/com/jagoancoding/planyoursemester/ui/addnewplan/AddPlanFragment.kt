@@ -107,10 +107,6 @@ class AddPlanFragment : Fragment() {
                 container,
                 false
             ) as ConstraintLayout
-        // Initially disable all input fields
-        for (child in view.children) {
-            child.isEnabled = false
-        }
 
         // Set up the app bar
         val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
@@ -138,7 +134,7 @@ class AddPlanFragment : Fragment() {
 
                 if (validateInput()) {
                     val navController = view.findNavController()
-                    item.onNavDestinationSelected(navController)
+                    navController.navigate(R.id.overviewFragment)
                 }
             }
 
@@ -160,6 +156,8 @@ class AddPlanFragment : Fragment() {
         return view
     }
 
+    //TODO: Make input field just for adding date, and below it an input field for start time and end time
+    //TODO: If homework or reminder, make date input field accept date AND time, else just date
     private fun setupViews(fm: FragmentManager) {
         val minDateForPicker = MonthAdapter.CalendarDay(vm.minimumDate)
         val maxDateForPicker = MonthAdapter.CalendarDay(vm.maximumDate)
@@ -168,24 +166,23 @@ class AddPlanFragment : Fragment() {
 
         when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> {
-                startDateET.isEnabled = true
-                endDateET.isEnabled = true
 
-                ViewUtil.getDateAndTimeWithPicker(
-                    startDateET,
+                descTIL.isEnabled = false
+
+                dateTIL.hint = resources.getString(R.string.plan_date)
+                ViewUtil.getDateWithPicker(
+                    dateTIL.editText!!,
                     fm,
                     minDateForPicker,
                     maxDateForPicker,
                     vm.today
                 )
+                ViewUtil.getTimeWithPicker(startDateET, fm)
                 ViewUtil.getTimeWithPicker(endDateET, fm)
-
-                subjectTIL.isEnabled = true
             }
             PlanItem.TYPE_HOMEWORK -> {
-                descTIL.isEnabled = true
-                dateTIL.isEnabled = true
 
+                dateTIL.hint = resources.getString(R.string.plan_date_time)
                 ViewUtil.getDateAndTimeWithPicker(
                     dateTIL.editText!!,
                     fm,
@@ -194,25 +191,29 @@ class AddPlanFragment : Fragment() {
                     vm.today
                 )
 
-                subjectTIL.isEnabled = true
+                startDateET.isEnabled = false
+                endDateET.isEnabled = false
             }
             PlanItem.TYPE_EVENT -> {
 
-                descTIL.isEnabled = true
-                startDateET.isEnabled = true
-                endDateET.isEnabled = true
-
-                ViewUtil.getDateAndTimeWithPicker(
-                    startDateET,
+                dateTIL.hint = resources.getString(R.string.plan_date)
+                ViewUtil.getDateWithPicker(
+                    dateTIL.editText!!,
                     fm,
                     minDateForPicker,
                     maxDateForPicker,
                     vm.today
                 )
+                ViewUtil.getTimeWithPicker(startDateET, fm)
                 ViewUtil.getTimeWithPicker(endDateET, fm)
+
+                subjectTIL.isEnabled = false
             }
             PlanItem.TYPE_REMINDER -> {
-                dateTIL.isEnabled = true
+
+                descTIL.isEnabled = false
+
+                dateTIL.hint = resources.getString(R.string.plan_date_time)
                 ViewUtil.getDateAndTimeWithPicker(
                     dateTIL.editText!!,
                     fm,
@@ -220,6 +221,11 @@ class AddPlanFragment : Fragment() {
                     maxDateForPicker,
                     vm.today
                 )
+
+                startDateET.isEnabled = false
+                endDateET.isEnabled = false
+                subjectTIL.isEnabled = false
+
                 //TODO: Reminder.isDone()
             }
         }
@@ -246,8 +252,9 @@ class AddPlanFragment : Fragment() {
                     vm.minimumDate,
                     vm.maximumDate
                 )
-                endDate =
-                    endDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                endDate = endDateET.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate
+                )
                 //TODO: get subject names and make sure subject is one of them
                 subject = subjectTIL.validateAndGetText(
                     vm.minimumDate,
@@ -268,8 +275,7 @@ class AddPlanFragment : Fragment() {
                 date =
                     dateTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
                 subject = subjectTIL.validateAndGetText(
-                    vm.minimumDate,
-                    vm.maximumDate
+                    vm.minimumDate, vm.maximumDate
                 )
 
                 isValidated = vm.validateData(

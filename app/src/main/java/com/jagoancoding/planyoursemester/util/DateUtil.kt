@@ -26,9 +26,10 @@ import org.threeten.bp.format.DateTimeFormatter
 
 object DateUtil {
 
-    private const val DATE_FORMAT_STANDARD = "hh:mm"
+    private const val DATE_FORMAT_STANDARD = "dd/MM/yyyy"
+    private const val TIME_FORMAT_STANDARD = "hh:mm"
     private const val DATE_FORMAT_DAY = "EEE"
-    private const val DATE_TIME_FORMAT_STANDARD = "dd/mm/yyyy hh:mm"
+    private const val DATE_TIME_FORMAT_STANDARD = "dd/MM/yyyy hh:mm"
 
     fun getDayOfWeek(date: LocalDate): String = date.dayOfMonth.toString()
 
@@ -43,7 +44,7 @@ object DateUtil {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime()
         val dateTimeFormatter =
-            DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
+            DateTimeFormatter.ofPattern(TIME_FORMAT_STANDARD)
         return localDate.format(dateTimeFormatter)
     }
 
@@ -83,12 +84,17 @@ object DateUtil {
     }
 
     fun formatDateWithTime(dateTime: LocalDateTime): String {
-        val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
+        val formatter = DateTimeFormatter.ofPattern(TIME_FORMAT_STANDARD)
         return dateTime.format(formatter)
     }
 
-    fun formatTime(hour: Int, minute: Int): String {
+    fun formatDate(year: Int, monthOfYear: Int, dayOfMonth: Int): String {
         val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
+        return LocalDate.of(year, monthOfYear, dayOfMonth).format(formatter)
+    }
+
+    fun formatTime(hour: Int, minute: Int): String {
+        val formatter = DateTimeFormatter.ofPattern(TIME_FORMAT_STANDARD)
         return LocalTime.of(hour, minute).format(formatter)
     }
 }
