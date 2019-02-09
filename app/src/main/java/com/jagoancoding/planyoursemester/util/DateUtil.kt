@@ -79,7 +79,7 @@ object DateUtil {
     fun toEpochMili(date: String, format: Int): Long = when (format) {
         ViewUtil.DATE -> {
             LocalDateTime.of(
-                parseDateTime(date).toLocalDate(),
+                parseDate(date),
                 LocalTime.MIDNIGHT
             ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
@@ -90,10 +90,8 @@ object DateUtil {
             ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
         ViewUtil.DATE_TIME -> {
-            LocalDateTime.of(
-                DateUtil.parseDateTime(date).toLocalDate(),
-                LocalTime.MIDNIGHT
-            ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            parseDateTime(date).atZone(ZoneId.systemDefault()).toInstant()
+                .toEpochMilli()
         }
         else -> 0L
     }

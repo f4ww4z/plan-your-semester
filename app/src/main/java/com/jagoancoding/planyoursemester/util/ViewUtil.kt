@@ -32,7 +32,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.jagoancoding.planyoursemester.R
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
-import org.threeten.bp.LocalTime
 import java.util.Calendar
 
 object ViewUtil {
@@ -61,55 +60,17 @@ object ViewUtil {
     fun Context.getColorByResId(resId: Int) =
         ContextCompat.getColor(this, resId)
 
-    fun TextInputLayout.validateAndGetText(
-        minDate: Long,
-        maxDate: Long,
-        format: Int
-    ): String = editText!!.validateAndGetText(minDate, maxDate, format)
+    fun TextInputLayout.checkIfEmptyAndGetText(): String =
+        editText!!.checkIfEmptyAndGetText()
 
-    fun EditText.validateAndGetText(
-        minDate: Long,
-        maxDate: Long,
-        format: Int
-    ): String {
+    //TODO: Handle date validation
+    fun EditText.checkIfEmptyAndGetText(): String {
         val textInputted = text
 
         if (textInputted.isNullOrBlank()) {
             error = resources.getString(R.string.error_text_empty)
             return ""
         }
-
-        // check date if text is a date format
-        when (format) {
-            DATE -> {
-                val date = DateUtil.parseDate(textInputted.toString())
-                val min = DateUtil.getDate(minDate)
-                val max = DateUtil.getDate(maxDate)
-                if (date.isBefore(min) || date.isAfter(max)) {
-                    error = resources.getString(R.string.error_date_not_possible)
-                    return ""
-                }
-            }
-            TIME -> {
-                val time = DateUtil.parseTime(textInputted.toString())
-                val min = DateUtil.getTime(minDate)
-                val max = DateUtil.getTime(maxDate)
-                if (time.isBefore(min) || time.isAfter(max)) {
-                    error = resources.getString(R.string.error_date_not_possible)
-                    return ""
-                }
-            }
-            DATE_TIME -> {
-                val dateTime = DateUtil.parseDateTime(textInputted.toString())
-                val min = DateUtil.getDateTime(minDate)
-                val max = DateUtil.getDateTime(maxDate)
-                if (dateTime.isBefore(min) || dateTime.isAfter(max)) {
-                    error = resources.getString(R.string.error_date_not_possible)
-                    return ""
-                }
-            }
-        }
-
         error = null
         return "$textInputted"
     }

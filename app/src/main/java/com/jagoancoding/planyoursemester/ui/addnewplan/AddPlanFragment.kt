@@ -36,7 +36,7 @@ import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.util.DateUtil
 import com.jagoancoding.planyoursemester.util.ViewUtil
-import com.jagoancoding.planyoursemester.util.ViewUtil.validateAndGetText
+import com.jagoancoding.planyoursemester.util.ViewUtil.checkIfEmptyAndGetText
 
 /**
  * A simple [Fragment] subclass.
@@ -134,8 +134,8 @@ class AddPlanFragment : Fragment() {
             if (item.itemId == R.id.overviewFragment) {
                 validateInput()
                 if (isValidated) {
-                    //TODO: Fix broken input
                     val navController = view.findNavController()
+                    view.clearFocus()
                     item.onNavDestinationSelected(navController)
                 }
             }
@@ -242,24 +242,15 @@ class AddPlanFragment : Fragment() {
         var dateTime = ""
         var subject = ""
 
-        name = nameTIL.validateAndGetText(
-            vm.minimumDate,
-            vm.maximumDate,
-            ViewUtil.NON_DATE
-        )
+        name = nameTIL.checkIfEmptyAndGetText()
 
         when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> {
-                startTime = startDateET.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.TIME
-                )
-                endTime = endDateET.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.TIME
-                )
+                dateTime = dateTIL.checkIfEmptyAndGetText()
+                startTime = "$dateTime ${startDateET.checkIfEmptyAndGetText()}"
+                endTime = "$dateTime ${endDateET.checkIfEmptyAndGetText()}"
                 //TODO: get subject names and make sure subject is one of them
-                subject = subjectTIL.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.NON_DATE
-                )
+                subject = subjectTIL.checkIfEmptyAndGetText()
 
                 isValidated = vm.validateData(
                     vm.planTypeToAdd,
@@ -270,15 +261,9 @@ class AddPlanFragment : Fragment() {
                 )
             }
             PlanItem.TYPE_HOMEWORK -> {
-                desc = descTIL.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.NON_DATE
-                )
-                dateTime = dateTIL.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.DATE_TIME
-                )
-                subject = subjectTIL.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.NON_DATE
-                )
+                desc = descTIL.checkIfEmptyAndGetText()
+                dateTime = dateTIL.checkIfEmptyAndGetText()
+                subject = subjectTIL.checkIfEmptyAndGetText()
 
                 isValidated = vm.validateData(
                     vm.planTypeToAdd,
@@ -289,18 +274,10 @@ class AddPlanFragment : Fragment() {
                 )
             }
             PlanItem.TYPE_EVENT -> {
-                desc = descTIL.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.NON_DATE
-                )
-                dateTime = dateTIL.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.DATE
-                )
-                startTime = dateTime + startDateET.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.TIME
-                )
-                endTime = dateTime + endDateET.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.TIME
-                )
+                desc = descTIL.checkIfEmptyAndGetText()
+                dateTime = dateTIL.checkIfEmptyAndGetText()
+                startTime = "$dateTime ${startDateET.checkIfEmptyAndGetText()}"
+                endTime = "$dateTime ${endDateET.checkIfEmptyAndGetText()}"
 
                 isValidated = vm.validateData(
                     vm.planTypeToAdd,
@@ -311,9 +288,7 @@ class AddPlanFragment : Fragment() {
                 )
             }
             PlanItem.TYPE_REMINDER -> {
-                dateTime = dateTIL.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate, ViewUtil.DATE_TIME
-                )
+                dateTime = dateTIL.checkIfEmptyAndGetText()
 
                 isValidated = vm.validateData(
                     vm.planTypeToAdd,
@@ -331,8 +306,8 @@ class AddPlanFragment : Fragment() {
     private fun addPlanToDatabase(
         name: String,
         desc: String = "",
-        startDate: String = "",
-        endDate: String = "",
+        startTime: String = "",
+        endTime: String = "",
         dt: String = "",
         subject: String = ""
     ) {
@@ -340,9 +315,9 @@ class AddPlanFragment : Fragment() {
         when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> {
                 val startEpoch: Long =
-                    DateUtil.toEpochMili(startDate, ViewUtil.DATE_TIME)
+                    DateUtil.toEpochMili(startTime, ViewUtil.DATE_TIME)
                 val endEpoch: Long =
-                    DateUtil.toEpochMili(endDate, ViewUtil.DATE_TIME)
+                    DateUtil.toEpochMili(endTime, ViewUtil.DATE_TIME)
                 vm.addOrUpdateExam(name, subject, startEpoch, endEpoch)
             }
             PlanItem.TYPE_HOMEWORK -> {
@@ -351,9 +326,9 @@ class AddPlanFragment : Fragment() {
             }
             PlanItem.TYPE_EVENT -> {
                 val startEpoch: Long =
-                    DateUtil.toEpochMili(startDate, ViewUtil.DATE_TIME)
+                    DateUtil.toEpochMili(startTime, ViewUtil.DATE_TIME)
                 val endEpoch: Long =
-                    DateUtil.toEpochMili(endDate, ViewUtil.DATE_TIME)
+                    DateUtil.toEpochMili(endTime, ViewUtil.DATE_TIME)
                 vm.addOrUpdateEvent(name, startEpoch, endEpoch, desc)
             }
             PlanItem.TYPE_REMINDER -> {
