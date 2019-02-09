@@ -32,6 +32,7 @@ import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.util.DateUtil
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneOffset
 
 class MainViewModel : ViewModel() {
@@ -65,20 +66,29 @@ class MainViewModel : ViewModel() {
     }
 
     fun displayPlan(plan: PlanItem) {
+        if (plan.name.isBlank()) { return }
+
         val dateItems = _dateItems.value
 
         // Check the type of plan, which determines if either date or startDate
         // should be used
-        val date: LocalDate = if (plan.itemType == PlanItem.TYPE_REMINDER ||
-            plan.itemType == PlanItem.TYPE_HOMEWORK
-        ) {
-            DateUtil.getDate(plan.date!!)
-        } else {
-            DateUtil.getDate(plan.startDate!!)
-        }
+        val dateTime: LocalDateTime =
+            if (plan.itemType == PlanItem.TYPE_REMINDER ||
+                plan.itemType == PlanItem.TYPE_HOMEWORK
+            ) {
+                DateUtil.getDateTime(plan.date!!)
+            } else {
+                DateUtil.getDateTime(plan.startDate!!)
+            }
 
         val dateItemToUpdateIndex =
-            dateItems?.indexOfFirst { it.date.isEqual(date) }!!
+            dateItems?.indexOfFirst {
+                it.date.isEqual(
+                    LocalDate.of(
+                        dateTime.year, dateTime.month, dateTime.dayOfMonth
+                    )
+                )
+            }!!
 
         val planList = dateItems[dateItemToUpdateIndex].planItems
         // Find the plan item to update

@@ -131,7 +131,7 @@ class OverviewFragment : Fragment(),
             }
         })
 
-        viewModel.addDemoData()
+        //viewModel.addDemoData()
     }
 
     override fun onDestroyView() {

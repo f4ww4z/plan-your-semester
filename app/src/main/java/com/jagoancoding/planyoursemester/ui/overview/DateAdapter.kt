@@ -62,7 +62,6 @@ class DateAdapter(private var data: List<DateItem>) :
             rl_plan_items.removeAllViewsInLayout()
 
             for (i in dateItem.planItems.indices) {
-                //TODO: Remove every plan item view first, then create it
                 rl_plan_items.addItemView(dateItem.planItems[i], i, resources)
             }
         }
