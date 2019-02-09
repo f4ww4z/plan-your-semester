@@ -71,24 +71,24 @@ object AppRepository {
     fun getReminderById(id: Long) = db.reminderDao().getReminderById(id)
 
     fun insertSubject(subject: Subject) {
-        InsertSubjectAsyncTask(db.subjectDao()).execute(subject)
+        RunInBackground().execute({ db.subjectDao().insertSubject(subject) })
     }
 
     fun insertExam(exam: Exam) {
-        AsyncTask.execute { db.examDao().insertExam(exam) }
+        RunInBackground().execute({ db.examDao().insertExam(exam) })
     }
 
     //TODO: Replace keyword to 'Assignment'
     fun insertHomework(homework: Homework) {
-        InsertHomeworkAsyncTask(db.homeworkDao()).execute(homework)
+        RunInBackground().execute({ db.homeworkDao().insertHomework(homework) })
     }
 
     fun insertEvent(event: Event) {
-        InsertEventAsyncTask(db.eventDao()).execute(event)
+        RunInBackground().execute({ db.eventDao().insertEvent(event) })
     }
 
     fun insertReminder(reminder: Reminder) {
-        InsertReminderAsyncTask(db.reminderDao()).execute(reminder)
+        RunInBackground().execute({ db.reminderDao().insertReminder(reminder) })
     }
 
     fun updateExam(exam: Exam) {
@@ -105,42 +105,9 @@ object AppRepository {
         return ret
     }
 
-    class InsertSubjectAsyncTask(private val dao: SubjectDao) :
-        AsyncTask<Subject, Void, Void>() {
-        override fun doInBackground(vararg params: Subject): Void? {
-            dao.insertSubject(params[0])
-            return null
-        }
-    }
-
-    class InsertExamAsyncTask(private val dao: ExamDao) :
-        AsyncTask<Exam, Void, Void>() {
-        override fun doInBackground(vararg params: Exam): Void? {
-            dao.insertExam(params[0])
-            return null
-        }
-    }
-
-    class InsertHomeworkAsyncTask(private val dao: HomeworkDao) :
-        AsyncTask<Homework, Void, Void>() {
-        override fun doInBackground(vararg params: Homework): Void? {
-            dao.insertHomework(params[0])
-            return null
-        }
-    }
-
-    class InsertEventAsyncTask(private val dao: EventDao) :
-        AsyncTask<Event, Void, Void>() {
-        override fun doInBackground(vararg params: Event): Void? {
-            dao.insertEvent(params[0])
-            return null
-        }
-    }
-
-    class InsertReminderAsyncTask(private val dao: ReminderDao) :
-        AsyncTask<Reminder, Void, Void>() {
-        override fun doInBackground(vararg params: Reminder): Void? {
-            dao.insertReminder(params[0])
+    class RunInBackground : AsyncTask<() -> Unit, Void, Void>() {
+        override fun doInBackground(vararg params: (() -> Unit)): Void? {
+            params[0]()
             return null
         }
     }
