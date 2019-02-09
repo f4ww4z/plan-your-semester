@@ -184,32 +184,32 @@ class MainViewModel : ViewModel() {
         type: Int,
         name: String = "",
         desc: String = "",
-        startDate: String = "",
-        endDate: String = "",
-        date: String = "",
+        startTime: String = "",
+        endTime: String = "",
+        dateTime: String = "",
         subject: String = ""
     ): Boolean {
         when (type) {
             PlanItem.TYPE_EXAM -> {
                 return (name.isNotBlank()
-                        && startDate.isNotBlank()
-                        && endDate.isNotBlank()
+                        && startTime.isNotBlank()
+                        && endTime.isNotBlank()
                         && subject.isNotBlank())
             }
             PlanItem.TYPE_HOMEWORK -> {
                 return (name.isNotBlank()
                         && desc.isNotBlank()
-                        && date.isNotBlank()
+                        && dateTime.isNotBlank()
                         && subject.isNotBlank())
             }
             PlanItem.TYPE_EVENT -> {
                 return (name.isNotBlank()
                         && desc.isNotBlank()
-                        && startDate.isNotBlank()
-                        && endDate.isNotBlank())
+                        && startTime.isNotBlank()
+                        && endTime.isNotBlank())
             }
             PlanItem.TYPE_REMINDER -> {
-                return (name.isNotBlank() && date.isNotBlank())
+                return (name.isNotBlank() && dateTime.isNotBlank())
             }
         }
 

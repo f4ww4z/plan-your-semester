@@ -27,9 +27,9 @@ import org.threeten.bp.format.DateTimeFormatter
 object DateUtil {
 
     private const val DATE_FORMAT_STANDARD = "dd/MM/yyyy"
-    private const val TIME_FORMAT_STANDARD = "hh:mm"
+    private const val TIME_FORMAT_STANDARD = "HH:mm"
     private const val DATE_FORMAT_DAY = "EEE"
-    private const val DATE_TIME_FORMAT_STANDARD = "dd/MM/yyyy hh:mm"
+    private const val DATE_TIME_FORMAT_STANDARD = "dd/MM/yyyy HH:mm"
 
     fun getDayOfWeek(date: LocalDate): String = date.dayOfMonth.toString()
 
@@ -62,6 +62,10 @@ object DateUtil {
         Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault())
             .toLocalDate()
 
+    fun getTime(epochMillis: Long): LocalTime =
+        Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault())
+            .toLocalTime()
+
     fun getDateTime(epochMillis: Long): LocalDateTime = LocalDateTime.ofInstant(
         Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()
     )
@@ -72,19 +76,45 @@ object DateUtil {
             LocalTime.MIDNIGHT
         ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-    fun toEpochMili(date: String): Long =
-        LocalDateTime.of(
-            DateUtil.parseDateTime(date).toLocalDate(),
-            LocalTime.MIDNIGHT
-        ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    fun toEpochMili(date: String, format: Int): Long = when (format) {
+        ViewUtil.DATE -> {
+            LocalDateTime.of(
+                parseDateTime(date).toLocalDate(),
+                LocalTime.MIDNIGHT
+            ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }
+        ViewUtil.TIME -> {
+            LocalDateTime.of(
+                LocalDate.now(ZoneId.systemDefault()),
+                parseTime(date)
+            ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }
+        ViewUtil.DATE_TIME -> {
+            LocalDateTime.of(
+                DateUtil.parseDateTime(date).toLocalDate(),
+                LocalTime.MIDNIGHT
+            ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }
+        else -> 0L
+    }
 
     fun parseDateTime(date: String): LocalDateTime {
         val formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_STANDARD)
         return LocalDateTime.parse(date, formatter)
     }
 
-    fun formatDateWithTime(dateTime: LocalDateTime): String {
+    fun parseDate(date: String): LocalDate {
+        val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
+        return LocalDate.parse(date, formatter)
+    }
+
+    fun parseTime(time: String): LocalTime {
         val formatter = DateTimeFormatter.ofPattern(TIME_FORMAT_STANDARD)
+        return LocalTime.parse(time, formatter)
+    }
+
+    fun formatDateWithTime(dateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_STANDARD)
         return dateTime.format(formatter)
     }
 

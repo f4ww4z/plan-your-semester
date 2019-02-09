@@ -24,7 +24,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProviders
@@ -86,6 +85,8 @@ class AddPlanFragment : Fragment() {
     private lateinit var dateTIL: TextInputLayout
     private lateinit var subjectTIL: TextInputLayout
 
+    private var isValidated = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -130,11 +131,12 @@ class AddPlanFragment : Fragment() {
         toolbar?.inflateMenu(R.menu.add_plan_menu)
         toolbar?.setOnMenuItemClickListener { item ->
 
-            if (item.itemId == R.menu.add_plan_menu) {
-
-                if (validateInput()) {
+            if (item.itemId == R.id.overviewFragment) {
+                validateInput()
+                if (isValidated) {
+                    //TODO: Fix broken input
                     val navController = view.findNavController()
-                    navController.navigate(R.id.overviewFragment)
+                    item.onNavDestinationSelected(navController)
                 }
             }
 
@@ -156,8 +158,6 @@ class AddPlanFragment : Fragment() {
         return view
     }
 
-    //TODO: Make input field just for adding date, and below it an input field for start time and end time
-    //TODO: If homework or reminder, make date input field accept date AND time, else just date
     private fun setupViews(fm: FragmentManager) {
         val minDateForPicker = MonthAdapter.CalendarDay(vm.minimumDate)
         val maxDateForPicker = MonthAdapter.CalendarDay(vm.maximumDate)
@@ -234,116 +234,133 @@ class AddPlanFragment : Fragment() {
     /**
      * Validate the data according to plan type
      */
-    private fun validateInput(): Boolean {
+    private fun validateInput() {
         val name: String
         var desc = ""
-        var startDate = ""
-        var endDate = ""
-        var date = ""
+        var startTime = ""
+        var endTime = ""
+        var dateTime = ""
         var subject = ""
 
-        var isValidated = false
-
-        name = nameTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+        name = nameTIL.validateAndGetText(
+            vm.minimumDate,
+            vm.maximumDate,
+            ViewUtil.NON_DATE
+        )
 
         when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> {
-                startDate = startDateET.validateAndGetText(
-                    vm.minimumDate,
-                    vm.maximumDate
+                startTime = startDateET.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate, ViewUtil.TIME
                 )
-                endDate = endDateET.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate
+                endTime = endDateET.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate, ViewUtil.TIME
                 )
                 //TODO: get subject names and make sure subject is one of them
                 subject = subjectTIL.validateAndGetText(
-                    vm.minimumDate,
-                    vm.maximumDate
+                    vm.minimumDate, vm.maximumDate, ViewUtil.NON_DATE
                 )
 
                 isValidated = vm.validateData(
                     vm.planTypeToAdd,
                     name = name,
-                    startDate = startDate,
-                    endDate = endDate,
+                    startTime = startTime,
+                    endTime = endTime,
                     subject = subject
                 )
             }
             PlanItem.TYPE_HOMEWORK -> {
-                desc =
-                    descTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
-                date =
-                    dateTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                desc = descTIL.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate, ViewUtil.NON_DATE
+                )
+                dateTime = dateTIL.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate, ViewUtil.DATE_TIME
+                )
                 subject = subjectTIL.validateAndGetText(
-                    vm.minimumDate, vm.maximumDate
+                    vm.minimumDate, vm.maximumDate, ViewUtil.NON_DATE
                 )
 
                 isValidated = vm.validateData(
                     vm.planTypeToAdd,
                     name = name,
                     desc = desc,
-                    date = date,
+                    dateTime = dateTime,
                     subject = subject
                 )
             }
             PlanItem.TYPE_EVENT -> {
-                desc =
-                    descTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
-                startDate = startDateET.validateAndGetText(
-                    vm.minimumDate,
-                    vm.maximumDate
+                desc = descTIL.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate, ViewUtil.NON_DATE
                 )
-                endDate =
-                    endDateET.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                dateTime = dateTIL.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate, ViewUtil.DATE
+                )
+                startTime = dateTime + startDateET.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate, ViewUtil.TIME
+                )
+                endTime = dateTime + endDateET.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate, ViewUtil.TIME
+                )
 
                 isValidated = vm.validateData(
                     vm.planTypeToAdd,
                     name = name,
                     desc = desc,
-                    startDate = startDate,
-                    endDate = endDate
+                    startTime = startTime,
+                    endTime = endTime
                 )
             }
             PlanItem.TYPE_REMINDER -> {
-                date =
-                    dateTIL.validateAndGetText(vm.minimumDate, vm.maximumDate)
+                dateTime = dateTIL.validateAndGetText(
+                    vm.minimumDate, vm.maximumDate, ViewUtil.DATE_TIME
+                )
 
                 isValidated = vm.validateData(
                     vm.planTypeToAdd,
                     name = name,
-                    date = date
+                    dateTime = dateTime
                 )
             }
         }
 
         if (isValidated) {
-
-            // All input fields are valid, add the plan to database
-            when (vm.planTypeToAdd) {
-                PlanItem.TYPE_EXAM -> {
-                    val startEpoch: Long = DateUtil.toEpochMili(startDate)
-                    val endEpoch: Long = DateUtil.toEpochMili(endDate)
-                    vm.addOrUpdateExam(name, subject, startEpoch, endEpoch)
-                }
-                PlanItem.TYPE_HOMEWORK -> {
-                    val epoch: Long = DateUtil.toEpochMili(date)
-                    vm.addOrUpdateHomework(name, subject, epoch, desc, false)
-                }
-                PlanItem.TYPE_EVENT -> {
-                    val startEpoch: Long = DateUtil.toEpochMili(startDate)
-                    val endEpoch: Long = DateUtil.toEpochMili(endDate)
-                    vm.addOrUpdateEvent(name, startEpoch, endEpoch, desc)
-                }
-                PlanItem.TYPE_REMINDER -> {
-                    val epoch: Long = DateUtil.toEpochMili(date)
-                    vm.addOrUpdateReminder(name, epoch, false)
-                }
-            }
-
-            return true
+            addPlanToDatabase(name, desc, startTime, endTime, dateTime, subject)
         }
+    }
 
-        return false
+    private fun addPlanToDatabase(
+        name: String,
+        desc: String = "",
+        startDate: String = "",
+        endDate: String = "",
+        dt: String = "",
+        subject: String = ""
+    ) {
+        // All input fields are valid, add the plan to database
+        when (vm.planTypeToAdd) {
+            PlanItem.TYPE_EXAM -> {
+                val startEpoch: Long =
+                    DateUtil.toEpochMili(startDate, ViewUtil.DATE_TIME)
+                val endEpoch: Long =
+                    DateUtil.toEpochMili(endDate, ViewUtil.DATE_TIME)
+                vm.addOrUpdateExam(name, subject, startEpoch, endEpoch)
+            }
+            PlanItem.TYPE_HOMEWORK -> {
+                val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
+                vm.addOrUpdateHomework(name, subject, epoch, desc, false)
+            }
+            PlanItem.TYPE_EVENT -> {
+                val startEpoch: Long =
+                    DateUtil.toEpochMili(startDate, ViewUtil.DATE_TIME)
+                val endEpoch: Long =
+                    DateUtil.toEpochMili(endDate, ViewUtil.DATE_TIME)
+                vm.addOrUpdateEvent(name, startEpoch, endEpoch, desc)
+            }
+            PlanItem.TYPE_REMINDER -> {
+                val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
+                vm.addOrUpdateReminder(name, epoch, false)
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
