@@ -109,15 +109,15 @@ class MainViewModel : ViewModel() {
     val reminders: LiveData<List<Reminder>>
         get() = AppRepository.getReminders()
 
-    fun getExamWithSubject(id: String): LiveData<ExamWithSubject> =
+    fun getExamWithSubject(id: Long): LiveData<ExamWithSubject> =
         AppRepository.getExamWithSubject(id)
 
-    fun getHomeworkWithSubject(id: String): LiveData<HomeworkWithSubject> =
+    fun getHomeworkWithSubject(id: Long): LiveData<HomeworkWithSubject> =
         AppRepository.getHomeworkWithSubject(id)
 
-    fun event(id: String): LiveData<Event> = AppRepository.getEventById(id)
+    fun event(id: Long): LiveData<Event> = AppRepository.getEventById(id)
 
-    fun reminder(id: String): LiveData<Reminder> =
+    fun reminder(id: Long): LiveData<Reminder> =
         AppRepository.getReminderById(id)
 
     //TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate

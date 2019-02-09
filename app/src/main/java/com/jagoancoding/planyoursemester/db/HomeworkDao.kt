@@ -20,6 +20,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface HomeworkDao {
@@ -38,8 +39,11 @@ interface HomeworkDao {
         FROM homework INNER JOIN subjects
         WHERE subject_name = s_name AND homework_id = :id"""
     )
-    fun getHomeworkWithSubject(id: String): LiveData<HomeworkWithSubject>
+    fun getHomeworkWithSubject(id: Long): LiveData<HomeworkWithSubject>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertHomework(homework: Homework)
+    fun insertHomework(homework: Homework): Long
+
+    @Update(onConflict = OnConflictStrategy.ABORT)
+    fun updateHomework(homework: Homework)
 }

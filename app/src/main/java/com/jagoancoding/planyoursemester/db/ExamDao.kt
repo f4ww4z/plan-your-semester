@@ -20,6 +20,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface ExamDao {
@@ -38,8 +39,11 @@ interface ExamDao {
         FROM exams INNER JOIN subjects
         WHERE subject_name = s_name AND exam_id = :id"""
     )
-    fun getExamWithSubject(id: String): LiveData<ExamWithSubject>
+    fun getExamWithSubject(id: Long): LiveData<ExamWithSubject>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertExam(exam: Exam)
+    fun insertExam(exam: Exam): Long
+
+    @Update(onConflict = OnConflictStrategy.ABORT)
+    fun updateExam(exam: Exam)
 }

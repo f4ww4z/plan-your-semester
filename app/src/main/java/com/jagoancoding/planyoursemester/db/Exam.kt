@@ -20,8 +20,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.jagoancoding.planyoursemester.model.PlanItem
-import java.util.UUID
+import java.util.Random
 
 @Entity(
     tableName = "exams", foreignKeys = [ForeignKey(
@@ -32,9 +31,8 @@ import java.util.UUID
     )], indices = [Index(value = ["subject_name"], unique = true)]
 )
 data class Exam(
-    @PrimaryKey
-    @ColumnInfo(name = "exam_id")
-    val id: String = UUID.randomUUID().toString(),
+    @PrimaryKey(autoGenerate = true)
+    val exam_id: Long = Random(100).nextLong(),
     @ColumnInfo(name = "subject_name")
     val subjectName: String,
     @ColumnInfo

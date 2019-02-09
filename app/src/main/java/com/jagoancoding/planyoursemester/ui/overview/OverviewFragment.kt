@@ -131,7 +131,7 @@ class OverviewFragment : Fragment(),
             }
         })
 
-        //viewModel.addDemoData()
+        viewModel.addDemoData()
     }
 
     override fun onDestroyView() {
@@ -209,28 +209,28 @@ class OverviewFragment : Fragment(),
     }
 
     private fun addToView(exam: Exam) {
-        viewModel.getExamWithSubject(exam.id).observe(this, Observer {
+        viewModel.getExamWithSubject(exam.exam_id).observe(this, Observer {
             val newExam = it.toPlanItem()
             viewModel.displayPlan(newExam)
         })
     }
 
     private fun addToView(homework: Homework) {
-        viewModel.getHomeworkWithSubject(homework.id).observe(this, Observer {
+        viewModel.getHomeworkWithSubject(homework.homework_id).observe(this, Observer {
             val newHomework = it.toPlanItem()
             viewModel.displayPlan(newHomework)
         })
     }
 
     private fun addToView(event: Event) {
-        viewModel.event(event.id).observe(this, Observer {
+        viewModel.event(event.event_id).observe(this, Observer {
             val newEvent = it.toPlanItem()
             viewModel.displayPlan(newEvent)
         })
     }
 
     private fun addToView(reminder: Reminder) {
-        viewModel.reminder(reminder.id).observe(this, Observer {
+        viewModel.reminder(reminder.reminder_id).observe(this, Observer {
             val newReminder = it.toPlanItem()
             viewModel.displayPlan(newReminder)
         })

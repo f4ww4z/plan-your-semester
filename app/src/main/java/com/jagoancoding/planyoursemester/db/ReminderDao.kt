@@ -20,6 +20,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface ReminderDao {
@@ -28,11 +29,14 @@ interface ReminderDao {
     fun getReminders(): LiveData<List<Reminder>>
 
     @Query("SELECT * FROM reminders WHERE reminder_id = :id")
-    fun getReminderById(id: String): LiveData<Reminder>
+    fun getReminderById(id: Long): LiveData<Reminder>
 
     @Query("SELECT reminder FROM reminders")
     fun getReminderNames(): LiveData<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertReminder(event: Reminder)
+    fun insertReminder(event: Reminder): Long
+
+    @Update(onConflict = OnConflictStrategy.ABORT)
+    fun updateReminder(reminder: Reminder)
 }

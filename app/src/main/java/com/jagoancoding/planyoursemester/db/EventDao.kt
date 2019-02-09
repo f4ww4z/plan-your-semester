@@ -20,6 +20,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface EventDao {
@@ -28,11 +29,14 @@ interface EventDao {
     fun getEvents(): LiveData<List<Event>>
 
     @Query("SELECT * FROM events WHERE event_id = :id")
-    fun getEventById(id: String): LiveData<Event>
+    fun getEventById(id: Long): LiveData<Event>
 
     @Query("SELECT name FROM events")
     fun getEventNames(): LiveData<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertEvent(event: Event)
+    fun insertEvent(event: Event): Long
+
+    @Update(onConflict = OnConflictStrategy.ABORT)
+    fun updateEvent(event: Event)
 }

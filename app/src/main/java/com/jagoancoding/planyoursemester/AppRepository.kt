@@ -52,30 +52,30 @@ object AppRepository {
 
     fun getExams(): LiveData<List<Exam>> = db.examDao().getExams()
 
-    fun getExamWithSubject(id: String): LiveData<ExamWithSubject> =
+    fun getExamWithSubject(id: Long): LiveData<ExamWithSubject> =
         db.examDao().getExamWithSubject(id)
 
     fun getHomeworks() = db.homeworkDao().getHomeworks()
 
-    fun getHomeworkWithSubject(id: String): LiveData<HomeworkWithSubject> =
+    fun getHomeworkWithSubject(id: Long): LiveData<HomeworkWithSubject> =
         db.homeworkDao().getHomeworkWithSubject(id)
 
     fun getEvents() = db.eventDao().getEvents()
 
-    fun getEventById(id: String): LiveData<Event> =
+    fun getEventById(id: Long): LiveData<Event> =
         db.eventDao().getEventById(id)
 
     fun getReminders(): LiveData<List<Reminder>> =
         db.reminderDao().getReminders()
 
-    fun getReminderById(id: String) = db.reminderDao().getReminderById(id)
+    fun getReminderById(id: Long) = db.reminderDao().getReminderById(id)
 
     fun insertSubject(subject: Subject) {
         InsertSubjectAsyncTask(db.subjectDao()).execute(subject)
     }
 
     fun insertExam(exam: Exam) {
-        InsertExamAsyncTask(db.examDao()).execute(exam)
+        AsyncTask.execute { db.examDao().insertExam(exam) }
     }
 
     //TODO: Replace keyword to 'Assignment'
@@ -89,6 +89,10 @@ object AppRepository {
 
     fun insertReminder(reminder: Reminder) {
         InsertReminderAsyncTask(db.reminderDao()).execute(reminder)
+    }
+
+    fun updateExam(exam: Exam) {
+
     }
 
     fun datesBetween(start: LocalDate, end: LocalDate): List<LocalDate> {

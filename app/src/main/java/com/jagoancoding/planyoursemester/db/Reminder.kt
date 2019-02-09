@@ -19,13 +19,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.jagoancoding.planyoursemester.model.PlanItem
-import java.util.UUID
+import java.util.Random
 
 @Entity(tableName = "reminders")
 data class Reminder(
-    @PrimaryKey
-    @ColumnInfo(name = "reminder_id")
-    val id: String = UUID.randomUUID().toString(),
+    @PrimaryKey(autoGenerate = true)
+    val reminder_id: Long = Random(100).nextLong(),
     @ColumnInfo
     var reminder: String,
     @ColumnInfo
