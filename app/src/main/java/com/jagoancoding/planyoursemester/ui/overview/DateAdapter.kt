@@ -16,6 +16,7 @@
 package com.jagoancoding.planyoursemester.ui.overview
 
 import android.content.res.Resources
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -119,6 +120,12 @@ class DateAdapter(private var data: List<DateItem>) :
                 descriptionTV.setTextAndGoneIfEmpty(description)
                 dateTV.text = getDateToDisplay(resources)
                 subjectTV.setTextAndGoneIfEmpty(subject?.name)
+
+                // If homework or reminder is done, cross the text
+                if (isDone != null) {
+                    titleTV.paintFlags =
+                        if (isDone!!) Paint.STRIKE_THRU_TEXT_FLAG else 0
+                }
 
                 // When clicked, update the plan item
                 setOnClickListener {

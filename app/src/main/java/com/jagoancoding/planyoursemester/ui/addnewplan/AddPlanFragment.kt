@@ -22,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -89,6 +90,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     private lateinit var endDateET: EditText
     private lateinit var dateTIL: TextInputLayout
     private lateinit var subjectTIL: TextInputLayout
+    private lateinit var isDoneCB: CheckBox
 
     private lateinit var state: String
     private var isValidated = false
@@ -125,6 +127,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             startDateET = findViewById(R.id.et_plan_start_date)
             endDateET = findViewById(R.id.et_plan_end_date)
             subjectTIL = findViewById(R.id.til_plan_subject)
+            isDoneCB = findViewById(R.id.cb_done)
         }
 
         setupViews(fragmentManager!!)
@@ -223,6 +226,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 )
                 ViewUtil.getTimeWithPicker(startDateET, fm)
                 ViewUtil.getTimeWithPicker(endDateET, fm)
+
+                isDoneCB.isEnabled = false
             }
             PlanItem.TYPE_HOMEWORK -> {
 
@@ -252,6 +257,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 ViewUtil.getTimeWithPicker(endDateET, fm)
 
                 subjectTIL.isEnabled = false
+                isDoneCB.isEnabled = false
             }
             PlanItem.TYPE_REMINDER -> {
 
@@ -310,6 +316,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                         DateUtil.formatDateWithTime(ldt)
                     )
                     subjectTIL.editText?.setText(subject?.name)
+                    isDoneCB.isChecked = isDone!!
                 }
                 PlanItem.TYPE_EVENT -> {
                     val startLdt = DateUtil.getDateTime(startDate!!)
@@ -338,6 +345,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     dateTIL.editText?.setText(
                         DateUtil.formatDateWithTime(ldt)
                     )
+                    isDoneCB.isChecked = isDone!!
                 }
                 else -> return
             }
@@ -354,6 +362,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         var endTime = ""
         var dateTime = ""
         var subject = ""
+        var isDone: Boolean? = null
 
         name = nameTIL.checkIfEmptyAndGetText()
 
@@ -374,9 +383,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 )
             }
             PlanItem.TYPE_HOMEWORK -> {
-                desc = descTIL.checkIfEmptyAndGetText()
+                desc = descTIL.editText?.text?.toString() ?: ""
                 dateTime = dateTIL.checkIfEmptyAndGetText()
                 subject = subjectTIL.checkIfEmptyAndGetText()
+                isDone = isDoneCB.isChecked
 
                 isValidated = vm.validateData(
                     vm.currentPlanItemType,
@@ -387,7 +397,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 )
             }
             PlanItem.TYPE_EVENT -> {
-                desc = descTIL.checkIfEmptyAndGetText()
+                desc = descTIL.editText?.text?.toString() ?: ""
                 dateTime = dateTIL.checkIfEmptyAndGetText()
                 startTime = "$dateTime ${startDateET.checkIfEmptyAndGetText()}"
                 endTime = "$dateTime ${endDateET.checkIfEmptyAndGetText()}"
@@ -402,6 +412,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             }
             PlanItem.TYPE_REMINDER -> {
                 dateTime = dateTIL.checkIfEmptyAndGetText()
+                isDone = isDoneCB.isChecked
 
                 isValidated = vm.validateData(
                     vm.currentPlanItemType,
@@ -419,7 +430,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 startTime,
                 endTime,
                 dateTime,
-                subject
+                subject,
+                isDone
             )
         }
     }
@@ -431,7 +443,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         startTime: String = "",
         endTime: String = "",
         dt: String = "",
-        subject: String = ""
+        subject: String = "",
+        isDone: Boolean? = null
     ) {
         // All input fields are valid, add the plan to database
         when (vm.currentPlanItemType) {
@@ -462,7 +475,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
 
                 if (state == INSERT_STATE) {
-                    vm.addHomework(name, subject, epoch, desc, false)
+                    vm.addHomework(name, subject, epoch, desc, isDone!!)
                     context?.showLongToast(
                         getString(
                             R.string.success_plan_added,
@@ -471,7 +484,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     )
                 } else {
                     //TODO: Make isDone checkbox and update code here
-                    vm.updateHomework(id!!, name, subject, epoch, desc, false)
+                    vm.updateHomework(id!!, name, subject, epoch, desc, isDone!!)
                     context?.showLongToast(
                         getString(
                             R.string.success_plan_update,
@@ -508,7 +521,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
 
                 if (state == INSERT_STATE) {
-                    vm.addReminder(name, epoch, false)
+                    vm.addReminder(name, epoch, isDone!!)
                     context?.showLongToast(
                         getString(
                             R.string.success_plan_added,
@@ -517,7 +530,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     )
                 } else {
                     //TODO: Make isDone checkbox and update code here
-                    vm.updateReminder(id!!, name, epoch, false)
+                    vm.updateReminder(id!!, name, epoch, isDone!!)
                     context?.showLongToast(
                         getString(
                             R.string.success_plan_update,

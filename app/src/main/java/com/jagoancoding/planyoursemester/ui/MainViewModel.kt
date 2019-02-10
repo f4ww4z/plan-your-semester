@@ -268,13 +268,11 @@ class MainViewModel : ViewModel() {
             }
             PlanItem.TYPE_HOMEWORK -> {
                 return (name.isNotBlank()
-                        && desc.isNotBlank()
                         && dateTime.isNotBlank()
                         && subject.isNotBlank())
             }
             PlanItem.TYPE_EVENT -> {
                 return (name.isNotBlank()
-                        && desc.isNotBlank()
                         && startTime.isNotBlank()
                         && endTime.isNotBlank())
             }

@@ -42,4 +42,5 @@
     <string name="update_plan">Update %1$s</string>
     <string name="update_plan_default">Update Plan</string>
     <string name="success_plan_update">%1$s is updated successfully</string>
+    <string name="is_done">Done?</string>
 </resources>
