@@ -29,6 +29,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.App
+import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
@@ -142,13 +143,10 @@ class OverviewFragment : Fragment(),
     override fun onRFACItemIconClick(position: Int, item: RFACLabelItem<Int>?) {
         // context?.showShortToast("Icon $position clicked")
 
-        val minDate = DateUtil.toEpochMili(viewModel.startDate)
-        val maxDate = DateUtil.toEpochMili(viewModel.endDate)
-
         val bundle = Bundle().apply {
             putInt(AddPlanFragment.PLAN_ITEM_TYPE, position)
-            putLong(AddPlanFragment.MiNIMUM_DATE, minDate)
-            putLong(AddPlanFragment.MAXIMUM_DATE, maxDate)
+            putLong(AddPlanFragment.MiNIMUM_DATE, AppRepository.minimumDate)
+            putLong(AddPlanFragment.MAXIMUM_DATE, AppRepository.maximumDate)
         }
         view?.findNavController()?.navigate(R.id.addPlanFragment, bundle)
     }

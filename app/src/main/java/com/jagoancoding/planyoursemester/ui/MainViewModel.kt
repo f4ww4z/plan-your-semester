@@ -36,21 +36,16 @@ import org.threeten.bp.ZoneOffset
 
 class MainViewModel : ViewModel() {
 
-    val today: LocalDate = LocalDate.now()
-    val startDate: LocalDate = today.minusDays(App.DAYS_PASSED)
-    val endDate: LocalDate = startDate.plusDays(App.DAYS_SINCE_PASSED)
-
-    var planTypeToAdd: Int = 0
-    var planItemToAdd: PlanItem? = null
-    var minimumDate: Long = DateUtil.toEpochMili(startDate)
-    var maximumDate: Long = DateUtil.toEpochMili(endDate)
+    var currentPlanItemType: Int = 0
+    var currentPlanItem: PlanItem? = null
 
     private var _dateItems = MutableLiveData<List<DateItem>>()
     val dateItems: LiveData<List<DateItem>>
         get() = _dateItems
 
     init {
-        _dateItems.value = initialDateItems(startDate, endDate)
+        _dateItems.value =
+            initialDateItems(AppRepository.startDate, AppRepository.endDate)
     }
 
     fun initialDateItems(start: LocalDate, end: LocalDate): List<DateItem> {

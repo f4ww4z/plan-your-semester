@@ -149,6 +149,7 @@ class DateAdapter(private var data: List<DateItem>) :
 
     private fun updatePlanItemScreen(nc: NavController?, planItem: PlanItem) {
         val bundle = Bundle().apply {
+            putInt(AddPlanFragment.PLAN_ITEM_TYPE, planItem.itemType)
             putSerializable(AddPlanFragment.PLAN_ITEM_OBJECT, planItem)
         }
         nc?.navigate(R.id.addPlanFragment, bundle)

@@ -31,6 +31,7 @@ import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.db.ReminderDao
 import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.db.SubjectDao
+import com.jagoancoding.planyoursemester.util.DateUtil
 import org.threeten.bp.LocalDate
 
 /**
@@ -44,6 +45,13 @@ object AppRepository {
     fun init(application: Application) {
         db = AppDatabase.getInstance(application.applicationContext)
     }
+
+    val today: LocalDate = LocalDate.now()
+    val startDate: LocalDate = today.minusDays(App.DAYS_PASSED)
+    val endDate: LocalDate = startDate.plusDays(App.DAYS_SINCE_PASSED)
+
+    var minimumDate: Long = DateUtil.toEpochMili(startDate)
+    var maximumDate: Long = DateUtil.toEpochMili(endDate)
 
     fun getSubjects(): LiveData<List<Subject>> = db.subjectDao().getSubjects()
 

@@ -32,6 +32,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter
 import com.google.android.material.textfield.TextInputLayout
+import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
@@ -39,6 +40,7 @@ import com.jagoancoding.planyoursemester.util.DateUtil
 import com.jagoancoding.planyoursemester.util.ToastUtil.showLongToast
 import com.jagoancoding.planyoursemester.util.ViewUtil
 import com.jagoancoding.planyoursemester.util.ViewUtil.checkIfEmptyAndGetText
+import org.threeten.bp.LocalDate
 
 /**
  * A simple [Fragment] subclass.
@@ -64,17 +66,15 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
          * this fragment using the provided parameters.
          *
          * @param planItemType Plan Item Type (can be of 4 values)
-         * @param minDate minimum date in Date Picker
-         * @param maxDate maximum date allowed in Date Picker
+         * @param planItem Plan item to load
          * @return A new instance of fragment AddPlanFragment.
          */
         @JvmStatic
-        fun newInstance(planItemType: Int, minDate: Long, maxDate: Long) =
+        fun newInstance(planItemType: Int, planItem: PlanItem) =
             AddPlanFragment().apply {
                 arguments = Bundle().apply {
                     putInt(PLAN_ITEM_TYPE, planItemType)
-                    putLong(MiNIMUM_DATE, minDate)
-                    putLong(MAXIMUM_DATE, maxDate)
+                    putSerializable(PLAN_ITEM_OBJECT, planItem)
                 }
             }
     }
@@ -102,12 +102,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             .get(MainViewModel::class.java)
 
         arguments?.apply {
-            vm.planTypeToAdd = getInt(PLAN_ITEM_TYPE)
-            vm.planItemToAdd = getSerializable(PLAN_ITEM_OBJECT) as PlanItem?
-            state = if (vm.planItemToAdd == null) INSERT_STATE else UPDATE_STATE
-            vm.minimumDate = getLong(MiNIMUM_DATE)
-            vm.maximumDate = getLong(MAXIMUM_DATE)
+            vm.currentPlanItemType = getInt(PLAN_ITEM_TYPE)
+            vm.currentPlanItem = getSerializable(PLAN_ITEM_OBJECT) as PlanItem?
         }
+        state = if (vm.currentPlanItem == null) INSERT_STATE else UPDATE_STATE
 
         // Inflate the layout for this fragment
         val view =
@@ -155,7 +153,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         toolbar?.menu?.clear()
 
         if (state == INSERT_STATE) {
-            toolbar?.title = when (vm.planTypeToAdd) {
+            toolbar?.title = when (vm.currentPlanItemType) {
                 PlanItem.TYPE_EXAM -> getString(
                     R.string.add_new, getString(R.string.exam_label)
                 )
@@ -171,7 +169,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 else -> getString(R.string.add_new, "")
             }
         } else {
-            toolbar?.title = when (vm.planTypeToAdd) {
+            toolbar?.title = when (vm.currentPlanItemType) {
                 PlanItem.TYPE_EXAM -> getString(
                     R.string.update_plan, getString(R.string.exam_label)
                 )
@@ -193,27 +191,33 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     }
 
     private fun setupViews(fm: FragmentManager) {
-        val minDateForPicker = MonthAdapter.CalendarDay(vm.minimumDate)
-        val maxDateForPicker = MonthAdapter.CalendarDay(vm.maximumDate)
+        val minDateForPicker =
+            MonthAdapter.CalendarDay(AppRepository.minimumDate)
+        val maxDateForPicker =
+            MonthAdapter.CalendarDay(AppRepository.maximumDate)
 
-        nameTIL.isEnabled = true
+        val preselectedDate: LocalDate
 
-        if (state == UPDATE_STATE) {
-            fillUpViewsWhenUpdatingPlan(vm.planItemToAdd!!)
+        if (state == INSERT_STATE) {
+            preselectedDate = AppRepository.today
+        } else {
+            fillUpViewsWhenUpdatingPlan(vm.currentPlanItem!!)
+            preselectedDate = DateUtil.getDate(vm.currentPlanItem?.date!!)
         }
 
-        when (vm.planTypeToAdd) {
+        when (vm.currentPlanItemType) {
             PlanItem.TYPE_EXAM -> {
 
                 descTIL.isEnabled = false
 
                 dateTIL.hint = resources.getString(R.string.plan_date)
+
                 ViewUtil.getDateWithPicker(
                     dateTIL.editText!!,
                     fm,
                     minDateForPicker,
                     maxDateForPicker,
-                    vm.today
+                    preselectedDate
                 )
                 ViewUtil.getTimeWithPicker(startDateET, fm)
                 ViewUtil.getTimeWithPicker(endDateET, fm)
@@ -226,7 +230,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     fm,
                     minDateForPicker,
                     maxDateForPicker,
-                    vm.today
+                    preselectedDate
                 )
 
                 startDateET.isEnabled = false
@@ -240,7 +244,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     fm,
                     minDateForPicker,
                     maxDateForPicker,
-                    vm.today
+                    preselectedDate
                 )
                 ViewUtil.getTimeWithPicker(startDateET, fm)
                 ViewUtil.getTimeWithPicker(endDateET, fm)
@@ -257,7 +261,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     fm,
                     minDateForPicker,
                     maxDateForPicker,
-                    vm.today
+                    preselectedDate
                 )
 
                 startDateET.isEnabled = false
@@ -351,7 +355,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         name = nameTIL.checkIfEmptyAndGetText()
 
-        when (vm.planTypeToAdd) {
+        when (vm.currentPlanItemType) {
             PlanItem.TYPE_EXAM -> {
                 dateTime = dateTIL.checkIfEmptyAndGetText()
                 startTime = "$dateTime ${startDateET.checkIfEmptyAndGetText()}"
@@ -360,7 +364,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 subject = subjectTIL.checkIfEmptyAndGetText()
 
                 isValidated = vm.validateData(
-                    vm.planTypeToAdd,
+                    vm.currentPlanItemType,
                     name = name,
                     startTime = startTime,
                     endTime = endTime,
@@ -373,7 +377,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 subject = subjectTIL.checkIfEmptyAndGetText()
 
                 isValidated = vm.validateData(
-                    vm.planTypeToAdd,
+                    vm.currentPlanItemType,
                     name = name,
                     desc = desc,
                     dateTime = dateTime,
@@ -387,7 +391,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 endTime = "$dateTime ${endDateET.checkIfEmptyAndGetText()}"
 
                 isValidated = vm.validateData(
-                    vm.planTypeToAdd,
+                    vm.currentPlanItemType,
                     name = name,
                     desc = desc,
                     startTime = startTime,
@@ -398,7 +402,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 dateTime = dateTIL.checkIfEmptyAndGetText()
 
                 isValidated = vm.validateData(
-                    vm.planTypeToAdd,
+                    vm.currentPlanItemType,
                     name = name,
                     dateTime = dateTime
                 )
@@ -407,7 +411,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         if (isValidated) {
             addOrUpdatePlan(
-                vm.planItemToAdd?.id,
+                vm.currentPlanItem?.id,
                 name,
                 desc,
                 startTime,
@@ -421,14 +425,14 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     private fun addOrUpdatePlan(
         id: Long?,
         name: String,
-        desc: String = "",g
+        desc: String = "",
         startTime: String = "",
         endTime: String = "",
         dt: String = "",
         subject: String = ""
     ) {
         // All input fields are valid, add the plan to database
-        when (vm.planTypeToAdd) {
+        when (vm.currentPlanItemType) {
             PlanItem.TYPE_EXAM -> {
                 val startEpoch: Long =
                     DateUtil.toEpochMili(startTime, ViewUtil.DATE_TIME)

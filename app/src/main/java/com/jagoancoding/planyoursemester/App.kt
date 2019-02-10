@@ -28,7 +28,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        AppRepository.init(this)
         AndroidThreeTen.init(this)
+        AppRepository.init(this)
     }
 }
