@@ -17,6 +17,7 @@ package com.jagoancoding.planyoursemester.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -39,4 +40,10 @@ interface EventDao {
 
     @Update(onConflict = OnConflictStrategy.ABORT)
     fun updateEvent(event: Event)
+
+    @Query("""DELETE * FROM events WHERE event_id = :id""")
+    fun deleteEvent(id: Long)
+
+    @Delete
+    fun deleteEvents(vararg event: Event)
 }

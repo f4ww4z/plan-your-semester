@@ -17,6 +17,7 @@ package com.jagoancoding.planyoursemester.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -39,4 +40,10 @@ interface ReminderDao {
 
     @Update(onConflict = OnConflictStrategy.ABORT)
     fun updateReminder(reminder: Reminder)
+
+    @Query("""DELETE * FROM reminders WHERE reminder_id = :id""")
+    fun deleteReminder(id: Long)
+    
+    @Delete
+    fun deleteReminders(vararg reminder: Reminder)
 }

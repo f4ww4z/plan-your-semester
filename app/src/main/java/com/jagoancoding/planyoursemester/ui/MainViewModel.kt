@@ -163,6 +163,10 @@ class MainViewModel : ViewModel() {
         AppRepository.updateExam(exam)
     }
 
+    fun deleteExam(id: Long) {
+        AppRepository.deleteExam(id)
+    }
+
     fun addHomework(
         name: String,
         subjectName: String,
@@ -199,6 +203,10 @@ class MainViewModel : ViewModel() {
         AppRepository.updateHomework(homework)
     }
 
+    fun deleteHomework(id: Long) {
+        AppRepository.deleteHomework(id)
+    }
+
     fun addEvent(
         name: String, startDate: Long, endDate: Long, description: String
     ) {
@@ -228,6 +236,10 @@ class MainViewModel : ViewModel() {
         AppRepository.updateEvent(event)
     }
 
+    fun deleteEvent(id: Long) {
+        AppRepository.deleteEvent(id)
+    }
+
     fun addReminder(reminder: String, date: Long, isDone: Boolean) {
         val reminderEntity =
             Reminder(reminder = reminder, date = date, isDone = isDone)
@@ -248,6 +260,10 @@ class MainViewModel : ViewModel() {
                 isDone = isDone
             )
         AppRepository.updateReminder(reminderEntity)
+    }
+
+    fun deleteReminder(id: Long) {
+        AppRepository.deleteReminder(id)
     }
 
     fun validateData(

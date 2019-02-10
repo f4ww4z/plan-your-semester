@@ -24,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -135,18 +136,25 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         return view
     }
 
-    override fun onMenuItemClick(item: MenuItem): Boolean {
-        if (item.itemId == R.id.overviewFragment) {
-            validateInput()
-            if (isValidated) {
-                val navController = view!!.findNavController()
-                view!!.clearFocus()
-                return item.onNavDestinationSelected(navController)
+    override fun onMenuItemClick(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.overviewFragment -> {
+                validateInput()
+                if (isValidated) {
+                    val navController = view!!.findNavController()
+                    view!!.clearFocus()
+                    item.onNavDestinationSelected(navController)
+                }
+                true
             }
+            R.id.action_delete_plan -> {
+                if (context != null && vm.currentPlanItem != null) {
+                    showPlanDeleteDialog(context!!, vm.currentPlanItem!!)
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
-
-        return super.onOptionsItemSelected(item)
-    }
 
     /**
      * Set up the custom activity Toolbar
@@ -191,6 +199,40 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         toolbar?.inflateMenu(R.menu.add_plan_menu)
         toolbar?.setOnMenuItemClickListener(this)
+    }
+
+
+    private fun showPlanDeleteDialog(context: Context, plan: PlanItem) {
+        with(plan) {
+            val title = context.getString(
+                R.string.dialog_remove_plan_title, when (itemType) {
+                    PlanItem.TYPE_EXAM -> context.getString(R.string.exam_label)
+                    PlanItem.TYPE_HOMEWORK -> context.getString(R.string.homework_label)
+                    PlanItem.TYPE_EVENT -> context.getString(R.string.event_label)
+                    PlanItem.TYPE_REMINDER -> context.getString(R.string.reminder_label)
+                    else -> context.getString(R.string.plan)
+                }
+            )
+            val message =
+                context.getString(R.string.dialog_remove_plan_mes, name)
+
+            val confirmDeleteDialog = AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.yes) { _, _ ->
+                    when (itemType) {
+                        PlanItem.TYPE_EXAM -> vm.deleteExam(id)
+                        PlanItem.TYPE_HOMEWORK -> vm.deleteHomework(id)
+                        PlanItem.TYPE_EVENT -> vm.deleteEvent(id)
+                        PlanItem.TYPE_REMINDER -> vm.deleteReminder(id)
+                    }
+                }
+                .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+            confirmDeleteDialog.show()
+        }
     }
 
     private fun setupViews(fm: FragmentManager) {
@@ -484,7 +526,14 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     )
                 } else {
                     //TODO: Make isDone checkbox and update code here
-                    vm.updateHomework(id!!, name, subject, epoch, desc, isDone!!)
+                    vm.updateHomework(
+                        id!!,
+                        name,
+                        subject,
+                        epoch,
+                        desc,
+                        isDone!!
+                    )
                     context?.showLongToast(
                         getString(
                             R.string.success_plan_update,

@@ -115,6 +115,22 @@ object AppRepository {
         RunInBackground().execute({ db.reminderDao().updateReminder(reminder) })
     }
 
+    fun deleteExam(id: Long) {
+        db.examDao().deleteExam(id)
+    }
+
+    fun deleteHomework(id: Long) {
+        db.homeworkDao().deleteHomework(id)
+    }
+
+    fun deleteEvent(id: Long) {
+        db.eventDao().deleteEvent(id)
+    }
+
+    fun deleteReminder(id: Long) {
+        db.reminderDao().deleteReminder(id)
+    }
+
     fun datesBetween(start: LocalDate, end: LocalDate): List<LocalDate> {
         val ret = ArrayList<LocalDate>()
         var date = start
