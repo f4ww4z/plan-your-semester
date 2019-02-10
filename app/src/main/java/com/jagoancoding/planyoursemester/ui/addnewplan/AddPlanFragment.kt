@@ -425,7 +425,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     DateUtil.toEpochMili(startTime, ViewUtil.DATE_TIME)
                 val endEpoch: Long =
                     DateUtil.toEpochMili(endTime, ViewUtil.DATE_TIME)
-                vm.addOrUpdateExam(name, subject, startEpoch, endEpoch)
+                vm.addExam(name, subject, startEpoch, endEpoch)
 
                 context?.showLongToast(
                     getString(
@@ -436,7 +436,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             }
             PlanItem.TYPE_HOMEWORK -> {
                 val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
-                vm.addOrUpdateHomework(name, subject, epoch, desc, false)
+                vm.addHomework(name, subject, epoch, desc, false)
 
                 context?.showLongToast(
                     getString(
@@ -450,7 +450,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     DateUtil.toEpochMili(startTime, ViewUtil.DATE_TIME)
                 val endEpoch: Long =
                     DateUtil.toEpochMili(endTime, ViewUtil.DATE_TIME)
-                vm.addOrUpdateEvent(name, startEpoch, endEpoch, desc)
+                vm.addEvent(name, startEpoch, endEpoch, desc)
 
                 context?.showLongToast(
                     getString(
@@ -461,7 +461,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             }
             PlanItem.TYPE_REMINDER -> {
                 val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
-                vm.addOrUpdateReminder(name, epoch, false)
+                vm.addReminder(name, epoch, false)
 
                 context?.showLongToast(
                     getString(

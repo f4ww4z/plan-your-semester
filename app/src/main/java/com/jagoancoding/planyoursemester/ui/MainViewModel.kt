@@ -32,7 +32,6 @@ import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.util.DateUtil
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
-import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneOffset
 
 class MainViewModel : ViewModel() {
@@ -67,7 +66,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun displayPlan(plan: PlanItem) {
-        if (plan.name.isBlank()) { return }
+        if (plan.name.isBlank()) {
+            return
+        }
 
         val dateItems = _dateItems.value
 
@@ -133,16 +134,13 @@ class MainViewModel : ViewModel() {
 
     //TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
 
-    fun addOrUpdateSubject(name: String, color: String) {
+    fun addSubject(name: String, color: String) {
         val subject = Subject(name = name, color = color)
         AppRepository.insertSubject(subject)
     }
 
-    fun addOrUpdateExam(
-        name: String,
-        subjectName: String,
-        startDate: Long,
-        endDate: Long
+    fun addExam(
+        name: String, subjectName: String, startDate: Long, endDate: Long
     ) {
         val exam = Exam(
             name = name,
@@ -153,7 +151,19 @@ class MainViewModel : ViewModel() {
         AppRepository.insertExam(exam)
     }
 
-    fun addOrUpdateHomework(
+    fun updateExam(
+        name: String, subjectName: String, startDate: Long, endDate: Long
+    ) {
+        val exam = Exam(
+            name = name,
+            subjectName = subjectName,
+            startDate = startDate,
+            endDate = endDate
+        )
+        AppRepository.updateExam(exam)
+    }
+
+    fun addHomework(
         name: String,
         subjectName: String,
         dueDate: Long,
@@ -170,11 +180,8 @@ class MainViewModel : ViewModel() {
         AppRepository.insertHomework(homework)
     }
 
-    fun addOrUpdateEvent(
-        name: String,
-        startDate: Long,
-        endDate: Long,
-        description: String
+    fun addEvent(
+        name: String, startDate: Long, endDate: Long, description: String
     ) {
         val event = Event(
             name = name,
@@ -185,7 +192,7 @@ class MainViewModel : ViewModel() {
         AppRepository.insertEvent(event)
     }
 
-    fun addOrUpdateReminder(reminder: String, date: Long, isDone: Boolean) {
+    fun addReminder(reminder: String, date: Long, isDone: Boolean) {
         val reminderEntity =
             Reminder(reminder = reminder, date = date, isDone = isDone)
         AppRepository.insertReminder(reminderEntity)
@@ -256,34 +263,34 @@ class MainViewModel : ViewModel() {
                 .toInstant(ZoneOffset.UTC)
                 .toEpochMilli()
         //TODO: Covert this to a test
-        addOrUpdateSubject("Maths", "blue")
-        addOrUpdateSubject("Science", "green")
-        addOrUpdateSubject("Music", "red")
-        addOrUpdateSubject("Culture", "orange")
-        addOrUpdateSubject("Bler", "pink")
-        addOrUpdateExam(
+        addSubject("Maths", "blue")
+        addSubject("Science", "green")
+        addSubject("Music", "red")
+        addSubject("Culture", "orange")
+        addSubject("Bler", "pink")
+        addExam(
             "Maths test", "Maths",
             startDate1,
             endDate1
         )
-        addOrUpdateExam(
+        addExam(
             "Piano daily test", "Music",
             startDate2,
             endDate2
         )
-        addOrUpdateExam(
+        addExam(
             "Physics mid sem", "Science",
             startDate3,
             endDate3
         )
-        addOrUpdateHomework(
+        addHomework(
             "Algebra sheet 2",
             "Maths",
             startDate2,
             "Need help from John",
             false
         )
-        addOrUpdateEvent("Party", startDate3, endDate3, "Get friends together")
-        addOrUpdateReminder("Buy eggs", date4, false)
+        addEvent("Party", startDate3, endDate3, "Get friends together")
+        addReminder("Buy eggs", date4, false)
     }
 }

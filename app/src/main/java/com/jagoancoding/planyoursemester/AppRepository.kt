@@ -74,9 +74,7 @@ object AppRepository {
         RunInBackground().execute({ db.subjectDao().insertSubject(subject) })
     }
 
-    fun insertExam(exam: Exam) {
-        RunInBackground().execute({ db.examDao().insertExam(exam) })
-    }
+    fun insertExam(exam: Exam): Long = db.examDao().insertExam(exam)
 
     //TODO: Replace keyword to 'Assignment'
     fun insertHomework(homework: Homework) {
@@ -92,7 +90,19 @@ object AppRepository {
     }
 
     fun updateExam(exam: Exam) {
+        RunInBackground().execute({ db.examDao().updateExam(exam) })
+    }
 
+    fun updateHomework(homework: Homework) {
+        RunInBackground().execute({ db.homeworkDao().updateHomework(homework) })
+    }
+
+    fun updateEvent(event: Event) {
+        RunInBackground().execute({ db.eventDao().updateEvent(event) })
+    }
+
+    fun updateReminder(reminder: Reminder) {
+        RunInBackground().execute({ db.reminderDao().updateReminder(reminder) })
     }
 
     fun datesBetween(start: LocalDate, end: LocalDate): List<LocalDate> {
