@@ -20,21 +20,20 @@ import android.widget.Toast
 
 object ToastUtil {
 
-    private lateinit var mToast: Toast
+    private var mToast: Toast? = null
 
-    fun init(applicationContext: Context) {
-        mToast = Toast.makeText(applicationContext, null, Toast.LENGTH_SHORT)
+    fun Context.showShortToast(message: String) {
+        if (mToast != null) {
+            mToast!!.cancel()
+        }
+        mToast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
+        mToast?.show()
     }
 
-    fun showShortToast(message: String) {
-        mToast.cancel()
-        mToast.setText(message)
-        mToast.show()
-    }
-
-    fun showShortToast(messageId: Int) {
-        mToast.cancel()
-        mToast.setText(messageId)
-        mToast.show()
+    fun Context.showShortToast(
+        messageId: Int,
+        vararg strings: String = arrayOf()
+    ) {
+        this.showShortToast(getString(messageId, strings))
     }
 }

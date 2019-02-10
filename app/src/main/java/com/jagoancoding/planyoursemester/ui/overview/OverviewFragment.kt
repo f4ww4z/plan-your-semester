@@ -140,7 +140,7 @@ class OverviewFragment : Fragment(),
     }
 
     override fun onRFACItemIconClick(position: Int, item: RFACLabelItem<Int>?) {
-        showShortToast("Icon $position clicked")
+        context?.showShortToast("Icon $position clicked")
 
         val minDate = DateUtil.toEpochMili(viewModel.startDate)
         val maxDate = DateUtil.toEpochMili(viewModel.endDate)
@@ -157,7 +157,7 @@ class OverviewFragment : Fragment(),
         position: Int,
         item: RFACLabelItem<Int>?
     ) {
-        showShortToast("Label ${item?.label} clicked")
+        context?.showShortToast("Label ${item?.label} clicked")
     }
 
     private fun getRfabItems(context: Context): List<RFACLabelItem<Int>> =

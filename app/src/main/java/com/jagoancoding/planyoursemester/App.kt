@@ -30,6 +30,5 @@ class App : Application() {
         super.onCreate()
         AppRepository.init(this)
         AndroidThreeTen.init(this)
-        ToastUtil.init(this)
     }
 }
