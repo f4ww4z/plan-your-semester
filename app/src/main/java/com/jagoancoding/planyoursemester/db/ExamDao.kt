@@ -48,7 +48,7 @@ interface ExamDao {
     @Update(onConflict = OnConflictStrategy.ABORT)
     fun updateExam(exam: Exam)
 
-    @Query("""DELETE * FROM exams WHERE exam_id = :id""")
+    @Query("""DELETE FROM exams WHERE exam_id = :id""")
     fun deleteExam(id: Long)
 
     @Delete

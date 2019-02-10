@@ -226,6 +226,11 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                         PlanItem.TYPE_EVENT -> vm.deleteEvent(id)
                         PlanItem.TYPE_REMINDER -> vm.deleteReminder(id)
                     }
+
+                    // Go back to overview fragment
+                    view!!.clearFocus()
+                    val navController = view!!.findNavController()
+                    navController.navigate(R.id.overviewFragment)
                 }
                 .setNegativeButton(android.R.string.cancel) { dialog, _ ->
                     dialog.dismiss()

@@ -41,7 +41,7 @@ interface ReminderDao {
     @Update(onConflict = OnConflictStrategy.ABORT)
     fun updateReminder(reminder: Reminder)
 
-    @Query("""DELETE * FROM reminders WHERE reminder_id = :id""")
+    @Query("""DELETE FROM reminders WHERE reminder_id = :id""")
     fun deleteReminder(id: Long)
     
     @Delete

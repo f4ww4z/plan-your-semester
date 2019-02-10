@@ -48,7 +48,7 @@ interface HomeworkDao {
     @Update(onConflict = OnConflictStrategy.ABORT)
     fun updateHomework(homework: Homework)
     
-    @Query("""DELETE * FROM homeworks WHERE homework_id = :id""")
+    @Query("""DELETE FROM homework WHERE homework_id = :id""")
     fun deleteHomework(id: Long)
     
     @Delete

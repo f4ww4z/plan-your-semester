@@ -41,7 +41,7 @@ interface EventDao {
     @Update(onConflict = OnConflictStrategy.ABORT)
     fun updateEvent(event: Event)
 
-    @Query("""DELETE * FROM events WHERE event_id = :id""")
+    @Query("""DELETE FROM events WHERE event_id = :id""")
     fun deleteEvent(id: Long)
 
     @Delete

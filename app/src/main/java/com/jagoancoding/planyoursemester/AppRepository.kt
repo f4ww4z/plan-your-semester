@@ -116,19 +116,19 @@ object AppRepository {
     }
 
     fun deleteExam(id: Long) {
-        db.examDao().deleteExam(id)
+        RunInBackground().execute({ db.examDao().deleteExam(id) })
     }
 
     fun deleteHomework(id: Long) {
-        db.homeworkDao().deleteHomework(id)
+        RunInBackground().execute({ db.homeworkDao().deleteHomework(id) })
     }
 
     fun deleteEvent(id: Long) {
-        db.eventDao().deleteEvent(id)
+        RunInBackground().execute({ db.eventDao().deleteEvent(id) })
     }
 
     fun deleteReminder(id: Long) {
-        db.reminderDao().deleteReminder(id)
+        RunInBackground().execute({ db.reminderDao().deleteReminder(id) })
     }
 
     fun datesBetween(start: LocalDate, end: LocalDate): List<LocalDate> {
