@@ -36,4 +36,19 @@ object ToastUtil {
     ) {
         this.showShortToast(getString(messageId, strings))
     }
+
+    fun Context.showLongToast(message: String) {
+        if (mToast != null) {
+            mToast!!.cancel()
+        }
+        mToast = Toast.makeText(this, message, Toast.LENGTH_LONG)
+        mToast?.show()
+    }
+
+    fun Context.showLongToast(
+        messageId: Int,
+        vararg strings: String = arrayOf()
+    ) {
+        this.showLongToast(getString(messageId, strings))
+    }
 }

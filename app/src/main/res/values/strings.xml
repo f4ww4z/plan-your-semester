@@ -36,4 +36,5 @@
     <string name="plan_date">Date (format: dd/MM/yyyy)</string>
     <string name="plan_date_time">Date (format: dd/MM/yyyy hh:mm)</string>
     <string name="plan_subject">Subject</string>
+    <string name="success_plan_added">New %1$s is added successfully</string>
 </resources>
