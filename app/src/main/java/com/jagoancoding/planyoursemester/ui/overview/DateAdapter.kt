@@ -23,7 +23,6 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -34,9 +33,6 @@ import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.util.ViewUtil.calculatePx
 import com.jagoancoding.planyoursemester.util.ViewUtil.setTextAndGoneIfEmpty
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
-import kotlinx.android.synthetic.main.date_card.view.rl_plan_items
-import kotlinx.android.synthetic.main.date_card.view.tv_day
-import kotlinx.android.synthetic.main.date_card.view.tv_day2
 
 class DateAdapter(private var data: List<DateItem>) :
     RecyclerView.Adapter<DateAdapter.ViewHolder>() {
@@ -46,6 +42,12 @@ class DateAdapter(private var data: List<DateItem>) :
     }
 
     private lateinit var inflater: LayoutInflater
+
+    class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
+        val dayTV: TextView = root.findViewById(R.id.tv_day)
+        val day2TV: TextView = root.findViewById(R.id.tv_day2)
+        val planItemsRL: RelativeLayout = root.findViewById(R.id.rl_plan_items)
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -60,13 +62,15 @@ class DateAdapter(private var data: List<DateItem>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val dateItem = data[position]
-        with(holder.itemView) {
-            tv_day.text = dateItem.dayOfWeek()
-            tv_day2.text = dateItem.dayName()
-            rl_plan_items.removeAllViewsInLayout()
+        with(holder) {
+            dayTV.text = dateItem.dayOfWeek()
+            day2TV.text = dateItem.dayName()
+            planItemsRL.removeAllViewsInLayout()
 
             for (i in dateItem.planItems.indices) {
-                rl_plan_items.addItemView(dateItem.planItems[i], i, resources)
+                planItemsRL.addItemView(
+                    dateItem.planItems[i], i, itemView.resources
+                )
             }
         }
     }
@@ -154,6 +158,4 @@ class DateAdapter(private var data: List<DateItem>) :
         }
         nc?.navigate(R.id.addPlanFragment, bundle)
     }
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 }

@@ -202,7 +202,9 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             preselectedDate = AppRepository.today
         } else {
             fillUpViewsWhenUpdatingPlan(vm.currentPlanItem!!)
-            preselectedDate = DateUtil.getDate(vm.currentPlanItem?.date!!)
+            preselectedDate = DateUtil.getDate(
+                vm.currentPlanItem?.date ?: vm.currentPlanItem?.startDate!!
+            )
         }
 
         when (vm.currentPlanItemType) {
