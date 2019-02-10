@@ -36,7 +36,6 @@ import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.util.DateUtil
-import com.jagoancoding.planyoursemester.util.ToastUtil.showShortToast
 import com.jagoancoding.planyoursemester.util.ToastUtil.showLongToast
 import com.jagoancoding.planyoursemester.util.ViewUtil
 import com.jagoancoding.planyoursemester.util.ViewUtil.checkIfEmptyAndGetText
@@ -199,6 +198,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         nameTIL.isEnabled = true
 
+        if (state == UPDATE_STATE) {
+            fillUpViewsWhenUpdatingPlan(vm.planItemToAdd!!)
+        }
+
         when (vm.planTypeToAdd) {
             PlanItem.TYPE_EXAM -> {
 
@@ -262,6 +265,75 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 subjectTIL.isEnabled = false
 
                 //TODO: Reminder.isDone()
+            }
+        }
+    }
+
+    private fun fillUpViewsWhenUpdatingPlan(planItem: PlanItem) {
+        with(planItem) {
+            nameTIL.editText?.setText(name)
+
+            when (planItem.itemType) {
+                PlanItem.TYPE_EXAM -> {
+
+                    val startLdt = DateUtil.getDateTime(startDate!!)
+                    val endLdt = DateUtil.getDateTime(endDate!!)
+                    dateTIL.editText?.setText(
+                        DateUtil.formatDate(
+                            startLdt.year,
+                            startLdt.month.value,
+                            startLdt.dayOfMonth
+                        )
+                    )
+                    startDateET.setText(
+                        DateUtil.formatTime(
+                            startLdt.hour, startLdt.minute
+                        )
+                    )
+                    endDateET.setText(
+                        DateUtil.formatTime(
+                            endLdt.hour, endLdt.minute
+                        )
+                    )
+                    subjectTIL.editText?.setText(subject?.name)
+                }
+                PlanItem.TYPE_HOMEWORK -> {
+                    descTIL.editText?.setText(description)
+                    val ldt = DateUtil.getDateTime(date!!)
+                    dateTIL.editText?.setText(
+                        DateUtil.formatDateWithTime(ldt)
+                    )
+                    subjectTIL.editText?.setText(subject?.name)
+                }
+                PlanItem.TYPE_EVENT -> {
+                    val startLdt = DateUtil.getDateTime(startDate!!)
+                    val endLdt = DateUtil.getDateTime(endDate!!)
+                    descTIL.editText?.setText(description)
+                    dateTIL.editText?.setText(
+                        DateUtil.formatDate(
+                            startLdt.year,
+                            startLdt.month.value,
+                            startLdt.dayOfMonth
+                        )
+                    )
+                    startDateET.setText(
+                        DateUtil.formatTime(
+                            startLdt.hour, startLdt.minute
+                        )
+                    )
+                    endDateET.setText(
+                        DateUtil.formatTime(
+                            endLdt.hour, endLdt.minute
+                        )
+                    )
+                }
+                PlanItem.TYPE_REMINDER -> {
+                    val ldt = DateUtil.getDateTime(date!!)
+                    dateTIL.editText?.setText(
+                        DateUtil.formatDateWithTime(ldt)
+                    )
+                }
+                else -> return
             }
         }
     }
@@ -334,11 +406,11 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         }
 
         if (isValidated) {
-            addPlanToDatabase(name, desc, startTime, endTime, dateTime, subject)
+            addOrUpdatePlan(name, desc, startTime, endTime, dateTime, subject)
         }
     }
 
-    private fun addPlanToDatabase(
+    private fun addOrUpdatePlan(
         name: String,
         desc: String = "",
         startTime: String = "",
