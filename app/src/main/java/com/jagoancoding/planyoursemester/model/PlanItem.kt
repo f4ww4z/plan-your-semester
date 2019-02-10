@@ -18,6 +18,7 @@ package com.jagoancoding.planyoursemester.model
 import android.content.res.Resources
 import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.util.DateUtil
+import java.io.Serializable
 
 class PlanItem(
     val itemType: Int,
@@ -28,7 +29,7 @@ class PlanItem(
     var startDate: Long? = null,
     var endDate: Long? = null,
     var isDone: Boolean? = null
-) {
+) : Serializable {
     companion object {
         const val TYPE_EXAM = 0
         const val TYPE_HOMEWORK = 1

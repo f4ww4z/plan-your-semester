@@ -42,6 +42,7 @@ class MainViewModel : ViewModel() {
     val endDate: LocalDate = startDate.plusDays(App.DAYS_SINCE_PASSED)
 
     var planTypeToAdd: Int = 0
+    var planItemToAdd: PlanItem? = null
     var minimumDate: Long = DateUtil.toEpochMili(startDate)
     var maximumDate: Long = DateUtil.toEpochMili(endDate)
 

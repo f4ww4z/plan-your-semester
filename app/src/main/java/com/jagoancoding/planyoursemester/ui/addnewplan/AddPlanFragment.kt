@@ -19,6 +19,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -49,12 +50,15 @@ import com.jagoancoding.planyoursemester.util.ViewUtil.checkIfEmptyAndGetText
  * create an instance of this fragment.
  *
  */
-class AddPlanFragment : Fragment() {
+class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     companion object {
         const val PLAN_ITEM_TYPE = "PLAN_ITEM_TYPE"
+        const val PLAN_ITEM_OBJECT = "PLAN_ITEM_OBJ"
         const val MiNIMUM_DATE = "MINIMUM_DATE"
         const val MAXIMUM_DATE = "MAXIMUM_DATE"
+        const val INSERT_STATE = "OnInsert"
+        const val UPDATE_STATE = "OnUpdate"
 
         /**
          * Use this factory method to create a new instance of
@@ -87,6 +91,7 @@ class AddPlanFragment : Fragment() {
     private lateinit var dateTIL: TextInputLayout
     private lateinit var subjectTIL: TextInputLayout
 
+    private lateinit var state: String
     private var isValidated = false
 
     override fun onCreateView(
@@ -99,6 +104,8 @@ class AddPlanFragment : Fragment() {
 
         arguments?.apply {
             vm.planTypeToAdd = getInt(PLAN_ITEM_TYPE)
+            vm.planItemToAdd = getSerializable(PLAN_ITEM_OBJECT) as PlanItem?
+            state = if (vm.planItemToAdd == null) INSERT_STATE else UPDATE_STATE
             vm.minimumDate = getLong(MiNIMUM_DATE)
             vm.maximumDate = getLong(MAXIMUM_DATE)
         }
@@ -111,39 +118,7 @@ class AddPlanFragment : Fragment() {
                 false
             ) as ConstraintLayout
 
-        // Set up the app bar
-        val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
-        toolbar?.menu?.clear()
-
-        toolbar?.title = when (vm.planTypeToAdd) {
-            PlanItem.TYPE_EXAM -> getString(
-                R.string.add_new, getString(R.string.exam_label)
-            )
-            PlanItem.TYPE_HOMEWORK -> getString(
-                R.string.add_new, getString(R.string.homework_label)
-            )
-            PlanItem.TYPE_EVENT -> getString(
-                R.string.add_new, getString(R.string.event_label)
-            )
-            PlanItem.TYPE_REMINDER -> getString(
-                R.string.add_new, getString(R.string.reminder_label)
-            )
-            else -> getString(R.string.add_new, "")
-        }
-        toolbar?.inflateMenu(R.menu.add_plan_menu)
-        toolbar?.setOnMenuItemClickListener { item ->
-
-            if (item.itemId == R.id.overviewFragment) {
-                validateInput()
-                if (isValidated) {
-                    val navController = view.findNavController()
-                    view.clearFocus()
-                    item.onNavDestinationSelected(navController)
-                }
-            }
-
-            super.onOptionsItemSelected(item)
-        }
+        setupAppBar()
 
         // Reference views
         with(view) {
@@ -158,6 +133,64 @@ class AddPlanFragment : Fragment() {
         setupViews(fragmentManager!!)
 
         return view
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        if (item.itemId == R.id.overviewFragment) {
+            validateInput()
+            if (isValidated) {
+                val navController = view!!.findNavController()
+                view!!.clearFocus()
+                return item.onNavDestinationSelected(navController)
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * Set up the custom activity Toolbar
+     */
+    private fun setupAppBar() {
+        val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
+        toolbar?.menu?.clear()
+
+        if (state == INSERT_STATE) {
+            toolbar?.title = when (vm.planTypeToAdd) {
+                PlanItem.TYPE_EXAM -> getString(
+                    R.string.add_new, getString(R.string.exam_label)
+                )
+                PlanItem.TYPE_HOMEWORK -> getString(
+                    R.string.add_new, getString(R.string.homework_label)
+                )
+                PlanItem.TYPE_EVENT -> getString(
+                    R.string.add_new, getString(R.string.event_label)
+                )
+                PlanItem.TYPE_REMINDER -> getString(
+                    R.string.add_new, getString(R.string.reminder_label)
+                )
+                else -> getString(R.string.add_new, "")
+            }
+        } else {
+            toolbar?.title = when (vm.planTypeToAdd) {
+                PlanItem.TYPE_EXAM -> getString(
+                    R.string.update_plan, getString(R.string.exam_label)
+                )
+                PlanItem.TYPE_HOMEWORK -> getString(
+                    R.string.update_plan, getString(R.string.homework_label)
+                )
+                PlanItem.TYPE_EVENT -> getString(
+                    R.string.update_plan, getString(R.string.event_label)
+                )
+                PlanItem.TYPE_REMINDER -> getString(
+                    R.string.update_plan, getString(R.string.reminder_label)
+                )
+                else -> getString(R.string.add_new, "")
+            }
+        }
+
+        toolbar?.inflateMenu(R.menu.add_plan_menu)
+        toolbar?.setOnMenuItemClickListener(this)
     }
 
     private fun setupViews(fm: FragmentManager) {
