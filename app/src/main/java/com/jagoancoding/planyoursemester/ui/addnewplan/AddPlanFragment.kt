@@ -406,13 +406,22 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         }
 
         if (isValidated) {
-            addOrUpdatePlan(name, desc, startTime, endTime, dateTime, subject)
+            addOrUpdatePlan(
+                vm.planItemToAdd?.id,
+                name,
+                desc,
+                startTime,
+                endTime,
+                dateTime,
+                subject
+            )
         }
     }
 
     private fun addOrUpdatePlan(
+        id: Long?,
         name: String,
-        desc: String = "",
+        desc: String = "",g
         startTime: String = "",
         endTime: String = "",
         dt: String = "",
@@ -425,50 +434,91 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     DateUtil.toEpochMili(startTime, ViewUtil.DATE_TIME)
                 val endEpoch: Long =
                     DateUtil.toEpochMili(endTime, ViewUtil.DATE_TIME)
-                vm.addExam(name, subject, startEpoch, endEpoch)
-
-                context?.showLongToast(
-                    getString(
-                        R.string.success_plan_added,
-                        getString(R.string.exam_label)
+                if (state == INSERT_STATE) {
+                    vm.addExam(name, subject, startEpoch, endEpoch)
+                    context?.showLongToast(
+                        getString(
+                            R.string.success_plan_added,
+                            getString(R.string.exam_label)
+                        )
                     )
-                )
+                } else {
+                    vm.updateExam(id!!, name, subject, startEpoch, endEpoch)
+                    context?.showLongToast(
+                        getString(
+                            R.string.success_plan_update,
+                            getString(R.string.exam_label)
+                        )
+                    )
+                }
             }
             PlanItem.TYPE_HOMEWORK -> {
                 val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
-                vm.addHomework(name, subject, epoch, desc, false)
 
-                context?.showLongToast(
-                    getString(
-                        R.string.success_plan_added,
-                        getString(R.string.homework_label)
+                if (state == INSERT_STATE) {
+                    vm.addHomework(name, subject, epoch, desc, false)
+                    context?.showLongToast(
+                        getString(
+                            R.string.success_plan_added,
+                            getString(R.string.homework_label)
+                        )
                     )
-                )
+                } else {
+                    //TODO: Make isDone checkbox and update code here
+                    vm.updateHomework(id!!, name, subject, epoch, desc, false)
+                    context?.showLongToast(
+                        getString(
+                            R.string.success_plan_update,
+                            getString(R.string.homework_label)
+                        )
+                    )
+                }
             }
             PlanItem.TYPE_EVENT -> {
                 val startEpoch: Long =
                     DateUtil.toEpochMili(startTime, ViewUtil.DATE_TIME)
                 val endEpoch: Long =
                     DateUtil.toEpochMili(endTime, ViewUtil.DATE_TIME)
-                vm.addEvent(name, startEpoch, endEpoch, desc)
 
-                context?.showLongToast(
-                    getString(
-                        R.string.success_plan_added,
-                        getString(R.string.event_label)
+                if (state == INSERT_STATE) {
+                    vm.addEvent(name, startEpoch, endEpoch, desc)
+                    context?.showLongToast(
+                        getString(
+                            R.string.success_plan_added,
+                            getString(R.string.event_label)
+                        )
                     )
-                )
+                } else {
+                    vm.updateEvent(id!!, name, startEpoch, endEpoch, desc)
+                    context?.showLongToast(
+                        getString(
+                            R.string.success_plan_update,
+                            getString(R.string.event_label)
+                        )
+                    )
+                }
             }
             PlanItem.TYPE_REMINDER -> {
                 val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
-                vm.addReminder(name, epoch, false)
 
-                context?.showLongToast(
-                    getString(
-                        R.string.success_plan_added,
-                        getString(R.string.reminder_label)
+                if (state == INSERT_STATE) {
+                    vm.addReminder(name, epoch, false)
+                    context?.showLongToast(
+                        getString(
+                            R.string.success_plan_added,
+                            getString(R.string.reminder_label)
+                        )
                     )
-                )
+                } else {
+                    //TODO: Make isDone checkbox and update code here
+                    vm.updateReminder(id!!, name, epoch, false)
+                    context?.showLongToast(
+                        getString(
+                            R.string.success_plan_update,
+                            getString(R.string.reminder_label)
+                        )
+                    )
+                }
             }
         }
     }

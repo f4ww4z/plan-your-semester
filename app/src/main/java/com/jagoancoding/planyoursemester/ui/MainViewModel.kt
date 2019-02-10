@@ -152,9 +152,14 @@ class MainViewModel : ViewModel() {
     }
 
     fun updateExam(
-        name: String, subjectName: String, startDate: Long, endDate: Long
+        id: Long,
+        name: String,
+        subjectName: String,
+        startDate: Long,
+        endDate: Long
     ) {
         val exam = Exam(
+            exam_id = id,
             name = name,
             subjectName = subjectName,
             startDate = startDate,
@@ -180,6 +185,25 @@ class MainViewModel : ViewModel() {
         AppRepository.insertHomework(homework)
     }
 
+    fun updateHomework(
+        id: Long,
+        name: String,
+        subjectName: String,
+        dueDate: Long,
+        description: String,
+        isDone: Boolean
+    ) {
+        val homework = Homework(
+            homework_id = id,
+            name = name,
+            subjectName = subjectName,
+            dueDate = dueDate,
+            description = description,
+            isDone = isDone
+        )
+        AppRepository.updateHomework(homework)
+    }
+
     fun addEvent(
         name: String, startDate: Long, endDate: Long, description: String
     ) {
@@ -192,10 +216,43 @@ class MainViewModel : ViewModel() {
         AppRepository.insertEvent(event)
     }
 
+    fun updateEvent(
+        id: Long,
+        name: String,
+        startDate: Long,
+        endDate: Long,
+        description: String
+    ) {
+        val event = Event(
+            event_id = id,
+            name = name,
+            startDate = startDate,
+            endDate = endDate,
+            description = description
+        )
+        AppRepository.updateEvent(event)
+    }
+
     fun addReminder(reminder: String, date: Long, isDone: Boolean) {
         val reminderEntity =
             Reminder(reminder = reminder, date = date, isDone = isDone)
         AppRepository.insertReminder(reminderEntity)
+    }
+
+    fun updateReminder(
+        id: Long,
+        reminder: String,
+        date: Long,
+        isDone: Boolean
+    ) {
+        val reminderEntity =
+            Reminder(
+                reminder_id = id,
+                reminder = reminder,
+                date = date,
+                isDone = isDone
+            )
+        AppRepository.updateReminder(reminderEntity)
     }
 
     fun validateData(

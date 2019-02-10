@@ -20,7 +20,7 @@ import com.jagoancoding.planyoursemester.model.PlanItem
 
 data class HomeworkWithSubject(
     @ColumnInfo(name = "homework_id")
-    val id: String,
+    val id: Long,
     @ColumnInfo(name = "subject_name")
     val subjectName: String,
     @ColumnInfo(name = "color")
@@ -35,6 +35,7 @@ data class HomeworkWithSubject(
 ) {
     fun toPlanItem() = PlanItem(
         PlanItem.TYPE_HOMEWORK,
+        id,
         Subject(subjectName, subjectColor),
         name,
         null,

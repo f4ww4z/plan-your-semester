@@ -16,6 +16,7 @@
 package com.jagoancoding.planyoursemester.ui.overview
 
 import android.content.res.Resources
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,10 +24,13 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.model.PlanItem
+import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.util.ViewUtil.calculatePx
 import com.jagoancoding.planyoursemester.util.ViewUtil.setTextAndGoneIfEmpty
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
@@ -111,6 +115,12 @@ class DateAdapter(private var data: List<DateItem>) :
                 descriptionTV.setTextAndGoneIfEmpty(description)
                 dateTV.text = getDateToDisplay(resources)
                 subjectTV.setTextAndGoneIfEmpty(subject?.name)
+
+                // When clicked, update the plan item
+                setOnClickListener {
+                    val nc = it?.findNavController()
+                    updatePlanItemScreen(nc, this)
+                }
             }
         }
 
@@ -135,6 +145,13 @@ class DateAdapter(private var data: List<DateItem>) :
         params.addRule(RelativeLayout.BELOW, idOfBelow)
 
         this.addView(planItemView, params)
+    }
+
+    private fun updatePlanItemScreen(nc: NavController?, planItem: PlanItem) {
+        val bundle = Bundle().apply {
+            putSerializable(AddPlanFragment.PLAN_ITEM_OBJECT, planItem)
+        }
+        nc?.navigate(R.id.addPlanFragment, bundle)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)

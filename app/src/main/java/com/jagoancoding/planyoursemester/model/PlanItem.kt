@@ -22,6 +22,7 @@ import java.io.Serializable
 
 class PlanItem(
     val itemType: Int,
+    val id: Long,
     val subject: Subject? = null,
     var name: String,
     var description: String? = null,

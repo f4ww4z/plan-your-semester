@@ -34,6 +34,7 @@ data class Reminder(
 ) {
     fun toPlanItem(): PlanItem = PlanItem(
         PlanItem.TYPE_REMINDER,
+        reminder_id,
         null,
         reminder,
         null,

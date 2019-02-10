@@ -36,6 +36,7 @@ data class Event(
 ) {
     fun toPlanItem(): PlanItem = PlanItem(
         PlanItem.TYPE_EVENT,
+        event_id,
         null,
         name,
         description,
