@@ -24,6 +24,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.FragmentManager
 import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment
 import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter
@@ -59,6 +60,10 @@ object ViewUtil {
 
     fun Context.getColorByResId(resId: Int) =
         ContextCompat.getColor(this, resId)
+
+    fun TextView.setDrawableColor(colorId: Int) {
+        DrawableCompat.setTint(this.background, colorId)
+    }
 
     fun TextInputLayout.checkIfEmptyAndGetText(): String =
         editText!!.checkIfEmptyAndGetText()

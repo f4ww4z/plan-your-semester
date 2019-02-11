@@ -24,7 +24,7 @@ data class ExamWithSubject(
     @ColumnInfo(name = "subject_name")
     val subjectName: String,
     @ColumnInfo(name = "color")
-    val subjectColor: String,
+    val subjectColor: Int,
     @ColumnInfo
     var name: String,
     @ColumnInfo

@@ -23,9 +23,9 @@ import androidx.fragment.app.DialogFragment
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
+import com.jagoancoding.planyoursemester.AppRepository.defaultSubjectColor
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.util.ViewUtil.checkIfEmptyAndGetText
-import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 
 class AddSubjectDialog : DialogFragment() {
     lateinit var listener: DialogClickListener
@@ -40,7 +40,7 @@ class AddSubjectDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val defaultColor = context!!.getColorByResId(R.color.colorAccent)
+        val defaultColor = defaultSubjectColor(context!!)
         val dialogView =
             activity?.layoutInflater?.inflate(R.layout.add_subject, null)
                 ?.apply {
@@ -49,6 +49,7 @@ class AddSubjectDialog : DialogFragment() {
                         findViewById<View>(R.id.rect_color_picker).apply {
                             setBackgroundColor(defaultColor)
                             setOnClickListener {
+                                clearFocus()
                                 // Show color picker dialog
                                 showColorPickerDialog(defaultColor)
                             }
@@ -61,6 +62,7 @@ class AddSubjectDialog : DialogFragment() {
             .setNegativeButton(android.R.string.cancel) { dialog, _ ->
                 dialog.cancel()
             }
+            .setPositiveButton(android.R.string.ok, null)
             .create()
 
         mDialog.setOnShowListener {

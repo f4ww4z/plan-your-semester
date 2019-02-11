@@ -15,6 +15,7 @@
 
 package com.jagoancoding.planyoursemester.ui
 
+import android.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -143,7 +144,7 @@ class MainViewModel : ViewModel() {
 
 //TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
 
-    fun addSubject(name: String, color: String) {
+    fun addSubject(name: String, color: Int) {
         val subject = Subject(name = name, color = color)
         AppRepository.insertSubject(subject)
     }
@@ -347,11 +348,11 @@ class MainViewModel : ViewModel() {
                 .toInstant(ZoneOffset.UTC)
                 .toEpochMilli()
         //TODO: Covert this to a test
-        addSubject("Maths", "blue")
-        addSubject("Science", "green")
-        addSubject("Music", "red")
-        addSubject("Culture", "orange")
-        addSubject("Bler", "pink")
+        addSubject("Maths", Color.BLACK)
+        addSubject("Science", Color.BLUE)
+        addSubject("Music", Color.BLACK)
+        addSubject("Culture", Color.BLACK)
+        addSubject("Bler", Color.BLACK)
         addExam(
             "Maths test", "Maths",
             startDate1,

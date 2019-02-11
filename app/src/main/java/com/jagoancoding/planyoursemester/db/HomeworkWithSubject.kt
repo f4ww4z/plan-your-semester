@@ -24,7 +24,7 @@ data class HomeworkWithSubject(
     @ColumnInfo(name = "subject_name")
     val subjectName: String,
     @ColumnInfo(name = "color")
-    val subjectColor: String,
+    val subjectColor: Int,
     @ColumnInfo
     var name: String,
     var dueDate: Long,

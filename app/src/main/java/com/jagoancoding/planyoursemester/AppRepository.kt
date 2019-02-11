@@ -16,22 +16,19 @@
 package com.jagoancoding.planyoursemester
 
 import android.app.Application
+import android.content.Context
 import android.os.AsyncTask
 import androidx.lifecycle.LiveData
 import com.jagoancoding.planyoursemester.db.AppDatabase
 import com.jagoancoding.planyoursemester.db.Event
-import com.jagoancoding.planyoursemester.db.EventDao
 import com.jagoancoding.planyoursemester.db.Exam
-import com.jagoancoding.planyoursemester.db.ExamDao
 import com.jagoancoding.planyoursemester.db.ExamWithSubject
 import com.jagoancoding.planyoursemester.db.Homework
-import com.jagoancoding.planyoursemester.db.HomeworkDao
 import com.jagoancoding.planyoursemester.db.HomeworkWithSubject
 import com.jagoancoding.planyoursemester.db.Reminder
-import com.jagoancoding.planyoursemester.db.ReminderDao
 import com.jagoancoding.planyoursemester.db.Subject
-import com.jagoancoding.planyoursemester.db.SubjectDao
 import com.jagoancoding.planyoursemester.util.DateUtil
+import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import org.threeten.bp.LocalDate
 
 /**
@@ -52,6 +49,9 @@ object AppRepository {
 
     var minimumDate: Long = DateUtil.toEpochMili(startDate)
     var maximumDate: Long = DateUtil.toEpochMili(endDate)
+
+    fun defaultSubjectColor(context: Context): Int =
+        context.getColorByResId(R.color.colorAccent)
 
     fun getSubjects(): LiveData<List<Subject>> = db.subjectDao().getSubjects()
 

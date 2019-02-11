@@ -238,7 +238,7 @@ class OverviewFragment : Fragment(),
     }
 
     override fun onSubjectChosen(subjectName: String, color: Int) {
-        viewModel.addSubject(subjectName, color.toString())
+        viewModel.addSubject(subjectName, color)
     }
 
     private fun addToView(exam: Exam) {

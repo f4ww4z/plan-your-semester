@@ -26,5 +26,5 @@ data class Subject(
         @ColumnInfo(name = "s_name")
         var name: String,
         @ColumnInfo
-        var color: String
+        var color: Int
 )

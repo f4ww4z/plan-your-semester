@@ -27,11 +27,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.util.ViewUtil.calculatePx
+import com.jagoancoding.planyoursemester.util.ViewUtil.setDrawableColor
 import com.jagoancoding.planyoursemester.util.ViewUtil.setTextAndGoneIfEmpty
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 
@@ -119,7 +121,12 @@ class DateAdapter(private var data: List<DateItem>) :
                 titleTV.text = name
                 descriptionTV.setTextAndGoneIfEmpty(description)
                 dateTV.text = getDateToDisplay(resources)
+
                 subjectTV.setTextAndGoneIfEmpty(subject?.name)
+                subjectTV.setDrawableColor(
+                    subject?.color
+                        ?: AppRepository.defaultSubjectColor(context!!)
+                )
 
                 // If homework or reminder is done, cross the text
                 if (isDone != null) {
