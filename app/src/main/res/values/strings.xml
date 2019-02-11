@@ -49,4 +49,12 @@
     <string name="remove_plan">Remove %1$s</string>
     <string name="dialog_remove_plan_title">Removing %1$s</string>
     <string name="dialog_remove_plan_mes">Do you really want to remove \'%1$s\'?</string>
+
+    <string name="add_subject">Add Subject</string>
+    <string name="remove_subject">Remove Subject</string>
+    <string name="dialog_add_subj_title">Add a Subject</string>
+    <string name="hint_add_subject">Enter subject name here</string>
+    <string name="subject_color">Subject Color</string>
+    <string name="dialog_color_subj_title">Choose the Subject Color</string>
+    <string name="select">select</string>
 </resources>

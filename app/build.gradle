@@ -93,4 +93,7 @@ dependencies {
 
     // Date time picker
     implementation 'com.code-troopers.betterpickers:library:3.1.0'
+
+    // Color picker
+    implementation 'com.github.QuadFlask:colorpicker:0.0.13'
 }

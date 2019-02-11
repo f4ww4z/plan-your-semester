@@ -48,7 +48,8 @@ import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloating
 import org.threeten.bp.LocalDate
 
 class OverviewFragment : Fragment(),
-    RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener<Int> {
+    RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener<Int>,
+    AddSubjectDialog.DialogClickListener {
 
     companion object {
         fun newInstance() = OverviewFragment()
@@ -56,6 +57,7 @@ class OverviewFragment : Fragment(),
 
     private lateinit var viewModel: MainViewModel
 
+    private var toolbar: Toolbar? = null
     private var rfal: RapidFloatingActionLayout? = null
     private var rfab: RapidFloatingActionButton? = null
     private var overviewRV: RecyclerView? = null
@@ -74,8 +76,7 @@ class OverviewFragment : Fragment(),
             .of(activity!!)
             .get(MainViewModel::class.java)
 
-        val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
-        toolbar?.menu?.clear()
+        setupAppBar()
 
         overviewRV = view?.findViewById(R.id.rv_overview)
         dateAdapter = DateAdapter(ArrayList())
@@ -129,6 +130,27 @@ class OverviewFragment : Fragment(),
         })
 
         //viewModel.addDemoData()
+    }
+
+    private fun setupAppBar() {
+        toolbar = activity?.findViewById(R.id.overview_toolbar)
+        toolbar?.menu?.clear()
+        toolbar?.inflateMenu(R.menu.overview_menu)
+        toolbar?.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.action_add_subject -> {
+                    val addSubjectDialog = AddSubjectDialog()
+                    addSubjectDialog.show(fragmentManager!!, "AddSubjectDialog")
+
+                    true
+                }
+                R.id.action_rm_subject -> {
+                    //TODO: Show dialog
+                    true
+                }
+                else -> super.onOptionsItemSelected(it)
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -213,6 +235,10 @@ class OverviewFragment : Fragment(),
                 this.scrollToPosition(position)
             }
         })
+    }
+
+    override fun onSubjectChosen(subjectName: String, color: Int) {
+        viewModel.addSubject(subjectName, color.toString())
     }
 
     private fun addToView(exam: Exam) {
