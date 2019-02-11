@@ -24,18 +24,18 @@ import androidx.room.Query
 @Dao
 interface SubjectDao {
 
-    @Query("SELECT * FROM subjectNames")
+    @Query("SELECT * FROM subjects")
     fun getSubjects(): LiveData<List<Subject>>
 
-    @Query("SELECT * FROM subjectNames WHERE s_name = :name")
+    @Query("SELECT * FROM subjects WHERE s_name = :name")
     fun getSubjectByName(name: String): LiveData<Subject>
 
-    @Query("SELECT s_name FROM subjectNames")
+    @Query("SELECT s_name FROM subjects")
     fun getSubjectNames(): LiveData<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSubject(subject: Subject)
 
-    @Query("""DELETE FROM subjectNames WHERE s_name = :name""")
+    @Query("""DELETE FROM subjects WHERE s_name = :name""")
     fun deleteSubject(name: String)
 }

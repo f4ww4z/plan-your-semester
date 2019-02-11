@@ -20,7 +20,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
 
-@Entity(tableName = "subjectNames")
+@Entity(tableName = "subjects")
 data class Subject(
         @PrimaryKey
         @ColumnInfo(name = "s_name")
