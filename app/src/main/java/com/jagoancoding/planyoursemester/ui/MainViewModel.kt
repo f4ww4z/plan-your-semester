@@ -18,7 +18,6 @@ package com.jagoancoding.planyoursemester.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.jagoancoding.planyoursemester.App
 import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
@@ -30,6 +29,7 @@ import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.util.DateUtil
+import com.jagoancoding.planyoursemester.util.DateUtil.findDatePositionInList
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneOffset
@@ -38,6 +38,7 @@ class MainViewModel : ViewModel() {
 
     var currentPlanItemType: Int = 0
     var currentPlanItem: PlanItem? = null
+    var scrollToDate: LocalDate? = null
 
     private var _dateItems = MutableLiveData<List<DateItem>>()
     val dateItems: LiveData<List<DateItem>>
@@ -60,6 +61,20 @@ class MainViewModel : ViewModel() {
         return dateItems
     }
 
+    fun removePlanItemFromView(date: LocalDate, id: Long) {
+        val changedDateItems = _dateItems.value
+        val dateItemsIndex: Int? =
+            changedDateItems?.findDatePositionInList(date)
+
+        if (dateItemsIndex != null) {
+            val changePlanItems: MutableList<PlanItem> =
+                changedDateItems[dateItemsIndex].planItems
+            changePlanItems.removeAll { it.id == id }
+            changedDateItems[dateItemsIndex].planItems = changePlanItems
+        }
+        _dateItems.value = changedDateItems
+    }
+
     fun displayPlan(plan: PlanItem) {
         if (plan.name.isBlank()) {
             return
@@ -78,14 +93,13 @@ class MainViewModel : ViewModel() {
                 DateUtil.getDateTime(plan.startDate!!)
             }
 
-        val dateItemToUpdateIndex =
-            dateItems?.indexOfFirst {
-                it.date.isEqual(
-                    LocalDate.of(
-                        dateTime.year, dateTime.month, dateTime.dayOfMonth
-                    )
-                )
-            }!!
+        val dateItemToUpdateIndex = dateItems!!.findDatePositionInList(
+            LocalDate.of(
+                dateTime.year,
+                dateTime.month,
+                dateTime.dayOfMonth
+            )
+        )
 
         val planList = dateItems[dateItemToUpdateIndex].planItems
         // Find the plan item to update
@@ -127,7 +141,7 @@ class MainViewModel : ViewModel() {
     fun reminder(id: Long): LiveData<Reminder> =
         AppRepository.getReminderById(id)
 
-    //TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
+//TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
 
     fun addSubject(name: String, color: String) {
         val subject = Subject(name = name, color = color)
@@ -163,8 +177,9 @@ class MainViewModel : ViewModel() {
         AppRepository.updateExam(exam)
     }
 
-    fun deleteExam(id: Long) {
+    fun deleteExam(date: LocalDate, id: Long) {
         AppRepository.deleteExam(id)
+        removePlanItemFromView(date, id)
     }
 
     fun addHomework(
@@ -203,8 +218,9 @@ class MainViewModel : ViewModel() {
         AppRepository.updateHomework(homework)
     }
 
-    fun deleteHomework(id: Long) {
+    fun deleteHomework(date: LocalDate, id: Long) {
         AppRepository.deleteHomework(id)
+        removePlanItemFromView(date, id)
     }
 
     fun addEvent(
@@ -236,8 +252,9 @@ class MainViewModel : ViewModel() {
         AppRepository.updateEvent(event)
     }
 
-    fun deleteEvent(id: Long) {
+    fun deleteEvent(date: LocalDate, id: Long) {
         AppRepository.deleteEvent(id)
+        removePlanItemFromView(date, id)
     }
 
     fun addReminder(reminder: String, date: Long, isDone: Boolean) {
@@ -262,8 +279,9 @@ class MainViewModel : ViewModel() {
         AppRepository.updateReminder(reminderEntity)
     }
 
-    fun deleteReminder(id: Long) {
+    fun deleteReminder(date: LocalDate, id: Long) {
         AppRepository.deleteReminder(id)
+        removePlanItemFromView(date, id)
     }
 
     fun validateData(

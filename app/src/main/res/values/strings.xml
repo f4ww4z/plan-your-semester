@@ -36,7 +36,7 @@
     <string name="plan_start_date">Start Time</string>
     <string name="plan_end_date">Time Finished</string>
     <string name="plan_date">Date</string>
-    <string name="homework_hint_date">Due Date</string>
+    <string name="homework_hint_date">Due Date and Time</string>
     <string name="plan_date_time">Date and Time</string>
     <string name="plan_subject">Subject</string>
     <string name="success_plan_added">New %1$s is added successfully</string>

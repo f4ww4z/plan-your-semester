@@ -31,7 +31,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
-import androidx.navigation.ui.onNavDestinationSelected
 import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter
 import com.google.android.material.textfield.TextInputLayout
 import com.jagoancoding.planyoursemester.AppRepository
@@ -101,7 +100,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         savedInstanceState: Bundle?
     ): View? {
         vm = ViewModelProviders
-            .of(this)
+            .of(activity!!)
             .get(MainViewModel::class.java)
 
         arguments?.apply {
@@ -136,25 +135,24 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         return view
     }
 
-    override fun onMenuItemClick(item: MenuItem): Boolean =
-        when (item.itemId) {
-            R.id.overviewFragment -> {
-                validateInput()
-                if (isValidated) {
-                    val navController = view!!.findNavController()
-                    view!!.clearFocus()
-                    item.onNavDestinationSelected(navController)
-                }
-                true
+    override fun onMenuItemClick(item: MenuItem) = when (item.itemId) {
+        R.id.action_add_or_update_plan -> {
+            validateInput()
+            if (isValidated) {
+                view!!.clearFocus()
+                val navController = view!!.findNavController()
+                navController.navigate(R.id.overviewFragment)
             }
-            R.id.action_delete_plan -> {
-                if (context != null && vm.currentPlanItem != null) {
-                    showPlanDeleteDialog(context!!, vm.currentPlanItem!!)
-                }
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+            true
         }
+        R.id.action_delete_plan -> {
+            if (context != null && state == UPDATE_STATE) {
+                showPlanDeleteDialog(context!!, vm.currentPlanItem!!)
+            }
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
 
     /**
      * Set up the custom activity Toolbar
@@ -197,6 +195,13 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             }
         }
 
+        if (vm.currentPlanItem != null) {
+            vm.scrollToDate = DateUtil.getDate(
+                vm.currentPlanItem!!.date
+                    ?: vm.currentPlanItem!!.startDate!!
+            )
+        }
+
         toolbar?.inflateMenu(R.menu.add_plan_menu)
         toolbar?.setOnMenuItemClickListener(this)
     }
@@ -221,10 +226,18 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 .setMessage(message)
                 .setPositiveButton(android.R.string.yes) { _, _ ->
                     when (itemType) {
-                        PlanItem.TYPE_EXAM -> vm.deleteExam(id)
-                        PlanItem.TYPE_HOMEWORK -> vm.deleteHomework(id)
-                        PlanItem.TYPE_EVENT -> vm.deleteEvent(id)
-                        PlanItem.TYPE_REMINDER -> vm.deleteReminder(id)
+                        PlanItem.TYPE_EXAM -> vm.deleteExam(
+                            DateUtil.getDate(startDate!!), id
+                        )
+                        PlanItem.TYPE_HOMEWORK -> vm.deleteHomework(
+                            DateUtil.getDate(date!!), id
+                        )
+                        PlanItem.TYPE_EVENT -> vm.deleteEvent(
+                            DateUtil.getDate(startDate!!), id
+                        )
+                        PlanItem.TYPE_REMINDER -> vm.deleteReminder(
+                            DateUtil.getDate(date!!), id
+                        )
                     }
 
                     // Go back to overview fragment
@@ -246,13 +259,11 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         val maxDateForPicker =
             MonthAdapter.CalendarDay(AppRepository.maximumDate)
 
-        val preselectedDate: LocalDate
-
-        if (state == INSERT_STATE) {
-            preselectedDate = AppRepository.today
+        val preselectedDate = if (state == INSERT_STATE) {
+            AppRepository.today
         } else {
             fillUpViewsWhenUpdatingPlan(vm.currentPlanItem!!)
-            preselectedDate = DateUtil.getDate(
+            DateUtil.getDate(
                 vm.currentPlanItem?.date ?: vm.currentPlanItem?.startDate!!
             )
         }
@@ -278,7 +289,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             }
             PlanItem.TYPE_HOMEWORK -> {
 
-                dateTIL.hint = resources.getString(R.string.plan_date_time)
+                dateTIL.hint =
+                    resources.getString(R.string.homework_hint_date)
                 ViewUtil.getDateAndTimeWithPicker(
                     dateTIL.editText!!,
                     fm,
@@ -416,7 +428,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         when (vm.currentPlanItemType) {
             PlanItem.TYPE_EXAM -> {
                 dateTime = dateTIL.checkIfEmptyAndGetText()
-                startTime = "$dateTime ${startDateET.checkIfEmptyAndGetText()}"
+                startTime =
+                    "$dateTime ${startDateET.checkIfEmptyAndGetText()}"
                 endTime = "$dateTime ${endDateET.checkIfEmptyAndGetText()}"
                 //TODO: get subject names and make sure subject is one of them
                 subject = subjectTIL.checkIfEmptyAndGetText()
@@ -446,7 +459,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             PlanItem.TYPE_EVENT -> {
                 desc = descTIL.editText?.text?.toString() ?: ""
                 dateTime = dateTIL.checkIfEmptyAndGetText()
-                startTime = "$dateTime ${startDateET.checkIfEmptyAndGetText()}"
+                startTime =
+                    "$dateTime ${startDateET.checkIfEmptyAndGetText()}"
                 endTime = "$dateTime ${endDateET.checkIfEmptyAndGetText()}"
 
                 isValidated = vm.validateData(
@@ -519,7 +533,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 }
             }
             PlanItem.TYPE_HOMEWORK -> {
-                val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
+                val epoch: Long =
+                    DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
 
                 if (state == INSERT_STATE) {
                     vm.addHomework(name, subject, epoch, desc, isDone!!)
@@ -572,7 +587,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 }
             }
             PlanItem.TYPE_REMINDER -> {
-                val epoch: Long = DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
+                val epoch: Long =
+                    DateUtil.toEpochMili(dt, ViewUtil.DATE_TIME)
 
                 if (state == INSERT_STATE) {
                     vm.addReminder(name, epoch, isDone!!)

@@ -23,7 +23,7 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/overviewFragment"
+        android:id="@+id/action_add_or_update_plan"
         android:icon="@drawable/ic_done_white_24dp"
         android:title="@string/add_plan"
         app:showAsAction="ifRoom" />

@@ -38,14 +38,14 @@ import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
-import com.jagoancoding.planyoursemester.util.DateUtil
-import com.jagoancoding.planyoursemester.util.ToastUtil.showShortToast
+import com.jagoancoding.planyoursemester.util.DateUtil.findDatePositionInList
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList
+import org.threeten.bp.LocalDate
 
 class OverviewFragment : Fragment(),
     RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener<Int> {
@@ -61,11 +61,6 @@ class OverviewFragment : Fragment(),
     private var overviewRV: RecyclerView? = null
     private lateinit var dateAdapter: DateAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -76,7 +71,7 @@ class OverviewFragment : Fragment(),
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders
-            .of(this)
+            .of(activity!!)
             .get(MainViewModel::class.java)
 
         val toolbar: Toolbar? = activity?.findViewById(R.id.overview_toolbar)
@@ -88,7 +83,8 @@ class OverviewFragment : Fragment(),
         overviewRV?.apply {
             layoutManager = LinearLayoutManager(this.context)
             adapter = dateAdapter
-        }?.scrollToToday()
+            scrollToDate(viewModel.scrollToDate ?: AppRepository.today)
+        }
 
         // Set up extended FAB
         with(view) {
@@ -207,6 +203,16 @@ class OverviewFragment : Fragment(),
 
     private fun RecyclerView.scrollToToday() {
         scrollToPosition(App.DAYS_PASSED.toInt())
+    }
+
+    private fun RecyclerView.scrollToDate(date: LocalDate) {
+        viewModel.dateItems.observe(this@OverviewFragment, Observer {
+            val position = it?.findDatePositionInList(date)
+
+            if (position != null) {
+                this.scrollToPosition(position)
+            }
+        })
     }
 
     private fun addToView(exam: Exam) {

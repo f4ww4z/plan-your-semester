@@ -17,6 +17,7 @@ package com.jagoancoding.planyoursemester.util
 
 import android.content.res.Resources
 import com.jagoancoding.planyoursemester.R
+import com.jagoancoding.planyoursemester.model.DateItem
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -125,4 +126,7 @@ object DateUtil {
         val formatter = DateTimeFormatter.ofPattern(TIME_FORMAT_STANDARD)
         return LocalTime.of(hour, minute).format(formatter)
     }
+
+    fun List<DateItem>.findDatePositionInList(date: LocalDate): Int =
+        this.indexOfFirst { it.date.isEqual(date) }
 }
