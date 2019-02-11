@@ -37,7 +37,7 @@ interface ExamDao {
 
     @Query(
         """SELECT exam_id, subject_name, color, name, startDate, endDate
-        FROM exams INNER JOIN subjects
+        FROM exams INNER JOIN subjectNames
         WHERE subject_name = s_name AND exam_id = :id"""
     )
     fun getExamWithSubject(id: Long): LiveData<ExamWithSubject>

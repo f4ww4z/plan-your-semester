@@ -53,7 +53,8 @@ object AppRepository {
     fun defaultSubjectColor(context: Context): Int =
         context.getColorByResId(R.color.colorAccent)
 
-    fun getSubjects(): LiveData<List<Subject>> = db.subjectDao().getSubjects()
+    fun getSubjectNames(): LiveData<List<String>> =
+        db.subjectDao().getSubjectNames()
 
     fun getSubject(name: String): LiveData<Subject> =
         db.subjectDao().getSubjectByName(name)
@@ -113,6 +114,10 @@ object AppRepository {
 
     fun updateReminder(reminder: Reminder) {
         RunInBackground().execute({ db.reminderDao().updateReminder(reminder) })
+    }
+
+    fun deleteSubject(subjectId: String) {
+        RunInBackground().execute({ db.subjectDao().deleteSubject(subjectId) })
     }
 
     fun deleteExam(id: Long) {

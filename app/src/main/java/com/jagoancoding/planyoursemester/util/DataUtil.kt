@@ -13,18 +13,19 @@
  * limitations under the License.
  */
 
-package com.jagoancoding.planyoursemester.db
+package com.jagoancoding.planyoursemester.util
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import java.util.UUID
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 
-@Entity(tableName = "subjectNames")
-data class Subject(
-        @PrimaryKey
-        @ColumnInfo(name = "s_name")
-        var name: String,
-        @ColumnInfo
-        var color: Int
-)
+object DataUtil {
+
+    fun <T> LiveData<T>.observeOnce(observer: Observer<T>) {
+        observeForever(object : Observer<T> {
+            override fun onChanged(t: T?) {
+                observer.onChanged(t)
+                removeObserver(this)
+            }
+        })
+    }
+}

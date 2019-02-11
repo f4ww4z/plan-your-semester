@@ -71,6 +71,7 @@ class AddSubjectDialog : DialogFragment() {
                 val subjectName = addSubjectNameTIL.checkIfEmptyAndGetText()
                 if (subjectName.isNotBlank()) {
                     listener.onSubjectChosen(subjectName, colorSelected)
+                    dialog?.dismiss()
                 }
             }
         }

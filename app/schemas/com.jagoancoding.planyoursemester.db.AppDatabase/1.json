@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ea9b10d7fef074d18ba80379cf857874",
+    "identityHash": "1cac17b24e1545a50519b3a1a66b21b1",
     "entities": [
       {
-        "tableName": "subjects",
+        "tableName": "subjectNames",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`s_name` TEXT NOT NULL, `color` INTEGER NOT NULL, PRIMARY KEY(`s_name`))",
         "fields": [
           {
@@ -32,7 +32,7 @@
       },
       {
         "tableName": "exams",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`exam_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `subject_name` TEXT NOT NULL, `name` TEXT NOT NULL, `startDate` INTEGER NOT NULL, `endDate` INTEGER NOT NULL, FOREIGN KEY(`subject_name`) REFERENCES `subjects`(`s_name`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`exam_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `subject_name` TEXT NOT NULL, `name` TEXT NOT NULL, `startDate` INTEGER NOT NULL, `endDate` INTEGER NOT NULL, FOREIGN KEY(`subject_name`) REFERENCES `subjectNames`(`s_name`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "exam_id",
@@ -83,7 +83,7 @@
         ],
         "foreignKeys": [
           {
-            "table": "subjects",
+            "table": "subjectNames",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
@@ -97,7 +97,7 @@
       },
       {
         "tableName": "homework",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`homework_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `subject_name` TEXT NOT NULL, `name` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `description` TEXT NOT NULL, `isDone` INTEGER NOT NULL, FOREIGN KEY(`subject_name`) REFERENCES `subjects`(`s_name`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`homework_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `subject_name` TEXT NOT NULL, `name` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `description` TEXT NOT NULL, `isDone` INTEGER NOT NULL, FOREIGN KEY(`subject_name`) REFERENCES `subjectNames`(`s_name`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "homework_id",
@@ -154,7 +154,7 @@
         ],
         "foreignKeys": [
           {
-            "table": "subjects",
+            "table": "subjectNames",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
@@ -251,7 +251,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ea9b10d7fef074d18ba80379cf857874\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"1cac17b24e1545a50519b3a1a66b21b1\")"
     ]
   }
 }

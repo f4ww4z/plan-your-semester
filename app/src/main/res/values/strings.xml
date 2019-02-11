@@ -57,4 +57,10 @@
     <string name="subject_color">Subject Color</string>
     <string name="dialog_color_subj_title">Choose the Subject Color</string>
     <string name="select">select</string>
+    <string name="success_subj_add">\'%1$s\' subject added successfully</string>
+
+    <string name="dialog_rm_subj_title">Choose a Subject to Remove</string>
+    <string name="dialog_confirm_rm_subj_title">Confirm Delete Subject</string>
+    <string name="dialog_confirm_rm_subj_mes">Do you really want to remove subject \'%1$s\'?</string>
+    <string name="success_subj_rm">\'%1$s\' subject removed successfully</string>
 </resources>

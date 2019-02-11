@@ -37,7 +37,7 @@ interface HomeworkDao {
 
     @Query(
         """SELECT homework_id, subject_name, color, name, dueDate, description, isDone
-        FROM homework INNER JOIN subjects
+        FROM homework INNER JOIN subjectNames
         WHERE subject_name = s_name AND homework_id = :id"""
     )
     fun getHomeworkWithSubject(id: Long): LiveData<HomeworkWithSubject>

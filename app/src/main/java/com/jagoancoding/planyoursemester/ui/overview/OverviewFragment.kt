@@ -39,6 +39,8 @@ import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.util.DateUtil.findDatePositionInList
+import com.jagoancoding.planyoursemester.util.DataUtil.observeOnce
+import com.jagoancoding.planyoursemester.util.ToastUtil.showLongToast
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper
@@ -49,7 +51,8 @@ import org.threeten.bp.LocalDate
 
 class OverviewFragment : Fragment(),
     RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener<Int>,
-    AddSubjectDialog.DialogClickListener {
+    AddSubjectDialog.DialogClickListener,
+    RemoveSubjectDialog.DialogClickListener {
 
     companion object {
         fun newInstance() = OverviewFragment()
@@ -137,15 +140,27 @@ class OverviewFragment : Fragment(),
         toolbar?.menu?.clear()
         toolbar?.inflateMenu(R.menu.overview_menu)
         toolbar?.setOnMenuItemClickListener {
+            view?.clearFocus()
+
             when (it.itemId) {
                 R.id.action_add_subject -> {
-                    val addSubjectDialog = AddSubjectDialog()
+                    val addSubjectDialog = AddSubjectDialog().apply {
+                        listener = this@OverviewFragment
+                    }
                     addSubjectDialog.show(fragmentManager!!, "AddSubjectDialog")
 
                     true
                 }
                 R.id.action_rm_subject -> {
-                    //TODO: Show dialog
+                    viewModel.subjectNames().observeOnce(Observer {
+                        val dialog = RemoveSubjectDialog().apply {
+                            listener = this@OverviewFragment
+                            subjectNames = it.toTypedArray()
+                        }
+                        dialog.show(
+                            fragmentManager!!, "RemoveSubjectDialog"
+                        )
+                    })
                     true
                 }
                 else -> super.onOptionsItemSelected(it)
@@ -239,6 +254,17 @@ class OverviewFragment : Fragment(),
 
     override fun onSubjectChosen(subjectName: String, color: Int) {
         viewModel.addSubject(subjectName, color)
+        context?.showLongToast(
+            getString(
+                R.string.success_subj_add,
+                subjectName
+            )
+        )
+    }
+
+    override fun onSubjectToRemoveSelected(subjectId: String) {
+        viewModel.deleteSubject(subjectId)
+        context?.showLongToast(getString(R.string.success_subj_rm, subjectId))
     }
 
     private fun addToView(exam: Exam) {

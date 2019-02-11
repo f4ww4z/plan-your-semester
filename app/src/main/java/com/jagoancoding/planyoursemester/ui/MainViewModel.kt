@@ -119,6 +119,8 @@ class MainViewModel : ViewModel() {
 
     fun getSubject(name: String) = AppRepository.getSubject(name)
 
+    fun subjectNames() = AppRepository.getSubjectNames()
+
     val exams: LiveData<List<Exam>>
         get() = AppRepository.getExams()
 
@@ -147,6 +149,10 @@ class MainViewModel : ViewModel() {
     fun addSubject(name: String, color: Int) {
         val subject = Subject(name = name, color = color)
         AppRepository.insertSubject(subject)
+    }
+
+    fun deleteSubject(subjectId: String) {
+        AppRepository.deleteSubject(subjectId)
     }
 
     fun addExam(
