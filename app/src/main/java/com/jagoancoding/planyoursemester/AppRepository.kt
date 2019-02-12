@@ -18,6 +18,7 @@ package com.jagoancoding.planyoursemester
 import android.app.Application
 import android.content.Context
 import android.os.AsyncTask
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.jagoancoding.planyoursemester.db.AppDatabase
 import com.jagoancoding.planyoursemester.db.Event
@@ -36,6 +37,7 @@ import org.threeten.bp.LocalDate
  */
 object AppRepository {
 
+    private const val TAG = "AppRepository"
     // Database backend
     private lateinit var db: AppDatabase
 
@@ -49,6 +51,34 @@ object AppRepository {
 
     var minimumDate: Long = DateUtil.toEpochMili(startDate)
     var maximumDate: Long = DateUtil.toEpochMili(endDate)
+
+    var subjectInstances = HashMap<String, Int>()
+
+    /**
+     * Keep track of the total exams and homework for the subject
+     * @param subjectName subject
+     */
+    fun incrementSubjectCountBy(subjectName: String, value: Int) {
+        val count = subjectInstances[subjectName]
+        if (count != null) {
+            subjectInstances[subjectName] = count + value
+        } else {
+            subjectInstances[subjectName] = value
+        }
+        Log.i(TAG, "Subject Instances: $subjectInstances")
+    }
+
+    /**
+     * Decreaase the number of times the subject is used in DateAdapter
+     * @param subjectName subject
+     */
+    fun decreaseSubjectCount(subjectName: String) {
+        val count = subjectInstances[subjectName]
+        if (count != null && count > 0) {
+            subjectInstances[subjectName] = count - 1
+        }
+        Log.i(TAG, "Subject Instances: $subjectInstances")
+    }
 
     fun defaultSubjectColor(context: Context): Int =
         context.getColorByResId(R.color.colorAccent)
@@ -87,7 +117,6 @@ object AppRepository {
         RunInBackground().execute({ db.examDao().insertExam(exam) })
     }
 
-    //TODO: Replace keyword to 'Assignment'
     fun insertHomework(homework: Homework) {
         RunInBackground().execute({ db.homeworkDao().insertHomework(homework) })
     }

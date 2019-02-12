@@ -41,7 +41,6 @@ import com.jagoancoding.planyoursemester.util.DateUtil
 import com.jagoancoding.planyoursemester.util.ToastUtil.showLongToast
 import com.jagoancoding.planyoursemester.util.ViewUtil
 import com.jagoancoding.planyoursemester.util.ViewUtil.checkIfEmptyAndGetText
-import org.threeten.bp.LocalDate
 
 /**
  * A simple [Fragment] subclass.
@@ -451,7 +450,6 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 isValidated = vm.validateData(
                     vm.currentPlanItemType,
                     name = name,
-                    desc = desc,
                     dateTime = dateTime,
                     subject = subject
                 )
@@ -466,7 +464,6 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 isValidated = vm.validateData(
                     vm.currentPlanItemType,
                     name = name,
-                    desc = desc,
                     startTime = startTime,
                     endTime = endTime
                 )
@@ -545,7 +542,6 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                         )
                     )
                 } else {
-                    //TODO: Make isDone checkbox and update code here
                     vm.updateHomework(
                         id!!,
                         name,
@@ -599,7 +595,6 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                         )
                     )
                 } else {
-                    //TODO: Make isDone checkbox and update code here
                     vm.updateReminder(id!!, name, epoch, isDone!!)
                     context?.showLongToast(
                         getString(

@@ -63,4 +63,5 @@
     <string name="dialog_confirm_rm_subj_title">Confirm Delete Subject</string>
     <string name="dialog_confirm_rm_subj_mes">Do you really want to remove subject \'%1$s\'?</string>
     <string name="success_subj_rm">\'%1$s\' subject removed successfully</string>
+    <string name="fail_subj_rm">Please remove all exams or homework of \'%1$s\' subject first</string>
 </resources>

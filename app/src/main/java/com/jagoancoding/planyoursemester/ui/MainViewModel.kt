@@ -16,6 +16,7 @@
 package com.jagoancoding.planyoursemester.ui
 
 import android.graphics.Color
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -36,6 +37,10 @@ import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneOffset
 
 class MainViewModel : ViewModel() {
+
+    companion object {
+        const val TAG = "MainViewModel"
+    }
 
     var currentPlanItemType: Int = 0
     var currentPlanItem: PlanItem? = null
@@ -95,11 +100,7 @@ class MainViewModel : ViewModel() {
             }
 
         val dateItemToUpdateIndex = dateItems!!.findDatePositionInList(
-            LocalDate.of(
-                dateTime.year,
-                dateTime.month,
-                dateTime.dayOfMonth
-            )
+            LocalDate.of(dateTime.year, dateTime.month, dateTime.dayOfMonth)
         )
 
         val planList = dateItems[dateItemToUpdateIndex].planItems
@@ -115,6 +116,21 @@ class MainViewModel : ViewModel() {
         dateItems[dateItemToUpdateIndex].planItems = planList
 
         _dateItems.value = dateItems
+    }
+
+    fun countSubjectUsage(subjectIds: List<String>, dateItems: List<DateItem>) {
+
+        // LOL KOTLIN MAP ROCKS!!!1
+        val subjUsages =
+            dateItems.flatMap { it.planItems }.map { it.subject }
+                .map { it?.name }
+
+        subjectIds.forEach { subjectId ->
+            val subjectCount = subjUsages.count { it == subjectId }
+            AppRepository.subjectInstances[subjectId] = subjectCount
+        }
+
+        Log.i(TAG, "Subject instances: ${AppRepository.subjectInstances}")
     }
 
     fun getSubject(name: String) = AppRepository.getSubject(name)
@@ -294,7 +310,6 @@ class MainViewModel : ViewModel() {
     fun validateData(
         type: Int,
         name: String = "",
-        desc: String = "",
         startTime: String = "",
         endTime: String = "",
         dateTime: String = "",

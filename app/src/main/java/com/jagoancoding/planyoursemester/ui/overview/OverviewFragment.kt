@@ -17,6 +17,7 @@ package com.jagoancoding.planyoursemester.ui.overview
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,11 +36,12 @@ import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
+import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
-import com.jagoancoding.planyoursemester.util.DateUtil.findDatePositionInList
 import com.jagoancoding.planyoursemester.util.DataUtil.observeOnce
+import com.jagoancoding.planyoursemester.util.DateUtil.findDatePositionInList
 import com.jagoancoding.planyoursemester.util.ToastUtil.showLongToast
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
@@ -55,6 +57,7 @@ class OverviewFragment : Fragment(),
     RemoveSubjectDialog.DialogClickListener {
 
     companion object {
+        const val TAG = "OverviewFragment"
         fun newInstance() = OverviewFragment()
     }
 
@@ -104,8 +107,13 @@ class OverviewFragment : Fragment(),
             .build()
 
         // Set recylerview adapter's data to updated data
-        viewModel.dateItems.observe(this, Observer {
-            (overviewRV?.adapter as DateAdapter).setData(it)
+        viewModel.dateItems.observe(this, Observer { dateItems ->
+            (overviewRV!!.adapter as DateAdapter).setData(dateItems)
+
+            viewModel.subjectNames()
+                .observe(this, Observer { subjectNames ->
+                    viewModel.countSubjectUsage(subjectNames, dateItems)
+                })
         })
 
         viewModel.exams.observe(this, Observer { exams ->
@@ -132,7 +140,7 @@ class OverviewFragment : Fragment(),
             }
         })
 
-        viewModel.addDemoData()
+        //viewModel.addDemoData()
     }
 
     private fun setupAppBar() {
@@ -263,34 +271,42 @@ class OverviewFragment : Fragment(),
     }
 
     override fun onSubjectToRemoveSelected(subjectId: String) {
-        viewModel.deleteSubject(subjectId)
-        context?.showLongToast(getString(R.string.success_subj_rm, subjectId))
+        if (AppRepository.subjectInstances[subjectId] == null ||
+            AppRepository.subjectInstances[subjectId]!! == 0
+        ) {
+            viewModel.deleteSubject(subjectId)
+            context?.showLongToast(
+                getString(R.string.success_subj_rm, subjectId)
+            )
+        } else {
+            context?.showLongToast(getString(R.string.fail_subj_rm, subjectId))
+        }
     }
 
     private fun addToView(exam: Exam) {
-        viewModel.getExamWithSubject(exam.exam_id).observe(this, Observer {
+        viewModel.getExamWithSubject(exam.exam_id).observeOnce(Observer {
             val newExam = it.toPlanItem()
             viewModel.displayPlan(newExam)
         })
     }
 
     private fun addToView(homework: Homework) {
-        viewModel.getHomeworkWithSubject(homework.homework_id)
-            .observe(this, Observer {
+        viewModel.getHomeworkWithSubject(homework.homework_id).observeOnce(
+            Observer {
                 val newHomework = it.toPlanItem()
                 viewModel.displayPlan(newHomework)
             })
     }
 
     private fun addToView(event: Event) {
-        viewModel.event(event.event_id).observe(this, Observer {
+        viewModel.event(event.event_id).observeOnce(Observer {
             val newEvent = it.toPlanItem()
             viewModel.displayPlan(newEvent)
         })
     }
 
     private fun addToView(reminder: Reminder) {
-        viewModel.reminder(reminder.reminder_id).observe(this, Observer {
+        viewModel.reminder(reminder.reminder_id).observeOnce(Observer {
             val newReminder = it.toPlanItem()
             viewModel.displayPlan(newReminder)
         })

@@ -139,6 +139,11 @@ class DateAdapter(private var data: List<DateItem>) :
                     val nc = it?.findNavController()
                     updatePlanItemScreen(nc, this)
                 }
+
+                // Add the count of subject usage
+                if (planType == PlanItem.TYPE_EXAM || planType == PlanItem.TYPE_HOMEWORK) {
+                    //AppRepository.incrementSubjectCountBy(subject!!.name)
+                }
             }
         }
 
