@@ -22,8 +22,10 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -58,6 +60,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         const val PLAN_ITEM_OBJECT = "PLAN_ITEM_OBJ"
         const val MiNIMUM_DATE = "MINIMUM_DATE"
         const val MAXIMUM_DATE = "MAXIMUM_DATE"
+        const val SUBJECT_NAMES_COL = "SUBJECT_NAMES"
         const val INSERT_STATE = "OnInsert"
         const val UPDATE_STATE = "OnUpdate"
 
@@ -88,7 +91,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     private lateinit var startDateET: EditText
     private lateinit var endDateET: EditText
     private lateinit var dateTIL: TextInputLayout
-    private lateinit var subjectTIL: TextInputLayout
+    private lateinit var subjectSpinner: Spinner
     private lateinit var isDoneCB: CheckBox
 
     private lateinit var state: String
@@ -111,9 +114,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         // Inflate the layout for this fragment
         val view =
             inflater.inflate(
-                R.layout.fragment_add_plan,
-                container,
-                false
+                R.layout.fragment_add_plan, container, false
             ) as ConstraintLayout
 
         setupAppBar()
@@ -125,7 +126,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             dateTIL = findViewById(R.id.til_plan_date)
             startDateET = findViewById(R.id.et_plan_start_date)
             endDateET = findViewById(R.id.et_plan_end_date)
-            subjectTIL = findViewById(R.id.til_plan_subject)
+            subjectSpinner = findViewById(R.id.spinner_subject)
             isDoneCB = findViewById(R.id.cb_done)
         }
 
@@ -261,7 +262,6 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         val preselectedDate = if (state == INSERT_STATE) {
             AppRepository.today
         } else {
-            fillUpViewsWhenUpdatingPlan(vm.currentPlanItem!!)
             DateUtil.getDate(
                 vm.currentPlanItem?.date ?: vm.currentPlanItem?.startDate!!
             )
@@ -284,6 +284,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 ViewUtil.getTimeWithPicker(startDateET, fm)
                 ViewUtil.getTimeWithPicker(endDateET, fm)
 
+                subjectSpinner.adapter = subjectSpinnerAdapter(
+                    ArrayList(AppRepository.subjectInstances.keys)
+                )
+
                 isDoneCB.isEnabled = false
             }
             PlanItem.TYPE_HOMEWORK -> {
@@ -300,6 +304,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
                 startDateET.isEnabled = false
                 endDateET.isEnabled = false
+
+                subjectSpinner.adapter = subjectSpinnerAdapter(
+                    ArrayList(AppRepository.subjectInstances.keys)
+                )
             }
             PlanItem.TYPE_EVENT -> {
 
@@ -314,7 +322,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 ViewUtil.getTimeWithPicker(startDateET, fm)
                 ViewUtil.getTimeWithPicker(endDateET, fm)
 
-                subjectTIL.isEnabled = false
+                subjectSpinner.isEnabled = false
                 isDoneCB.isEnabled = false
             }
             PlanItem.TYPE_REMINDER -> {
@@ -332,10 +340,12 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
                 startDateET.isEnabled = false
                 endDateET.isEnabled = false
-                subjectTIL.isEnabled = false
-
-                //TODO: Reminder.isDone()
+                subjectSpinner.isEnabled = false
             }
+        }
+
+        if (state == UPDATE_STATE) {
+            fillUpViewsWhenUpdatingPlan(vm.currentPlanItem!!)
         }
     }
 
@@ -365,7 +375,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                             endLdt.hour, endLdt.minute
                         )
                     )
-                    subjectTIL.editText?.setText(subject?.name)
+
+                    subjectSpinner.setToValue(subject!!.name)
                 }
                 PlanItem.TYPE_HOMEWORK -> {
                     descTIL.editText?.setText(description)
@@ -373,7 +384,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                     dateTIL.editText?.setText(
                         DateUtil.formatDateWithTime(ldt)
                     )
-                    subjectTIL.editText?.setText(subject?.name)
+
+                    subjectSpinner.setToValue(subject!!.name)
                     isDoneCB.isChecked = isDone!!
                 }
                 PlanItem.TYPE_EVENT -> {
@@ -410,11 +422,12 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         }
     }
 
+
     /**
      * Validate the data according to plan type
      */
     private fun validateInput() {
-        val name: String
+        val name: String = nameTIL.checkIfEmptyAndGetText()
         var desc = ""
         var startTime = ""
         var endTime = ""
@@ -422,16 +435,13 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         var subject = ""
         var isDone: Boolean? = null
 
-        name = nameTIL.checkIfEmptyAndGetText()
-
         when (vm.currentPlanItemType) {
             PlanItem.TYPE_EXAM -> {
                 dateTime = dateTIL.checkIfEmptyAndGetText()
                 startTime =
                     "$dateTime ${startDateET.checkIfEmptyAndGetText()}"
                 endTime = "$dateTime ${endDateET.checkIfEmptyAndGetText()}"
-                //TODO: get subject names and make sure subject is one of them
-                subject = subjectTIL.checkIfEmptyAndGetText()
+                subject = subjectSpinner.selectedItem.toString().trim()
 
                 isValidated = vm.validateData(
                     vm.currentPlanItemType,
@@ -444,7 +454,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             PlanItem.TYPE_HOMEWORK -> {
                 desc = descTIL.editText?.text?.toString() ?: ""
                 dateTime = dateTIL.checkIfEmptyAndGetText()
-                subject = subjectTIL.checkIfEmptyAndGetText()
+                subject = subjectSpinner.selectedItem.toString().trim()
                 isDone = isDoneCB.isChecked
 
                 isValidated = vm.validateData(
@@ -613,6 +623,23 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             listener = context
         } else {
             throw RuntimeException("$context must implement OnFragmentInteractionListener")
+        }
+    }
+
+    private fun subjectSpinnerAdapter(subjectNames: ArrayList<String>): ArrayAdapter<String> =
+        ArrayAdapter<String>(
+            context!!,
+            android.R.layout.simple_spinner_item,
+            subjectNames.toMutableList()
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+
+    private fun Spinner.setToValue(value: String) {
+        for (i in 0..(count - 1)) {
+            if (adapter.getItem(i).toString().trim() == value.trim()) {
+                setSelection(i)
+            }
         }
     }
 

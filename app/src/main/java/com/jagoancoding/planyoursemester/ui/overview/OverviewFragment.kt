@@ -182,12 +182,20 @@ class OverviewFragment : Fragment(),
     override fun onRFACItemIconClick(position: Int, item: RFACLabelItem<Int>?) {
         // context?.showShortToast("Icon $position clicked")
 
-        val bundle = Bundle().apply {
-            putInt(AddPlanFragment.PLAN_ITEM_TYPE, position)
-            putLong(AddPlanFragment.MiNIMUM_DATE, AppRepository.minimumDate)
-            putLong(AddPlanFragment.MAXIMUM_DATE, AppRepository.maximumDate)
-        }
-        view?.findNavController()?.navigate(R.id.addPlanFragment, bundle)
+        // Pass subject names first
+        viewModel.subjectNames().observeOnce(Observer { subjectNames ->
+            val bundle = Bundle().apply {
+                putInt(AddPlanFragment.PLAN_ITEM_TYPE, position)
+                putLong(AddPlanFragment.MiNIMUM_DATE, AppRepository.minimumDate)
+                putLong(AddPlanFragment.MAXIMUM_DATE, AppRepository.maximumDate)
+                putStringArrayList(
+                    AddPlanFragment.SUBJECT_NAMES_COL,
+                    ArrayList<String>(subjectNames)
+                )
+            }
+            view?.findNavController()?.navigate(R.id.addPlanFragment, bundle)
+        })
+
     }
 
     override fun onRFACItemLabelClick(
@@ -273,6 +281,7 @@ class OverviewFragment : Fragment(),
             AppRepository.subjectInstances[subjectId]!! == 0
         ) {
             viewModel.deleteSubject(subjectId)
+            AppRepository.subjectInstances.remove(subjectId)
             context?.showLongToast(
                 getString(R.string.success_subj_rm, subjectId)
             )

@@ -319,12 +319,14 @@ class MainViewModel : ViewModel() {
                 return (name.isNotBlank()
                         && startTime.isNotBlank()
                         && endTime.isNotBlank()
-                        && subject.isNotBlank())
+                        && subject.isNotBlank()
+                        && AppRepository.subjectInstances.keys.contains(subject))
             }
             PlanItem.TYPE_HOMEWORK -> {
                 return (name.isNotBlank()
                         && dateTime.isNotBlank()
-                        && subject.isNotBlank())
+                        && subject.isNotBlank()
+                        && AppRepository.subjectInstances.keys.contains(subject))
             }
             PlanItem.TYPE_EVENT -> {
                 return (name.isNotBlank()
