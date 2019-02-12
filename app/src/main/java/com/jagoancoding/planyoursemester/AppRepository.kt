@@ -31,6 +31,8 @@ import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.util.DateUtil
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 
 /**
  * Enables injection of data sources
@@ -45,7 +47,10 @@ object AppRepository {
         db = AppDatabase.getInstance(application.applicationContext)
     }
 
-    val today: LocalDate = LocalDate.now()
+    val zoneId: ZoneId = ZoneId.systemDefault()
+    val currentDateTime: ZonedDateTime = ZonedDateTime.now(zoneId)
+
+    val today: LocalDate = currentDateTime.toLocalDate()
     val startDate: LocalDate = today.minusDays(App.DAYS_PASSED)
     val endDate: LocalDate = startDate.plusDays(App.DAYS_SINCE_PASSED)
 

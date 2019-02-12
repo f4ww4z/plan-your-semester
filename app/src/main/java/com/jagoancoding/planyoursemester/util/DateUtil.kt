@@ -16,6 +16,7 @@
 package com.jagoancoding.planyoursemester.util
 
 import android.content.res.Resources
+import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
 import org.threeten.bp.Instant
@@ -36,16 +37,17 @@ object DateUtil {
 
     fun getDayNameFromDate(date: LocalDate): String {
         val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_DAY)
+            .withZone(AppRepository.zoneId)
         return formatter.format(date)
     }
 
     fun getFormattedTime(date: Long): String {
         val localDate: LocalDateTime =
             Instant.ofEpochMilli(date)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime()
+                .atZone(AppRepository.zoneId).toLocalDateTime()
         val dateTimeFormatter =
             DateTimeFormatter.ofPattern(TIME_FORMAT_STANDARD)
+                .withZone(AppRepository.zoneId)
         return localDate.format(dateTimeFormatter)
     }
 
@@ -60,38 +62,36 @@ object DateUtil {
         )
 
     fun getDate(epochMillis: Long): LocalDate =
-        Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault())
+        Instant.ofEpochMilli(epochMillis).atZone(AppRepository.zoneId)
             .toLocalDate()
 
     fun getTime(epochMillis: Long): LocalTime =
-        Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault())
+        Instant.ofEpochMilli(epochMillis).atZone(AppRepository.zoneId)
             .toLocalTime()
 
     fun getDateTime(epochMillis: Long): LocalDateTime = LocalDateTime.ofInstant(
-        Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()
+        Instant.ofEpochMilli(epochMillis), AppRepository.zoneId
     )
 
     fun toEpochMili(date: LocalDate): Long =
-        LocalDateTime.of(
-            date,
-            LocalTime.MIDNIGHT
-        ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        LocalDateTime.of(date, LocalTime.MIDNIGHT)
+            .atZone(AppRepository.zoneId).toInstant().toEpochMilli()
 
     fun toEpochMili(date: String, format: Int): Long = when (format) {
         ViewUtil.DATE -> {
             LocalDateTime.of(
                 parseDate(date),
                 LocalTime.MIDNIGHT
-            ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            ).atZone(AppRepository.zoneId).toInstant().toEpochMilli()
         }
         ViewUtil.TIME -> {
             LocalDateTime.of(
                 LocalDate.now(ZoneId.systemDefault()),
                 parseTime(date)
-            ).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            ).atZone(AppRepository.zoneId).toInstant().toEpochMilli()
         }
         ViewUtil.DATE_TIME -> {
-            parseDateTime(date).atZone(ZoneId.systemDefault()).toInstant()
+            parseDateTime(date).atZone(AppRepository.zoneId).toInstant()
                 .toEpochMilli()
         }
         else -> 0L
@@ -104,26 +104,31 @@ object DateUtil {
 
     fun parseDate(date: String): LocalDate {
         val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
+            .withZone(AppRepository.zoneId)
         return LocalDate.parse(date, formatter)
     }
 
     fun parseTime(time: String): LocalTime {
         val formatter = DateTimeFormatter.ofPattern(TIME_FORMAT_STANDARD)
+            .withZone(AppRepository.zoneId)
         return LocalTime.parse(time, formatter)
     }
 
     fun formatDateWithTime(dateTime: LocalDateTime): String {
         val formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_STANDARD)
+            .withZone(AppRepository.zoneId)
         return dateTime.format(formatter)
     }
 
     fun formatDate(year: Int, monthOfYear: Int, dayOfMonth: Int): String {
         val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_STANDARD)
+            .withZone(AppRepository.zoneId)
         return LocalDate.of(year, monthOfYear, dayOfMonth).format(formatter)
     }
 
     fun formatTime(hour: Int, minute: Int): String {
         val formatter = DateTimeFormatter.ofPattern(TIME_FORMAT_STANDARD)
+            .withZone(AppRepository.zoneId)
         return LocalTime.of(hour, minute).format(formatter)
     }
 
