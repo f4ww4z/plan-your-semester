@@ -110,6 +110,8 @@ class MainViewModel : ViewModel() {
             planList.add(plan)
         }
 
+        planList.sortBy { it.date ?: it.startDate }
+
         dateItems[dateItemToUpdateIndex].planItems = planList
 
         _dateItems.value = dateItems

@@ -23,7 +23,9 @@ object DataUtil {
     fun <T> LiveData<T>.observeOnce(observer: Observer<T>) {
         observeForever(object : Observer<T> {
             override fun onChanged(t: T?) {
-                observer.onChanged(t)
+                if (t != null) {
+                    observer.onChanged(t)
+                }
                 removeObserver(this)
             }
         })
