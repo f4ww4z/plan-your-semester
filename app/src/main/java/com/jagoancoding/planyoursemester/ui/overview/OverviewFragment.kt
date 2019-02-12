@@ -17,7 +17,6 @@ package com.jagoancoding.planyoursemester.ui.overview
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +35,6 @@ import com.jagoancoding.planyoursemester.db.Event
 import com.jagoancoding.planyoursemester.db.Exam
 import com.jagoancoding.planyoursemester.db.Homework
 import com.jagoancoding.planyoursemester.db.Reminder
-import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment

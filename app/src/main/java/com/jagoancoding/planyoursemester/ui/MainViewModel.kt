@@ -58,10 +58,7 @@ class MainViewModel : ViewModel() {
     fun initialDateItems(start: LocalDate, end: LocalDate): List<DateItem> {
         val dateItems = ArrayList<DateItem>()
         AppRepository.datesBetween(start, end).forEach { date ->
-            val dateItem = DateItem(
-                date,
-                ArrayList()
-            )
+            val dateItem = DateItem(date, ArrayList())
             dateItems.add(dateItem)
         }
         return dateItems
@@ -106,7 +103,7 @@ class MainViewModel : ViewModel() {
         val planList = dateItems[dateItemToUpdateIndex].planItems
         // Find the plan item to update
         // If item is found, update it, else create a new plan item and add it
-        val planToUpdateIndex = planList.indexOfFirst { it.name == plan.name }
+        val planToUpdateIndex = planList.indexOfFirst { it.id == plan.id }
         if (planToUpdateIndex != -1) {
             planList[planToUpdateIndex] = plan
         } else {

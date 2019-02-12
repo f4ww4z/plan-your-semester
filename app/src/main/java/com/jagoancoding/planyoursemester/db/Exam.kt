@@ -20,7 +20,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.util.Random
 
 @Entity(
     tableName = "exams", foreignKeys = [ForeignKey(
@@ -32,7 +31,7 @@ import java.util.Random
 )
 data class Exam(
     @PrimaryKey(autoGenerate = true)
-    val exam_id: Long = Random(100).nextLong(),
+    val exam_id: Long = 0,
     @ColumnInfo(name = "subject_name")
     val subjectName: String,
     @ColumnInfo

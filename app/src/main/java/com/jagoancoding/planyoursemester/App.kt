@@ -16,7 +16,6 @@
 package com.jagoancoding.planyoursemester
 
 import android.app.Application
-import com.jagoancoding.planyoursemester.util.ToastUtil
 import com.jakewharton.threetenabp.AndroidThreeTen
 
 class App : Application() {

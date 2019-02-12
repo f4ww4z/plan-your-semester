@@ -33,9 +33,9 @@ import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.util.ViewUtil.calculatePx
+import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import com.jagoancoding.planyoursemester.util.ViewUtil.setDrawableColor
 import com.jagoancoding.planyoursemester.util.ViewUtil.setTextAndGoneIfEmpty
-import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 
 class DateAdapter(private var data: List<DateItem>) :
     RecyclerView.Adapter<DateAdapter.ViewHolder>() {

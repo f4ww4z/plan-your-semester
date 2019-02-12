@@ -18,13 +18,12 @@ package com.jagoancoding.planyoursemester.db
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.UUID
 
 @Entity(tableName = "subjects")
 data class Subject(
-        @PrimaryKey
-        @ColumnInfo(name = "s_name")
-        var name: String,
-        @ColumnInfo
-        var color: Int
+    @PrimaryKey
+    @ColumnInfo(name = "s_name")
+    var name: String,
+    @ColumnInfo
+    var color: Int
 )

@@ -43,7 +43,7 @@ interface ReminderDao {
 
     @Query("""DELETE FROM reminders WHERE reminder_id = :id""")
     fun deleteReminder(id: Long)
-    
+
     @Delete
     fun deleteReminders(vararg reminder: Reminder)
 }
