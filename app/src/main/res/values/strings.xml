@@ -33,11 +33,11 @@
     <string name="error_date_not_possible">Must be after start time</string>
     <string name="plan_name">Name</string>
     <string name="plan_description">Description (optional)</string>
-    <string name="plan_start_date">Start Time</string>
-    <string name="plan_end_date">Time Finished</string>
+    <string name="plan_start_date">Start time</string>
+    <string name="plan_end_date">Time finished</string>
     <string name="plan_date">Date</string>
-    <string name="homework_hint_date">Due Date and Time</string>
-    <string name="plan_date_time">Date and Time</string>
+    <string name="homework_hint_date">Due date and time</string>
+    <string name="plan_date_time">Date and time</string>
     <string name="plan_subject">Subject</string>
     <string name="success_plan_added">New %1$s is added successfully</string>
 
@@ -53,8 +53,8 @@
     <string name="add_subject">Add Subject</string>
     <string name="remove_subject">Remove Subject</string>
     <string name="dialog_add_subj_title">Add a Subject</string>
-    <string name="hint_add_subject">Enter subject name here</string>
-    <string name="subject_color">Subject Color</string>
+    <string name="hint_add_subject">Subject name</string>
+    <string name="subject_color">Subject color</string>
     <string name="dialog_color_subj_title">Choose the Subject Color</string>
     <string name="select">select</string>
     <string name="success_subj_add">\'%1$s\' subject added successfully</string>

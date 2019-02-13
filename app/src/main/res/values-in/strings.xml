@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2019 Maharaj Fawwaz Almuqaddim Yusran
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">Plan Your Semester</string>
+    <string name="plan">Rencana</string>
+    <string name="date_start_end">%1$s - %2$s</string>
+    <string name="homework_date">Kumpul tanggal %1$s</string>
+    <string name="exam_label">Ujian</string>
+    <string name="homework_label">Tugas</string>
+    <string name="event_label">Kegiatan</string>
+    <string name="reminder_label">Pengingat</string>
+    <string name="add_new">Tambah %1$s</string>
+    <string name="add_plan">Tambah Rencana</string>
+    <string name="error_text_empty">Tidak boleh kosong</string>
+    <string name="error_date_format">Harus dalam format: dd/MM/yyyy hh:mm</string>
+    <string name="error_date_not_possible">Harus setelah waktu mulai</string>
+    <string name="plan_name">Nama</string>
+    <string name="plan_description">Deskripsi (boleh kosong)</string>
+    <string name="plan_start_date">Waktu mulai</string>
+    <string name="plan_end_date">Waktu selesai</string>
+    <string name="plan_date">Tanggal</string>
+    <string name="homework_hint_date">Tanggal dan waktu pengumpulan</string>
+    <string name="plan_date_time">Tanggal dan waktu</string>
+    <string name="plan_subject">Mapel</string>
+    <string name="success_plan_added">%1$s baru sukses ditambah</string>
+    <string name="update_plan">Perbarui %1$s</string>
+    <string name="update_plan_default">Perbarui Rencana</string>
+    <string name="success_plan_update">%1$s sukses diperbarui</string>
+    <string name="is_done">Selesai?</string>
+    <string name="remove_plan">Hapus %1$s</string>
+    <string name="dialog_remove_plan_title">Menghapus %1$s</string>
+    <string name="dialog_remove_plan_mes">Anda yakin ingin menghapus \'%1$s\'?</string>
+    <string name="add_subject">Tambahkan Mapel</string>
+    <string name="remove_subject">Hapus Mapel</string>
+    <string name="dialog_add_subj_title">Tambah Mapel</string>
+    <string name="hint_add_subject">Nama mapel</string>
+    <string name="subject_color">Warna mapel</string>
+    <string name="dialog_color_subj_title">Pilih warna mapel</string>
+    <string name="select">pilih</string>
+    <string name="success_subj_add">Mapel \'%1$s\' sukses ditambah</string>
+    <string name="dialog_rm_subj_title">Pilih mapel yang ingin dihapus</string>
+    <string name="dialog_confirm_rm_subj_title">Konfirmasi Penghapusan Mapel</string>
+    <string name="dialog_confirm_rm_subj_mes">Anda yakin ingin menghapus mapel \'%1$s\'?</string>
+    <string name="success_subj_rm">"Mapel '%1$s' sukses dihapus "</string>
+    <string name="fail_subj_rm">Harap hapus semua ujian atau tugas dari mapel \'%1$s\' terlebih dahulu</string>
+</resources>
