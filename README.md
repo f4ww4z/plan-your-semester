@@ -6,12 +6,7 @@
 
 An Android app to keep track of your everyday plans.
 
-<br/>
-
-<img align="left" src="https://lh3.googleusercontent.com/MKtIo523BQQ01BxY_4E4RIaRZ6ShWzG1AzBtXevRYxR9uDAE_Pugn2vpLUU2bMMK7t8=w1920-h942" alt="Screenshot 1"/>
-<img align="left" src="https://lh3.googleusercontent.com/G7HqTfO0iZnRyVK6e1Tl3C1ugvzL8TARXp7XCgJTYA1LuS7oKZG-xXQtuEICuOl0N3Y=w1920-h942" alt="Screenshot 2"/>
-<img align="left" src="https://lh3.googleusercontent.com/YYh1B4hsStu7426QLYljNnvxwJjXuy5tBcW9a23Pnw7W7vnJcA8Kk7lN_Er7BWFGpoc=w1920-h942" alt="Screenshot 3"/>
-<br/><br/><br/><br/><br/>
+![Screenshots](https://i.imgur.com/PY6oXER.png)
 
 
 ## Want to Contribute?
@@ -33,3 +28,7 @@ FInd an *unassigned*, *ready-for-work* [open issues](https://github.com/f4ww4z/p
 3. Right click on `strings.xml` and choose **Open Translation Editor**
 4. Choose the *Globe* button (named *Add Locale*) and choose a language
 4. Begin translating in the newly created language column
+
+## Notes
+
+- To run the `MainViewModelTest`, put this in the project's `gradle.properties`: `android.enableUnitTestBinaryResources=true`
