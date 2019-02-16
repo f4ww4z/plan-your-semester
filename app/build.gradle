@@ -43,18 +43,25 @@ android {
     lintOptions {
         abortOnError false
     }
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
 
     // AndroidX
     def lifecycle_version = "2.0.0"
     def room_version = "2.0.0"
     def nav_version = "1.0.0-beta01"
+    def test_version = "1.1.0"
 
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.core:core-ktx:1.1.0-alpha03'
@@ -71,24 +78,37 @@ dependencies {
     // use -ktx for Kotlin
     implementation "android.arch.navigation:navigation-ui-ktx:$nav_version"
     // use -ktx for Kotlin
-
-
     implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version" // use kapt for Kotlin
+    kapt "androidx.room:room-compiler:$room_version"
+
+    // use kapt for Kotlin
+
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
-    // optional - Test helpers for LiveData
-    testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
 
-    androidTestImplementation 'androidx.test:runner:1.1.1'
+    // optional - Test helpers for LiveData
+
+    // Testing
+    testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
+    testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
+    androidTestImplementation 'org.mockito:mockito-core:2.24.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    // Core library
+    testImplementation "androidx.test:core:$test_version"
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation "androidx.test:runner:$test_version"
+    androidTestImplementation "androidx.test:rules:$test_version"
+
 
     // JSR-310 backport for Android
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
+    testImplementation('org.threeten:threetenbp:1.3.8') {
+        exclude group: 'com.jakewharton.threetenabp', module: 'threetenabp'
+    }
 
     // Rapid (Extended) Floating Action Button
     implementation 'com.github.wangjiegulu:rfab:2.0.0'
-
     implementation 'com.google.android.material:material:1.0.0'
 
     // Date time picker
