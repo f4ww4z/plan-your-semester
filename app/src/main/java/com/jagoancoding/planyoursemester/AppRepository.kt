@@ -47,10 +47,10 @@ object AppRepository {
         db = AppDatabase.getInstance(application.applicationContext)
     }
 
-    val zoneId: ZoneId = ZoneId.systemDefault()
-    val currentDateTime: ZonedDateTime = ZonedDateTime.now(zoneId)
+    var zoneId: ZoneId = ZoneId.systemDefault()
+    var currentDateTime: ZonedDateTime = ZonedDateTime.now(zoneId)
 
-    val today: LocalDate = currentDateTime.toLocalDate()
+    var today: LocalDate = currentDateTime.toLocalDate()
     val startDate: LocalDate = today.minusDays(App.DAYS_PASSED)
     val endDate: LocalDate = startDate.plusDays(App.DAYS_SINCE_PASSED)
 
