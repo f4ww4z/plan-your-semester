@@ -51,8 +51,8 @@ object AppRepository {
     var currentDateTime: ZonedDateTime = ZonedDateTime.now(zoneId)
 
     var today: LocalDate = currentDateTime.toLocalDate()
-    val startDate: LocalDate = today.minusDays(App.DAYS_PASSED)
-    val endDate: LocalDate = startDate.plusDays(App.DAYS_SINCE_PASSED)
+    var startDate: LocalDate = today.minusDays(App.DAYS_PASSED)
+    var endDate: LocalDate = startDate.plusDays(App.DAYS_SINCE_PASSED)
 
     var minimumDate: Long = DateUtil.toEpochMili(startDate)
     var maximumDate: Long = DateUtil.toEpochMili(endDate)
