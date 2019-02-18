@@ -132,6 +132,11 @@ class MainViewModel : ViewModel() {
         Log.i(TAG, "Subject instances: ${AppRepository.subjectInstances}")
     }
 
+    fun resetData() {
+        _dateItems.value =
+            initialDateItems(AppRepository.startDate, AppRepository.endDate)
+    }
+
     fun getSubject(name: String) = AppRepository.getSubject(name)
 
     fun subjectNames() = AppRepository.getSubjectNames()
