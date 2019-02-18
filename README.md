@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.com/f4ww4z/plan-your-semester.svg?token=6sGe8XeJSLjUzd5ZEHK5&branch=master)](https://travis-ci.com/f4ww4z/plan-your-semester)
-[![Coverage Status](https://coveralls.io/repos/github/f4ww4z/plan-your-semester/badge.svg?branch=master)](https://coveralls.io/github/f4ww4z/plan-your-semester?branch=master)
+[![codecov](https://codecov.io/gh/f4ww4z/plan-your-semester/branch/master/graph/badge.svg)](https://codecov.io/gh/f4ww4z/plan-your-semester)
+
 
 <a href='https://play.google.com/store/apps/details?id=com.jagoancoding.planyoursemester&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="360"/></a>
 
