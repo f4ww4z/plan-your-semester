@@ -29,6 +29,8 @@ import com.jagoancoding.planyoursemester.db.HomeworkWithSubject
 import com.jagoancoding.planyoursemester.db.Reminder
 import com.jagoancoding.planyoursemester.db.Subject
 import com.jagoancoding.planyoursemester.model.DateItem
+import com.jagoancoding.planyoursemester.model.DividerItem
+import com.jagoancoding.planyoursemester.model.ListItem
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.util.DateUtil
 import com.jagoancoding.planyoursemester.util.DateUtil.findDatePositionInList
@@ -46,36 +48,47 @@ class MainViewModel : ViewModel() {
     var currentPlanItem: PlanItem? = null
     var scrollToDate: LocalDate? = null
 
-    private var _dateItems = MutableLiveData<List<DateItem>>()
-    val dateItems: LiveData<List<DateItem>>
-        get() = _dateItems
+    private var _listItems = MutableLiveData<List<ListItem>>()
+    val listItems: LiveData<List<ListItem>>
+        get() = _listItems
 
     init {
-        _dateItems.value =
-            initialDateItems(AppRepository.startDate, AppRepository.endDate)
+        _listItems.value =
+            initialListItems(AppRepository.startDate, AppRepository.endDate)
     }
 
-    fun initialDateItems(start: LocalDate, end: LocalDate): List<DateItem> {
-        val dateItems = ArrayList<DateItem>()
+    fun initialListItems(start: LocalDate, end: LocalDate): List<ListItem> {
+        val listItems = ArrayList<ListItem>()
         AppRepository.datesBetween(start, end).forEach { date ->
+            // Insert divider every month
+            if (date.dayOfMonth == 1) {
+                val divItem = DividerItem(date.monthValue, date.year)
+                listItems.add(divItem)
+            }
+
+            // Add normal date rows
             val dateItem = DateItem(date, ArrayList())
-            dateItems.add(dateItem)
+            listItems.add(dateItem)
         }
-        return dateItems
+        return listItems
     }
 
     fun removePlanItemFromView(date: LocalDate, id: Long) {
-        val changedDateItems = _dateItems.value
+        val changedListItems: MutableList<ListItem>? =
+            _listItems.value?.toMutableList()
         val dateItemsIndex: Int? =
-            changedDateItems?.findDatePositionInList(date)
+            changedListItems?.findDatePositionInList(date)
 
         if (dateItemsIndex != null) {
+            val dateItemToChange = changedListItems[dateItemsIndex] as DateItem
             val changePlanItems: MutableList<PlanItem> =
-                changedDateItems[dateItemsIndex].planItems
+                dateItemToChange.planItems
             changePlanItems.removeAll { it.id == id }
-            changedDateItems[dateItemsIndex].planItems = changePlanItems
+
+            dateItemToChange.planItems = changePlanItems
+            changedListItems[dateItemsIndex] = dateItemToChange
         }
-        _dateItems.value = changedDateItems
+        _listItems.value = changedListItems
     }
 
     fun displayPlan(plan: PlanItem) {
@@ -83,7 +96,7 @@ class MainViewModel : ViewModel() {
             return
         }
 
-        val dateItems = _dateItems.value
+        val listItems = _listItems.value
 
         // Check the type of plan, which determines if either date or startDate
         // should be used
@@ -96,11 +109,11 @@ class MainViewModel : ViewModel() {
                 DateUtil.getDateTime(plan.startDate!!)
             }
 
-        val dateItemToUpdateIndex = dateItems!!.findDatePositionInList(
+        val dateItemToUpdateIndex = listItems!!.findDatePositionInList(
             LocalDate.of(dateTime.year, dateTime.month, dateTime.dayOfMonth)
         )
 
-        val planList = dateItems[dateItemToUpdateIndex].planItems
+        val planList = (listItems[dateItemToUpdateIndex] as DateItem).planItems
         // Find the plan item to update
         // If item is found, update it, else create a new plan item and add it
         val planToUpdateIndex = planList.indexOfFirst { it.id == plan.id }
@@ -112,17 +125,21 @@ class MainViewModel : ViewModel() {
 
         planList.sortBy { it.date ?: it.startDate }
 
-        dateItems[dateItemToUpdateIndex].planItems = planList
+        (listItems[dateItemToUpdateIndex] as DateItem).planItems = planList
 
-        _dateItems.value = dateItems
+        _listItems.value = listItems
     }
 
-    fun countSubjectUsage(subjectIds: List<String>, dateItems: List<DateItem>) {
+    fun countSubjectUsage(subjectIds: List<String>, listItems: List<ListItem>) {
+
+        var dateItems = listItems.filter { it.getType() == ListItem.TYPE_DATE }
+        dateItems = dateItems.toDateItems()
 
         // LOL KOTLIN MAP ROCKS!!!1
-        val subjUsages =
-            dateItems.flatMap { it.planItems }.map { it.subject }
-                .map { it?.name }
+        val subjUsages = dateItems
+            .flatMap { it.planItems }
+            .map { it.subject }
+            .map { it?.name }
 
         subjectIds.forEach { subjectId ->
             val subjectCount = subjUsages.count { it == subjectId }
@@ -133,8 +150,16 @@ class MainViewModel : ViewModel() {
     }
 
     fun resetData() {
-        _dateItems.value =
-            initialDateItems(AppRepository.startDate, AppRepository.endDate)
+        _listItems.value =
+            initialListItems(AppRepository.startDate, AppRepository.endDate)
+    }
+
+    fun List<ListItem>.toDateItems(): List<DateItem> {
+        val items = ArrayList<DateItem>()
+        forEach {
+            items.add(it as DateItem)
+        }
+        return items
     }
 
     fun getSubject(name: String) = AppRepository.getSubject(name)

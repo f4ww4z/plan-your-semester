@@ -33,6 +33,13 @@
         <item name="android:textColor">@color/secondaryText</item>
     </style>
 
+    <style name="MonthDividerText" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="ThinLabelText" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/primaryText</item>
