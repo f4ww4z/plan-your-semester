@@ -57,4 +57,6 @@
     <string name="dialog_confirm_rm_subj_mes">Anda yakin ingin menghapus mapel \'%1$s\'?</string>
     <string name="success_subj_rm">"Mapel '%1$s' sukses dihapus "</string>
     <string name="fail_subj_rm">Harap hapus semua ujian atau tugas dari mapel \'%1$s\' terlebih dahulu</string>
+    <string name="no_subjects_found">Tidak ada mapel yang terdaftar!</string>
+    <string name="subjects_empty">Setidaknya 1 mapel harus terdaftar</string>
 </resources>
