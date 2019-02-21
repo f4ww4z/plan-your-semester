@@ -158,14 +158,19 @@ class OverviewFragment : Fragment(),
                     true
                 }
                 R.id.action_rm_subject -> {
-                    viewModel.subjectNames().observeOnce(Observer {
-                        val dialog = RemoveSubjectDialog().apply {
-                            listener = this@OverviewFragment
-                            subjectNames = it.toTypedArray()
+                    viewModel.subjectNames().observeOnce(Observer { names ->
+
+                        if (names.isNullOrEmpty()) {
+                            context?.showLongToast(R.string.no_subjects_found)
+                        } else {
+                            val dialog = RemoveSubjectDialog().apply {
+                                listener = this@OverviewFragment
+                                subjectNames = names.toTypedArray()
+                            }
+                            dialog.show(
+                                fragmentManager!!, "RemoveSubjectDialog"
+                            )
                         }
-                        dialog.show(
-                            fragmentManager!!, "RemoveSubjectDialog"
-                        )
                     })
                     true
                 }
@@ -184,18 +189,32 @@ class OverviewFragment : Fragment(),
 
         // Pass subject names first
         viewModel.subjectNames().observeOnce(Observer { subjectNames ->
-            val bundle = Bundle().apply {
-                putInt(AddPlanFragment.PLAN_ITEM_TYPE, position)
-                putLong(AddPlanFragment.MiNIMUM_DATE, AppRepository.minimumDate)
-                putLong(AddPlanFragment.MAXIMUM_DATE, AppRepository.maximumDate)
-                putStringArrayList(
-                    AddPlanFragment.SUBJECT_NAMES_COL,
-                    ArrayList<String>(subjectNames)
-                )
-            }
-            view?.findNavController()?.navigate(R.id.addPlanFragment, bundle)
-        })
 
+            // Check if more than 1 subject is registered when clicking Exam
+            // or Assignment
+            if (subjectNames.isNullOrEmpty() &&
+                (position == PlanItem.TYPE_EXAM || position == PlanItem.TYPE_HOMEWORK)
+            ) {
+                // Show an error message
+                context?.showLongToast(R.string.subjects_empty)
+            } else {
+                val bundle = Bundle().apply {
+                    putInt(AddPlanFragment.PLAN_ITEM_TYPE, position)
+                    putLong(
+                        AddPlanFragment.MiNIMUM_DATE, AppRepository.minimumDate
+                    )
+                    putLong(
+                        AddPlanFragment.MAXIMUM_DATE, AppRepository.maximumDate
+                    )
+                    putStringArrayList(
+                        AddPlanFragment.SUBJECT_NAMES_COL,
+                        ArrayList<String>(subjectNames)
+                    )
+                }
+                view?.findNavController()
+                    ?.navigate(R.id.addPlanFragment, bundle)
+            }
+        })
     }
 
     override fun onRFACItemLabelClick(
