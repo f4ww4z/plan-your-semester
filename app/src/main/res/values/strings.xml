@@ -66,4 +66,10 @@
     <string name="fail_subj_rm">Please remove all exams or homework of \'%1$s\' subject first</string>
     <string name="no_subjects_found">No subjects found!</string>
     <string name="subjects_empty">At least 1 subject must be registered</string>
+
+    <string name="notif_1_day_before">%1$s starts tomorrow</string>
+    <string name="notif_due_in_1_day">%1$s is due tomorrow</string>
+    <string name="channel_name">Default Channel</string>
+    <string name="channel_description">High priority channel</string>
+
 </resources>

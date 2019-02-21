@@ -189,8 +189,6 @@ class MainViewModel : ViewModel() {
     fun reminder(id: Long): LiveData<Reminder> =
         AppRepository.getReminderById(id)
 
-//TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
-
     fun addSubject(name: String, color: Int) {
         val subject = Subject(name = name, color = color)
         AppRepository.insertSubject(subject)
@@ -210,6 +208,8 @@ class MainViewModel : ViewModel() {
             endDate = endDate
         )
         AppRepository.insertExam(exam)
+        //TODO: Add notification
+
     }
 
     fun updateExam(
@@ -227,6 +227,7 @@ class MainViewModel : ViewModel() {
             endDate = endDate
         )
         AppRepository.updateExam(exam)
+        //TODO: Update notification
     }
 
     fun deleteExam(date: LocalDate, id: Long) {
