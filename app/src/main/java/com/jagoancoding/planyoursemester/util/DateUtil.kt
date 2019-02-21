@@ -19,6 +19,7 @@ import android.content.res.Resources
 import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
+import com.jagoancoding.planyoursemester.model.ListItem
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -32,6 +33,7 @@ object DateUtil {
     private const val TIME_FORMAT_STANDARD = "HH:mm"
     private const val DATE_FORMAT_DAY = "EEE"
     private const val DATE_TIME_FORMAT_STANDARD = "dd/MM/yyyy HH:mm"
+    private const val MONTH_YEAR_FORMAT = "LLLL yyyy"
 
     fun getDayOfWeek(date: LocalDate): String = date.dayOfMonth.toString()
 
@@ -132,6 +134,15 @@ object DateUtil {
         return LocalTime.of(hour, minute).format(formatter)
     }
 
-    fun List<DateItem>.findDatePositionInList(date: LocalDate): Int =
-        this.indexOfFirst { it.date.isEqual(date) }
+    fun List<ListItem>.findDatePositionInList(date: LocalDate): Int =
+        this.indexOfFirst {
+            it.getType() == ListItem.TYPE_DATE &&
+                    (it as DateItem).date.isEqual(date)
+        }
+
+    fun getFormattedMonthAndYear(month: Int, year: Int): String {
+        val date: LocalDate = LocalDate.of(year, month, 1)
+        val formatter = DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT)
+        return formatter.format(date)
+    }
 }

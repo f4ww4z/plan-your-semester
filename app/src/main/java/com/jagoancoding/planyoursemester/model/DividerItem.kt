@@ -16,14 +16,10 @@
 package com.jagoancoding.planyoursemester.model
 
 import com.jagoancoding.planyoursemester.util.DateUtil
-import org.threeten.bp.LocalDate
 
-class DateItem(
-    var date: LocalDate, var planItems: MutableList<PlanItem>
-) : ListItem() {
-    fun dayOfWeek(): String = DateUtil.getDayOfWeek(date)
 
-    fun dayName(): String = DateUtil.getDayNameFromDate(date)
+class DividerItem(var month: Int, var year: Int) : ListItem() {
+    fun monthAndYear() = DateUtil.getFormattedMonthAndYear(month, year)
 
-    override fun getType() = TYPE_DATE
+    override fun getType() = TYPE_DIVIDER
 }

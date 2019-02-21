@@ -19,13 +19,15 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.TestUtil
+import com.jagoancoding.planyoursemester.model.DateItem
+import com.jagoancoding.planyoursemester.model.ListItem
+import com.jagoancoding.planyoursemester.util.DataUtil.observeOnce
+import com.jagoancoding.planyoursemester.util.DateUtil
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import com.jagoancoding.planyoursemester.util.DataUtil.observeOnce
-import com.jagoancoding.planyoursemester.util.DateUtil
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.threeten.bp.ZoneId
@@ -52,13 +54,13 @@ open class MainViewModelTest {
     }
 
     @Test
-    fun viewModelShouldHaveInitialDateItemsWhenLoadedForTheFirstTime() {
-        val actual = viewModel.dateItems
+    fun viewModelShouldHaveInitialDateItemsPlusDividersWhenLoadedForTheFirstTime() {
+        val actual = viewModel.listItems
         val expected = TestUtil.generateSampleDateItemList(
             TestUtil.date1Start, TestUtil.date1End
         )
         actual.observeOnce(Observer { dateItems ->
-            Assert.assertEquals(expected.size, dateItems!!.size)
+            Assert.assertEquals(expected.size + 12, dateItems!!.size)
         })
     }
 
@@ -68,8 +70,9 @@ open class MainViewModelTest {
         val expected = TestUtil.generateSampleDateItemList(
             TestUtil.date1Start, TestUtil.date1End
         )
-        val actual =
-            viewModel.initialDateItems(TestUtil.date1Start, TestUtil.date1End)
+        var actual =
+            viewModel.initialListItems(TestUtil.date1Start, TestUtil.date1End)
+        actual = actual.filter { it.getType() == ListItem.TYPE_DATE }
         Assert.assertEquals(expected.size, actual.size)
     }
 
@@ -123,14 +126,21 @@ open class MainViewModelTest {
         // Reset date items
         viewModel.resetData()
 
-        // Add a new event and check if it is in the dateItems list
+        // Add a new event and check if it is in the listItems list
         val p = TestUtil.planItemEvent1
         viewModel.displayPlan(p)
 
-        viewModel.dateItems.observeOnce(Observer { dateItems ->
+        viewModel.listItems.observeOnce(Observer { listItems ->
+            val dateItems =
+                listItems.filter { it.getType() == ListItem.TYPE_DATE }
+
             val dateItemToBeAddedToIndex =
-                dateItems.indexOfFirst { it.date.isEqual(DateUtil.getDate(p.startDate!!)) }
-            val planList = dateItems[dateItemToBeAddedToIndex].planItems
+                dateItems.indexOfFirst {
+                    (it as DateItem).date.isEqual(DateUtil.getDate(p.startDate!!))
+                }
+            val planList =
+                (dateItems[dateItemToBeAddedToIndex] as DateItem).planItems
+
             Assert.assertTrue(planList.contains(p))
         })
     }
@@ -140,15 +150,23 @@ open class MainViewModelTest {
         // Reset date items
         viewModel.resetData()
 
+        // Test a Reminder
         val p = TestUtil.planItemReminder1
         viewModel.displayPlan(p)
 
-        viewModel.dateItems.observeOnce(Observer { dateItems ->
+        viewModel.listItems.observeOnce(Observer { listItems ->
+            val dateItems =
+                listItems.filter { it.getType() == ListItem.TYPE_DATE }
+
             val updatedDateItemIndex =
-                dateItems.indexOfFirst { it.date.isEqual(DateUtil.getDate(p.date!!)) }
+                dateItems.indexOfFirst {
+                    (it as DateItem).date.isEqual(DateUtil.getDate(p.date!!))
+                }
             Assert.assertNotEquals(-1, updatedDateItemIndex)
 
-            val planList = dateItems[updatedDateItemIndex].planItems
+            val planList =
+                (dateItems[updatedDateItemIndex] as DateItem).planItems
+
             Assert.assertTrue(planList.contains(p))
         })
     }
@@ -165,11 +183,18 @@ open class MainViewModelTest {
         // Remove the event
         viewModel.removePlanItemFromView(DateUtil.getDate(p.startDate!!), p.id)
 
-        viewModel.dateItems.observeOnce(Observer { dateItems ->
+        viewModel.listItems.observeOnce(Observer { listItems ->
+            val dateItems =
+                listItems.filter { it.getType() == ListItem.TYPE_DATE }
+
             val deletedDateItemIndex =
-                dateItems.indexOfFirst { it.date.isEqual(DateUtil.getDate(p.startDate!!)) }
+                dateItems.indexOfFirst {
+                    (it as DateItem).date.isEqual(DateUtil.getDate(p.startDate!!))
+                }
             Assert.assertNotEquals(-1, deletedDateItemIndex)
-            val planList = dateItems[deletedDateItemIndex].planItems
+
+            val planList =
+                (dateItems[deletedDateItemIndex] as DateItem).planItems
             Assert.assertFalse(planList.contains(p))
         })
     }

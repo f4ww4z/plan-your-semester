@@ -30,6 +30,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
+import com.jagoancoding.planyoursemester.model.DividerItem
+import com.jagoancoding.planyoursemester.model.ListItem
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.util.ViewUtil.calculatePx
@@ -37,8 +39,8 @@ import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
 import com.jagoancoding.planyoursemester.util.ViewUtil.setDrawableColor
 import com.jagoancoding.planyoursemester.util.ViewUtil.setTextAndGoneIfEmpty
 
-class DateAdapter(private var data: List<DateItem>) :
-    RecyclerView.Adapter<DateAdapter.ViewHolder>() {
+class DateAdapter(private var consolidatedData: List<ListItem>) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val BASE_PLAN_ITEM_ID = 250601
@@ -46,40 +48,74 @@ class DateAdapter(private var data: List<DateItem>) :
 
     private lateinit var inflater: LayoutInflater
 
-    class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
+    // View holder for month divider
+    class MonthViewHolder(root: View) : RecyclerView.ViewHolder(root) {
+        val monthAndYearTV: TextView = root.findViewById(R.id.tv_month_and_year)
+    }
+
+    // View holder for normal date rows
+    class NormalViewHolder(root: View) : RecyclerView.ViewHolder(root) {
         val dayTV: TextView = root.findViewById(R.id.tv_day)
         val day2TV: TextView = root.findViewById(R.id.tv_day2)
         val planItemsRL: RelativeLayout = root.findViewById(R.id.rl_plan_items)
     }
 
     override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ViewHolder {
+        parent: ViewGroup, viewType: Int
+    ): RecyclerView.ViewHolder {
         inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.date_card, parent, false)
-        return ViewHolder(view)
+
+        val viewHolder: RecyclerView.ViewHolder
+
+        if (viewType == ListItem.TYPE_DATE) {
+            val view = inflater.inflate(R.layout.date_card, parent, false)
+            viewHolder = NormalViewHolder(view)
+        } else {
+            val view =
+                inflater.inflate(R.layout.month_divider, parent, false)
+            viewHolder = MonthViewHolder(view)
+        }
+        return viewHolder
     }
 
-    override fun getItemCount() = data.size
+    override fun getItemCount() = consolidatedData.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val dateItem = data[position]
-        with(holder) {
-            dayTV.text = dateItem.dayOfWeek()
-            day2TV.text = dateItem.dayName()
-            planItemsRL.removeAllViewsInLayout()
+    override fun getItemViewType(position: Int): Int =
+        consolidatedData[position].getType()
 
-            for (i in dateItem.planItems.indices) {
-                planItemsRL.addItemView(
-                    dateItem.planItems[i], i, itemView.resources
-                )
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder, position: Int
+    ) {
+        when (holder.itemViewType) {
+            ListItem.TYPE_DATE -> {
+                val dateItem: DateItem = consolidatedData[position] as DateItem
+                val viewHolder: NormalViewHolder = holder as NormalViewHolder
+
+                with(viewHolder) {
+                    dayTV.text = dateItem.dayOfWeek()
+                    day2TV.text = dateItem.dayName()
+                    planItemsRL.removeAllViewsInLayout()
+
+                    for (i in dateItem.planItems.indices) {
+                        planItemsRL.addItemView(
+                            dateItem.planItems[i], i, itemView.resources
+                        )
+                    }
+                }
+            }
+            ListItem.TYPE_DIVIDER -> {
+                val divItem: DividerItem =
+                    consolidatedData[position] as DividerItem
+                val viewHolder: MonthViewHolder = holder as MonthViewHolder
+
+                viewHolder.monthAndYearTV.text = divItem.monthAndYear()
             }
         }
+
     }
 
-    fun setData(newData: List<DateItem>) {
-        data = newData
+    fun setData(newData: List<ListItem>) {
+        consolidatedData = newData
         notifyDataSetChanged()
     }
 

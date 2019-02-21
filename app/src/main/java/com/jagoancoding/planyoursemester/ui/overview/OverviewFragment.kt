@@ -105,12 +105,12 @@ class OverviewFragment : Fragment(),
             .build()
 
         // Set recylerview adapter's data to updated data
-        viewModel.dateItems.observe(this, Observer { dateItems ->
-            (overviewRV!!.adapter as DateAdapter).setData(dateItems)
+        viewModel.listItems.observe(this, Observer { listItems ->
+            (overviewRV!!.adapter as DateAdapter).setData(listItems)
 
             viewModel.subjectNames()
                 .observe(this, Observer { subjectNames ->
-                    viewModel.countSubjectUsage(subjectNames, dateItems)
+                    viewModel.countSubjectUsage(subjectNames, listItems)
                 })
         })
 
@@ -257,7 +257,7 @@ class OverviewFragment : Fragment(),
     }
 
     private fun RecyclerView.scrollToDate(date: LocalDate) {
-        viewModel.dateItems.observe(this@OverviewFragment, Observer {
+        viewModel.listItems.observe(this@OverviewFragment, Observer {
             val position = it?.findDatePositionInList(date)
 
             if (position != null) {

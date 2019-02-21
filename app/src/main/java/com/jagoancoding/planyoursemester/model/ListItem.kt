@@ -15,15 +15,12 @@
 
 package com.jagoancoding.planyoursemester.model
 
-import com.jagoancoding.planyoursemester.util.DateUtil
-import org.threeten.bp.LocalDate
+abstract class ListItem {
 
-class DateItem(
-    var date: LocalDate, var planItems: MutableList<PlanItem>
-) : ListItem() {
-    fun dayOfWeek(): String = DateUtil.getDayOfWeek(date)
+    companion object {
+        const val TYPE_DATE = 113534521
+        const val TYPE_DIVIDER = 112312415
+    }
 
-    fun dayName(): String = DateUtil.getDayNameFromDate(date)
-
-    override fun getType() = TYPE_DATE
+    abstract fun getType(): Int
 }
