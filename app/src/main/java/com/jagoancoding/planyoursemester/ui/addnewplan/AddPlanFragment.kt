@@ -42,6 +42,7 @@ import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.ui.overview.OverviewFragment
 import com.jagoancoding.planyoursemester.util.DateUtil
+import com.jagoancoding.planyoursemester.util.Notifier
 import com.jagoancoding.planyoursemester.util.ToastUtil.showLongToast
 import com.jagoancoding.planyoursemester.util.ViewUtil
 import com.jagoancoding.planyoursemester.util.ViewUtil.checkIfEmptyAndGetText
@@ -142,7 +143,13 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             validateInput()
             if (isValidated) {
                 view!!.clearFocus()
-                navigateToOverviewScreen(view)
+                navigateToOverviewScreen(view!!)
+
+                Notifier.notifyUserAt(
+                    AppRepository.currentDateTime.toLocalDateTime(),
+                    vm.currentPlanItem!!.name,
+                    "description text lah"
+                )
             }
             true
         }
@@ -206,14 +213,20 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             ContextCompat.getDrawable(context!!, R.drawable.ic_arrow_back_24dp)
         toolbar?.setNavigationOnClickListener {
             navigateToOverviewScreen(view!!)
+
+            Notifier.notifyUserAt(
+                AppRepository.currentDateTime.toLocalDateTime(),
+                "Random name",
+                "description text lah"
+            )
         }
 
         toolbar?.inflateMenu(R.menu.add_plan_menu)
         toolbar?.setOnMenuItemClickListener(this)
     }
 
-    private fun navigateToOverviewScreen(currentView: View?) {
-        val navController = currentView?.findNavController()
+    private fun navigateToOverviewScreen(currentView: View) {
+        val navController = currentView.findNavController()
         val bundle = Bundle().apply {
             if (vm.scrollToDate != null) {
                 putLong(
@@ -221,7 +234,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 )
             }
         }
-        navController?.navigate(R.id.overviewFragment, bundle)
+        navController.navigate(R.id.overviewFragment, bundle)
     }
 
     private fun showPlanDeleteDialog(context: Context, plan: PlanItem) {
