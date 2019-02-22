@@ -46,7 +46,7 @@ class MainViewModel : ViewModel() {
 
     var currentPlanItemType: Int = 0
     var currentPlanItem: PlanItem? = null
-    var scrollToDate: LocalDate? = null
+    var scrollToDate: Long? = null
 
     private var _listItems = MutableLiveData<List<ListItem>>()
     val listItems: LiveData<List<ListItem>>

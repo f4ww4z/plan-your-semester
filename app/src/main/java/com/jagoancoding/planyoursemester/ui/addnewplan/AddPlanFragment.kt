@@ -29,6 +29,7 @@ import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProviders
@@ -39,6 +40,7 @@ import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
+import com.jagoancoding.planyoursemester.ui.overview.OverviewFragment
 import com.jagoancoding.planyoursemester.util.DateUtil
 import com.jagoancoding.planyoursemester.util.ToastUtil.showLongToast
 import com.jagoancoding.planyoursemester.util.ViewUtil
@@ -140,8 +142,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             validateInput()
             if (isValidated) {
                 view!!.clearFocus()
-                val navController = view!!.findNavController()
-                navController.navigate(R.id.overviewFragment)
+                navigateToOverviewScreen(view)
             }
             true
         }
@@ -196,16 +197,32 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         }
 
         if (vm.currentPlanItem != null) {
-            vm.scrollToDate = DateUtil.getDate(
-                vm.currentPlanItem!!.date
-                    ?: vm.currentPlanItem!!.startDate!!
-            )
+            vm.scrollToDate =
+                vm.currentPlanItem!!.date ?: vm.currentPlanItem!!.startDate!!
+        }
+
+        // Handle up navigation
+        toolbar?.navigationIcon =
+            ContextCompat.getDrawable(context!!, R.drawable.ic_arrow_back_24dp)
+        toolbar?.setNavigationOnClickListener {
+            navigateToOverviewScreen(view!!)
         }
 
         toolbar?.inflateMenu(R.menu.add_plan_menu)
         toolbar?.setOnMenuItemClickListener(this)
     }
 
+    private fun navigateToOverviewScreen(currentView: View?) {
+        val navController = currentView?.findNavController()
+        val bundle = Bundle().apply {
+            if (vm.scrollToDate != null) {
+                putLong(
+                    OverviewFragment.KEY_SCROLL_TO_DATE, vm.scrollToDate!!
+                )
+            }
+        }
+        navController?.navigate(R.id.overviewFragment, bundle)
+    }
 
     private fun showPlanDeleteDialog(context: Context, plan: PlanItem) {
         with(plan) {

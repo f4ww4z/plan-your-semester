@@ -17,9 +17,12 @@ package com.jagoancoding.planyoursemester.util
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.jagoancoding.planyoursemester.OverviewActivity
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
 import org.threeten.bp.LocalDateTime
@@ -73,22 +76,30 @@ object Notifier {
     private fun notifyUserAt(
         context: Context, dt: LocalDateTime, title: String, content: String
     ) {
-        createDefaultNotificationChannel(context)
-
         //TODO: Take user to Overview fragment and scroll to its date
+        val intent = Intent(context, OverviewActivity::class.java).apply {
+            flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent: PendingIntent =
+            PendingIntent.getActivity(context, 0, intent, 0)
+
         var builder =
             NotificationCompat.Builder(context, NORMAL_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(null)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)!!
     }
 
     /**
      * Create the NotificationChannel, but only on API 26+ because
      * the NotificationChannel class is new and not in the support library
      */
-    private fun createDefaultNotificationChannel(context: Context) {
+    fun createDefaultNotificationChannel(context: Context) {
         with(context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val name = getString(R.string.channel_name)

@@ -16,6 +16,7 @@
 package com.jagoancoding.planyoursemester
 
 import android.app.Application
+import com.jagoancoding.planyoursemester.util.Notifier
 import com.jakewharton.threetenabp.AndroidThreeTen
 
 class App : Application() {
@@ -29,5 +30,6 @@ class App : Application() {
         super.onCreate()
         AndroidThreeTen.init(this)
         AppRepository.init(this)
+        Notifier.createDefaultNotificationChannel(this)
     }
 }

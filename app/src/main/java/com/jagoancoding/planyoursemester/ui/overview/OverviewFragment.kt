@@ -39,6 +39,7 @@ import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.MainViewModel
 import com.jagoancoding.planyoursemester.ui.addnewplan.AddPlanFragment
 import com.jagoancoding.planyoursemester.util.DataUtil.observeOnce
+import com.jagoancoding.planyoursemester.util.DateUtil
 import com.jagoancoding.planyoursemester.util.DateUtil.findDatePositionInList
 import com.jagoancoding.planyoursemester.util.ToastUtil.showLongToast
 import com.jagoancoding.planyoursemester.util.ViewUtil.getColorByResId
@@ -56,6 +57,7 @@ class OverviewFragment : Fragment(),
 
     companion object {
         const val TAG = "OverviewFragment"
+        const val KEY_SCROLL_TO_DATE = "SCROLL TO DATE"
         fun newInstance() = OverviewFragment()
     }
 
@@ -85,10 +87,19 @@ class OverviewFragment : Fragment(),
         overviewRV = view?.findViewById(R.id.rv_overview)
         dateAdapter = DateAdapter(ArrayList())
 
+        // Get the date to scroll to in the Overview screen
+        val scrollToDateEpoch = arguments?.getLong(KEY_SCROLL_TO_DATE)
+        val scrollToDate =
+            if (scrollToDateEpoch == null)
+                null
+            else
+                DateUtil.getDate(scrollToDateEpoch)
+
         overviewRV?.apply {
             layoutManager = LinearLayoutManager(this.context)
             adapter = dateAdapter
-            scrollToDate(viewModel.scrollToDate ?: AppRepository.today)
+
+            scrollToDate(scrollToDate ?: AppRepository.today)
         }
 
         // Set up extended FAB
@@ -276,7 +287,7 @@ class OverviewFragment : Fragment(),
     }
 
     private fun RecyclerView.scrollToDate(date: LocalDate) {
-        viewModel.listItems.observe(this@OverviewFragment, Observer {
+        viewModel.listItems.observeOnce(Observer {
             val position = it?.findDatePositionInList(date)
 
             if (position != null) {
