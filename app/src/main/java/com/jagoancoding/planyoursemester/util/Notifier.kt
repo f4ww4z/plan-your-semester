@@ -52,10 +52,10 @@ object Notifier {
     private const val NOTIF_CONTENT_TEXT = "NOTIFICATION_TEXT"
     private const val NOTIF_DATETIME = "NOTIFICATION_DATE_TIME"
 
+    const val BASE_NOTIFICATION_ID_COUNT: Int = 1640
+
     private var notificationWorks = hashMapOf<String, Long>()
     private var notifications = hashMapOf<Int, Long>()
-    private var newNotificationId: Int = 1640
-        get() = field++
 
     /**
      * Create the NotificationChannel, but only on API 26+ because
@@ -189,7 +189,7 @@ object Notifier {
                     .build()!!
 
             // Show the notification
-            val id = newNotificationId
+            val id = DataUtil.getNotifIdCounter()
             NotificationManagerCompat.from(context)
                 .notify(id, mNotification)
 
@@ -197,7 +197,7 @@ object Notifier {
             notifications[id] = epoch
 
             Log.i(TAG, "Notifications: $notifications")
-            Log.i(TAG, "Showing notification '$title'...")
+            Log.i(TAG, "Showing notification: '$title'")
             return Result.success()
         }
 

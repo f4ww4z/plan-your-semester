@@ -15,10 +15,42 @@
 
 package com.jagoancoding.planyoursemester.util
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 
 object DataUtil {
+
+    private const val PREFERENCES_DEFAULT = "DEFAULT_PREFERENCES"
+    private const val NOTIF_ID_COUNTER = "NOTIFICATION_ID_COUNTER"
+
+    lateinit var prefs: SharedPreferences
+
+    fun init(applicationContext: Context) {
+        prefs = applicationContext.getSharedPreferences(
+            PREFERENCES_DEFAULT, Context.MODE_PRIVATE
+        )
+
+        setNotifIdCounter(Notifier.BASE_NOTIFICATION_ID_COUNT)
+    }
+
+    fun getNotifIdCounter(): Int {
+        val counter = prefs.getInt(NOTIF_ID_COUNTER, 0)
+
+        // Increase id by 1
+        prefs.edit().apply {
+            putInt(NOTIF_ID_COUNTER, counter + 1)
+        }.apply()
+
+        return counter
+    }
+
+    private fun setNotifIdCounter(number: Int) {
+        prefs.edit().apply {
+            putInt(NOTIF_ID_COUNTER, number)
+        }.apply()
+    }
 
     fun <T> LiveData<T>.observeOnce(observer: Observer<T>) {
         observeForever(object : Observer<T> {
