@@ -20,23 +20,31 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.Constraints
 import androidx.work.Data
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.OverviewActivity
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.overview.OverviewFragment
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 object Notifier {
+
+    private const val TAG = "Notifier"
 
     private const val NORMAL_CHANNEL_ID = "Default High Priority Channel 101"
 
@@ -122,8 +130,11 @@ object Notifier {
      * @param text the notification's description (appears below title)
      */
     fun notifyUserAt(dt: LocalDateTime, title: String, text: String) {
-        val epoch = DateUtil.toEpochMili(dt.toLocalDate())
-        val delay = epoch - System.currentTimeMillis()
+        val epoch = DateUtil.toEpochMilli(dt)
+        val now = DateUtil.toEpochMilli(
+            ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime()
+        )
+        val delay = epoch - now + 10
 
         val data: Data = Data.Builder()
             .putString(NOTIF_TITLE, title)
@@ -131,8 +142,14 @@ object Notifier {
             .putLong(NOTIF_DATETIME, epoch)
             .build()
 
+        val constraints: Constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+            .setRequiresCharging(false)
+            .build()
+
         val notificationWork = OneTimeWorkRequestBuilder<NotificationWorker>()
             .setInputData(data)
+            .setConstraints(constraints)
             .setInitialDelay(delay, TimeUnit.MILLISECONDS)
             .build()
 
@@ -149,6 +166,7 @@ object Notifier {
 
         override fun doWork(): Result {
 
+            //TODO: Fix notification not showing up. Read: Debug
             // Get data
             val title = inputData.getString(NOTIF_TITLE)
             val contentText = inputData.getString(NOTIF_CONTENT_TEXT)
@@ -159,11 +177,18 @@ object Notifier {
                 NotificationCompat.Builder(context, NORMAL_CHANNEL_ID)
                     .setContentTitle(title)
                     .setContentText(contentText)
+                    .setSmallIcon(R.drawable.cal_notification_icon)
+                    .setLargeIcon(
+                        BitmapFactory.decodeResource(
+                            context.resources, R.drawable.cal_notification_icon
+                        )
+                    )
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setContentIntent(overviewScreenIntent(context, epoch))
                     .setAutoCancel(true)
                     .build()!!
 
+            // Show the notification
             val id = newNotificationId
             NotificationManagerCompat.from(context)
                 .notify(id, mNotification)
@@ -171,6 +196,8 @@ object Notifier {
             // Store the notification id for later use
             notifications[id] = epoch
 
+            Log.i(TAG, "Notifications: $notifications")
+            Log.i(TAG, "Showing notification '$title'...")
             return Result.success()
         }
 

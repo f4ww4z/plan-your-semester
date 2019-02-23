@@ -99,6 +99,9 @@ object DateUtil {
         else -> 0L
     }
 
+    fun toEpochMilli(dateTime: LocalDateTime): Long =
+        dateTime.atZone(AppRepository.zoneId).toInstant().toEpochMilli()
+
     fun parseDateTime(date: String): LocalDateTime {
         val formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_STANDARD)
         return LocalDateTime.parse(date, formatter)

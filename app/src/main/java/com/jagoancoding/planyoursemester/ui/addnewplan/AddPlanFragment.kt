@@ -46,6 +46,7 @@ import com.jagoancoding.planyoursemester.util.Notifier
 import com.jagoancoding.planyoursemester.util.ToastUtil.showLongToast
 import com.jagoancoding.planyoursemester.util.ViewUtil
 import com.jagoancoding.planyoursemester.util.ViewUtil.checkIfEmptyAndGetText
+import org.threeten.bp.ZonedDateTime
 
 /**
  * A simple [Fragment] subclass.
@@ -146,8 +147,8 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 navigateToOverviewScreen(view!!)
 
                 Notifier.notifyUserAt(
-                    AppRepository.currentDateTime.toLocalDateTime(),
-                    vm.currentPlanItem!!.name,
+                    ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime(),
+                    "Random name",
                     "description text lah"
                 )
             }
@@ -215,7 +216,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             navigateToOverviewScreen(view!!)
 
             Notifier.notifyUserAt(
-                AppRepository.currentDateTime.toLocalDateTime(),
+                ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime(),
                 "Random name",
                 "description text lah"
             )
