@@ -52,6 +52,9 @@ object Notifier {
     private const val NOTIF_CONTENT_TEXT = "NOTIFICATION_TEXT"
     private const val NOTIF_DATETIME = "NOTIFICATION_DATE_TIME"
 
+    const val NOTIFICATIONS_MAP_FILE = "notifications_map.dat"
+    const val NOTIFICATION_WORKERS_MAP_FILE = "notification_workers.dat"
+
     const val BASE_NOTIFICATION_ID_COUNT: Int = 1640
 
     private var notificationWorks = hashMapOf<String, Long>()

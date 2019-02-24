@@ -19,6 +19,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 
 object DataUtil {
 
@@ -50,6 +54,30 @@ object DataUtil {
         prefs.edit().apply {
             putInt(NOTIF_ID_COUNTER, number)
         }.apply()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun getNotificationsMap(): HashMap<Int, Long> {
+        val fis = FileInputStream(Notifier.NOTIFICATIONS_MAP_FILE)
+        val ois = ObjectInputStream(fis)
+        val map: HashMap<Int, Long> = ois.readObject() as HashMap<Int, Long>
+        ois.close()
+        return map
+    }
+
+    fun setNotificationOfId(id: Int, epoch: Long) {
+        val fos = FileOutputStream(Notifier.NOTIFICATIONS_MAP_FILE)
+        val oos = ObjectOutputStream(fos)
+        val updatedNotificationsMap = getNotificationsMap()
+        updatedNotificationsMap[id] = epoch
+        oos.writeObject(updatedNotificationsMap)
+        oos.close()
+    }
+
+    fun newNotificationId(): Int {
+        val notifications = getNotificationsMap()
+        val latestId = notifications.keys.max()
+        return if (latestId == null) Notifier.BASE_NOTIFICATION_ID_COUNT else latestId + 1
     }
 
     fun <T> LiveData<T>.observeOnce(observer: Observer<T>) {
