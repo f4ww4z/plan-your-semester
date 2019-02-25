@@ -30,6 +30,7 @@ object DataUtil {
 
     private const val MAP_SPLITTER = ","
     private const val MAP_INT_LONG_FORMAT = "%d$MAP_SPLITTER%d"
+    private const val MAP_STRING_LONG_FORMAT = "%s$MAP_SPLITTER%d"
 
     lateinit var prefs: SharedPreferences
 
@@ -59,19 +60,28 @@ object DataUtil {
     }
 
     fun getNotificationsMap(context: Context): HashMap<Int, Long> {
-        val file = File(context.filesDir, Notifier.NOTIFICATIONS_MAP_FILE)
+        val data = readFile(Notifier.NOTIFICATIONS_MAP_FILE, context)
+
+        return toIntLongMap(data)
+    }
+
+    fun getNotificationWorksMap(context: Context): HashMap<String, Long> {
+        val data =
+            readFile(Notifier.NOTIFICATION_WORKERS_MAP_FILE, context)
+
+        return toStringLongMap(data)
+    }
+
+    private fun readFile(filePath: String, context: Context): List<String> {
+        val file = File(context.filesDir, filePath)
 
         // If file doesn't exist, create it
-        if (!file.exists()) {
-            file.bufferedWriter().use { it.write("") }
-            return hashMapOf()
-        }
+        file.createNewFile()
 
         val br = file.bufferedReader()
         val data = br.readLines()
         br.close()
-
-        return toIntLongMap(data)
+        return data
     }
 
     fun setNotificationOfId(id: Int, epoch: Long, context: Context) {
@@ -79,15 +89,15 @@ object DataUtil {
         updatedNotificationsMap[id] = epoch
         val data = updatedNotificationsMap.toMappedString()
 
-        val fos = context.openFileOutput(
-            Notifier.NOTIFICATIONS_MAP_FILE, Context.MODE_PRIVATE
-        )!!
-        fos.bufferedWriter().use { out ->
-            data.forEach {
-                out.write(it)
-                out.newLine()
-            }
-        }
+        writeListToFile(Notifier.NOTIFICATIONS_MAP_FILE, data, context)
+    }
+
+    fun setNotificationWorkOfId(id: String, epoch: Long, context: Context) {
+        val currentWorksMap = getNotificationWorksMap(context)
+        currentWorksMap[id] = epoch
+        val data = currentWorksMap.toMappedString()
+
+        writeListToFile(Notifier.NOTIFICATION_WORKERS_MAP_FILE, data, context)
     }
 
     fun newNotificationId(context: Context): Int {
@@ -99,10 +109,29 @@ object DataUtil {
         return latestId + 1
     }
 
-    private fun HashMap<Int, Long>.toMappedString(): List<String> {
+    private fun writeListToFile(
+        filePath: String, data: List<String>, context: Context
+    ) {
+        val fos = context.openFileOutput(
+            filePath, Context.MODE_PRIVATE
+        )!!
+        fos.bufferedWriter().use { out ->
+            data.forEach {
+                out.write(it)
+                out.newLine()
+            }
+        }
+    }
+
+    private fun <T> HashMap<T, Long>.toMappedString(): List<String> {
         val data = mutableListOf<String>()
         forEach {
-            val line = MAP_INT_LONG_FORMAT.format(it.key, it.value)
+            val line =
+                if (it.key is Int)
+                    MAP_INT_LONG_FORMAT.format(it.key, it.value)
+                else
+                    MAP_STRING_LONG_FORMAT.format(it.key, it.value)
+
             data.add(line)
         }
         return data
@@ -117,6 +146,21 @@ object DataUtil {
         data.forEach {
             val parts = it.split(MAP_SPLITTER)
             val key = parts[0].toInt()
+            val value = parts[1].toLong()
+            map[key] = value
+        }
+        return map
+    }
+
+    private fun toStringLongMap(data: List<String>): HashMap<String, Long> {
+        if (data.isNullOrEmpty() || data[0].isEmpty()) {
+            return hashMapOf()
+        }
+
+        val map = hashMapOf<String, Long>()
+        data.forEach {
+            val parts = it.split(MAP_SPLITTER)
+            val key = parts[0]
             val value = parts[1].toLong()
             map[key] = value
         }

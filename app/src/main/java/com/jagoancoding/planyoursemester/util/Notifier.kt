@@ -53,11 +53,9 @@ object Notifier {
     private const val NOTIF_DATETIME = "NOTIFICATION_DATE_TIME"
 
     const val NOTIFICATIONS_MAP_FILE = "notifications_map.txt"
-    const val NOTIFICATION_WORKERS_MAP_FILE = "notification_workers.dat"
+    const val NOTIFICATION_WORKERS_MAP_FILE = "notification_workers.txt"
 
     const val BASE_NOTIFICATION_ID_COUNT: Int = 1640
-
-    private var notificationWorks = hashMapOf<String, Long>()
 
     /**
      * Create the NotificationChannel, but only on API 26+ because
@@ -157,8 +155,6 @@ object Notifier {
 
         //TODO: Get the work's Id and update it when the user updates the plan or adds a new plan
         //TODO: And remove the work if user removes plan
-        val workId = "${notificationWork.id}"
-        notificationWorks[workId] = epoch
 
         WorkManager.getInstance().enqueue(notificationWork)
     }
@@ -167,12 +163,19 @@ object Notifier {
         Worker(context, params) {
 
         override fun doWork(): Result {
-
-            //TODO: Fix notification not showing up. Read: Debug
             // Get data
             val title = inputData.getString(NOTIF_TITLE)
             val contentText = inputData.getString(NOTIF_CONTENT_TEXT)
             val epoch = inputData.getLong(NOTIF_DATETIME, 0)
+
+            // Store the worker id
+            DataUtil.setNotificationWorkOfId("$id", epoch, context)
+            Log.i(
+                TAG,
+                "Notification workers: ${DataUtil.getNotificationWorksMap(
+                    context
+                )}"
+            )
 
             // Build the notification
             val mNotification =
