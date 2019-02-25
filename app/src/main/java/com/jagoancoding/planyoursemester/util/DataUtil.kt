@@ -19,15 +19,17 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
+import java.io.File
 
 object DataUtil {
 
+    private const val TAG = "DataUtil"
+
     private const val PREFERENCES_DEFAULT = "DEFAULT_PREFERENCES"
     private const val NOTIF_ID_COUNTER = "NOTIFICATION_ID_COUNTER"
+
+    private const val MAP_SPLITTER = ","
+    private const val MAP_INT_LONG_FORMAT = "%d$MAP_SPLITTER%d"
 
     lateinit var prefs: SharedPreferences
 
@@ -56,28 +58,69 @@ object DataUtil {
         }.apply()
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun getNotificationsMap(): HashMap<Int, Long> {
-        val fis = FileInputStream(Notifier.NOTIFICATIONS_MAP_FILE)
-        val ois = ObjectInputStream(fis)
-        val map: HashMap<Int, Long> = ois.readObject() as HashMap<Int, Long>
-        ois.close()
-        return map
+    fun getNotificationsMap(context: Context): HashMap<Int, Long> {
+        val file = File(context.filesDir, Notifier.NOTIFICATIONS_MAP_FILE)
+
+        // If file doesn't exist, create it
+        if (!file.exists()) {
+            file.bufferedWriter().use { it.write("") }
+            return hashMapOf()
+        }
+
+        val br = file.bufferedReader()
+        val data = br.readLines()
+        br.close()
+
+        return toIntLongMap(data)
     }
 
-    fun setNotificationOfId(id: Int, epoch: Long) {
-        val fos = FileOutputStream(Notifier.NOTIFICATIONS_MAP_FILE)
-        val oos = ObjectOutputStream(fos)
-        val updatedNotificationsMap = getNotificationsMap()
+    fun setNotificationOfId(id: Int, epoch: Long, context: Context) {
+        val updatedNotificationsMap = getNotificationsMap(context)
         updatedNotificationsMap[id] = epoch
-        oos.writeObject(updatedNotificationsMap)
-        oos.close()
+        val data = updatedNotificationsMap.toMappedString()
+
+        val fos = context.openFileOutput(
+            Notifier.NOTIFICATIONS_MAP_FILE, Context.MODE_PRIVATE
+        )!!
+        fos.bufferedWriter().use { out ->
+            data.forEach {
+                out.write(it)
+                out.newLine()
+            }
+        }
     }
 
-    fun newNotificationId(): Int {
-        val notifications = getNotificationsMap()
-        val latestId = notifications.keys.max()
-        return if (latestId == null) Notifier.BASE_NOTIFICATION_ID_COUNT else latestId + 1
+    fun newNotificationId(context: Context): Int {
+        val notifications = getNotificationsMap(context)
+        if (notifications.isNullOrEmpty()) {
+            return Notifier.BASE_NOTIFICATION_ID_COUNT
+        }
+        val latestId = notifications.keys.max()!!
+        return latestId + 1
+    }
+
+    private fun HashMap<Int, Long>.toMappedString(): List<String> {
+        val data = mutableListOf<String>()
+        forEach {
+            val line = MAP_INT_LONG_FORMAT.format(it.key, it.value)
+            data.add(line)
+        }
+        return data
+    }
+
+    private fun toIntLongMap(data: List<String>): HashMap<Int, Long> {
+        if (data.isNullOrEmpty() || data[0].isEmpty()) {
+            return hashMapOf()
+        }
+
+        val map = hashMapOf<Int, Long>()
+        data.forEach {
+            val parts = it.split(MAP_SPLITTER)
+            val key = parts[0].toInt()
+            val value = parts[1].toLong()
+            map[key] = value
+        }
+        return map
     }
 
     fun <T> LiveData<T>.observeOnce(observer: Observer<T>) {

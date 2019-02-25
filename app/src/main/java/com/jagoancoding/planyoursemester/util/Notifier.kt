@@ -52,13 +52,12 @@ object Notifier {
     private const val NOTIF_CONTENT_TEXT = "NOTIFICATION_TEXT"
     private const val NOTIF_DATETIME = "NOTIFICATION_DATE_TIME"
 
-    const val NOTIFICATIONS_MAP_FILE = "notifications_map.dat"
+    const val NOTIFICATIONS_MAP_FILE = "notifications_map.txt"
     const val NOTIFICATION_WORKERS_MAP_FILE = "notification_workers.dat"
 
     const val BASE_NOTIFICATION_ID_COUNT: Int = 1640
 
     private var notificationWorks = hashMapOf<String, Long>()
-    private var notifications = hashMapOf<Int, Long>()
 
     /**
      * Create the NotificationChannel, but only on API 26+ because
@@ -137,7 +136,7 @@ object Notifier {
         val now = DateUtil.toEpochMilli(
             ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime()
         )
-        val delay = epoch - now + 10
+        val delay = epoch - now + 2
 
         val data: Data = Data.Builder()
             .putString(NOTIF_TITLE, title)
@@ -173,7 +172,7 @@ object Notifier {
             // Get data
             val title = inputData.getString(NOTIF_TITLE)
             val contentText = inputData.getString(NOTIF_CONTENT_TEXT)
-            val epoch = inputData.getLong(NOTIF_DATETIME, 0L)
+            val epoch = inputData.getLong(NOTIF_DATETIME, 0)
 
             // Build the notification
             val mNotification =
@@ -192,14 +191,16 @@ object Notifier {
                     .build()!!
 
             // Show the notification
-            val id = DataUtil.getNotifIdCounter()
+            val id = DataUtil.newNotificationId(context)
             NotificationManagerCompat.from(context)
                 .notify(id, mNotification)
 
             // Store the notification id for later use
-            notifications[id] = epoch
+            DataUtil.setNotificationOfId(id, epoch, context)
 
-            Log.i(TAG, "Notifications: $notifications")
+            Log.i(
+                TAG, "Notifications: ${DataUtil.getNotificationsMap(context)}"
+            )
             Log.i(TAG, "Showing notification: '$title'")
             return Result.success()
         }
