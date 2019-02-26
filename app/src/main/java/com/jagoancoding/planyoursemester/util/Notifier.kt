@@ -110,17 +110,18 @@ object Notifier {
             }
             else -> {
                 epoch = planItem.date!!
-                content = context.getString(
-                    R.string.notif_1_day_before,
-                    context.getString(R.string.reminder_label)
-                )
+                content = context.getString(R.string.starts_tomorrow)
             }
         }
 
         val date: LocalDateTime = DateUtil.getDateTime(epoch)
         val oneDayBefore: LocalDateTime = date.minusDays(1)
+        val now: LocalDateTime =
+            ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime()
 
-        notifyUserAt(oneDayBefore, planItem.name, content)
+        if (oneDayBefore.isAfter(now)) {
+            notifyUserAt(oneDayBefore, planItem.name, content)
+        }
     }
 
     /**
@@ -129,7 +130,7 @@ object Notifier {
      * @param title the notification's title
      * @param text the notification's description (appears below title)
      */
-    fun notifyUserAt(dt: LocalDateTime, title: String, text: String) {
+    private fun notifyUserAt(dt: LocalDateTime, title: String, text: String) {
         val epoch = DateUtil.toEpochMilli(dt)
         val now = DateUtil.toEpochMilli(
             ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime()

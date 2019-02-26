@@ -206,10 +206,18 @@ class MainViewModel : ViewModel() {
             subjectName = subjectName,
             startDate = startDate,
             endDate = endDate
-        )
-        AppRepository.insertExam(exam)
-        //TODO: Add notification
+        ).apply {
+            currentPlanItem = ExamWithSubject(
+                exam_id,
+                subjectName,
+                0, // this color is NOT the real subject color
+                name,
+                startDate,
+                endDate
+            ).toPlanItem()
+        }
 
+        AppRepository.insertExam(exam)
     }
 
     fun updateExam(
@@ -225,7 +233,17 @@ class MainViewModel : ViewModel() {
             subjectName = subjectName,
             startDate = startDate,
             endDate = endDate
-        )
+        ).apply {
+            currentPlanItem = ExamWithSubject(
+                exam_id,
+                subjectName,
+                0, // this color is NOT the real subject color
+                name,
+                startDate,
+                endDate
+            ).toPlanItem()
+        }
+
         AppRepository.updateExam(exam)
         //TODO: Update notification
     }
@@ -248,7 +266,18 @@ class MainViewModel : ViewModel() {
             dueDate = dueDate,
             description = description,
             isDone = isDone
-        )
+        ).apply {
+            currentPlanItem = HomeworkWithSubject(
+                homework_id,
+                subjectName,
+                0, // this color is NOT the real subject color
+                name,
+                dueDate,
+                description,
+                isDone
+            ).toPlanItem()
+        }
+
         AppRepository.insertHomework(homework)
     }
 
@@ -267,7 +296,18 @@ class MainViewModel : ViewModel() {
             dueDate = dueDate,
             description = description,
             isDone = isDone
-        )
+        ).apply {
+            currentPlanItem = HomeworkWithSubject(
+                homework_id,
+                subjectName,
+                0, // this color is NOT the real subject color
+                name,
+                dueDate,
+                description,
+                isDone
+            ).toPlanItem()
+        }
+
         AppRepository.updateHomework(homework)
     }
 
@@ -285,6 +325,8 @@ class MainViewModel : ViewModel() {
             endDate = endDate,
             description = description
         )
+        currentPlanItem = event.toPlanItem()
+
         AppRepository.insertEvent(event)
     }
 
@@ -302,6 +344,8 @@ class MainViewModel : ViewModel() {
             endDate = endDate,
             description = description
         )
+        currentPlanItem = event.toPlanItem()
+
         AppRepository.updateEvent(event)
     }
 
@@ -311,9 +355,10 @@ class MainViewModel : ViewModel() {
     }
 
     fun addReminder(reminder: String, date: Long, isDone: Boolean) {
-        val reminderEntity =
-            Reminder(reminder = reminder, date = date, isDone = isDone)
-        AppRepository.insertReminder(reminderEntity)
+        val r = Reminder(reminder = reminder, date = date, isDone = isDone)
+        currentPlanItem = r.toPlanItem()
+
+        AppRepository.insertReminder(r)
     }
 
     fun updateReminder(
@@ -322,14 +367,12 @@ class MainViewModel : ViewModel() {
         date: Long,
         isDone: Boolean
     ) {
-        val reminderEntity =
-            Reminder(
-                reminder_id = id,
-                reminder = reminder,
-                date = date,
-                isDone = isDone
-            )
-        AppRepository.updateReminder(reminderEntity)
+        val r = Reminder(
+            reminder_id = id, reminder = reminder, date = date, isDone = isDone
+        )
+        currentPlanItem = r.toPlanItem()
+
+        AppRepository.updateReminder(r)
     }
 
     fun deleteReminder(date: LocalDate, id: Long) {

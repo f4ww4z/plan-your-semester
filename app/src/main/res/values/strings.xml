@@ -71,5 +71,6 @@
     <string name="notif_due_in_1_day">%1$s is due tomorrow</string>
     <string name="channel_name">Default Channel</string>
     <string name="channel_description">High priority channel</string>
+    <string name="starts_tomorrow">Starts tomorrow</string>
 
 </resources>

@@ -31,7 +31,6 @@ class App : Application() {
         super.onCreate()
         AndroidThreeTen.init(this)
         AppRepository.init(this)
-        DataUtil.init(this)
         Notifier.createDefaultNotificationChannel(this)
     }
 }
