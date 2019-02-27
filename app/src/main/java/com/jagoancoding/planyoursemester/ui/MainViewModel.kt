@@ -210,7 +210,7 @@ class MainViewModel : ViewModel() {
             currentPlanItem = ExamWithSubject(
                 exam_id,
                 subjectName,
-                0, // this color is NOT the real subject color
+                currentPlanItem!!.subject!!.color, // this color is NOT the real subject color
                 name,
                 startDate,
                 endDate
@@ -237,7 +237,7 @@ class MainViewModel : ViewModel() {
             currentPlanItem = ExamWithSubject(
                 exam_id,
                 subjectName,
-                0, // this color is NOT the real subject color
+                currentPlanItem!!.subject!!.color,
                 name,
                 startDate,
                 endDate
@@ -270,7 +270,7 @@ class MainViewModel : ViewModel() {
             currentPlanItem = HomeworkWithSubject(
                 homework_id,
                 subjectName,
-                0, // this color is NOT the real subject color
+                currentPlanItem!!.subject!!.color,
                 name,
                 dueDate,
                 description,
@@ -300,7 +300,7 @@ class MainViewModel : ViewModel() {
             currentPlanItem = HomeworkWithSubject(
                 homework_id,
                 subjectName,
-                0, // this color is NOT the real subject color
+                currentPlanItem!!.subject!!.color,
                 name,
                 dueDate,
                 description,

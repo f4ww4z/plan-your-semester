@@ -52,6 +52,10 @@ object Notifier {
     private const val NOTIF_CONTENT_TEXT = "NOTIFICATION_TEXT"
     private const val NOTIF_DATETIME = "NOTIFICATION_DATE_TIME"
 
+    private const val _1_DAY_BEFORE = "1daybefore"
+    private const val _30_MIN_BEFORE = "30minutesbefore"
+    private const val _NOW = "nowthen"
+
     const val NOTIFICATIONS_MAP_FILE = "notifications_map.txt"
     const val NOTIFICATION_WORKERS_MAP_FILE = "notification_workers.txt"
 
@@ -83,44 +87,130 @@ object Notifier {
 
     fun notifyUserOneDayBefore(context: Context, planItem: PlanItem) {
 
-        val epoch: Long
-        val content: String
-
-        when (planItem.itemType) {
-            PlanItem.TYPE_EXAM -> {
-                epoch = planItem.startDate!!
-                content = context.getString(
-                    R.string.notif_1_day_before,
-                    context.getString(R.string.exam_label)
-                )
-            }
-            PlanItem.TYPE_HOMEWORK -> {
-                epoch = planItem.date!!
-                content = context.getString(
-                    R.string.notif_due_in_1_day,
-                    context.getString(R.string.homework_label)
-                )
-            }
-            PlanItem.TYPE_EVENT -> {
-                epoch = planItem.startDate!!
-                content = context.getString(
-                    R.string.notif_1_day_before,
-                    context.getString(R.string.event_label)
-                )
-            }
-            else -> {
-                epoch = planItem.date!!
-                content = context.getString(R.string.starts_tomorrow)
-            }
-        }
+        val epoch: Long = DateUtil.getEpoch(planItem)
 
         val date: LocalDateTime = DateUtil.getDateTime(epoch)
         val oneDayBefore: LocalDateTime = date.minusDays(1)
         val now: LocalDateTime =
             ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime()
 
+        val content: String = getContentText(context, oneDayBefore, planItem)
+
         if (oneDayBefore.isAfter(now)) {
             notifyUserAt(oneDayBefore, planItem.name, content)
+        }
+    }
+
+    fun notify30MinsBefore(context: Context, planItem: PlanItem) {
+
+        val epoch: Long = DateUtil.getEpoch(planItem)
+
+        val date: LocalDateTime = DateUtil.getDateTime(epoch)
+        val oneDayBefore: LocalDateTime = date.minusMinutes(30)
+        val now: LocalDateTime =
+            ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime()
+
+        val content: String = getContentText(context, oneDayBefore, planItem)
+
+        if (oneDayBefore.isAfter(now)) {
+            notifyUserAt(oneDayBefore, planItem.name, content)
+        }
+    }
+
+    fun notifyAtPlanDate(context: Context, planItem: PlanItem) {
+        val epoch = DateUtil.getEpoch(planItem)
+        val date: LocalDateTime = DateUtil.getDateTime(epoch)
+        val content = getContentText(context, date, planItem)
+
+        notifyUserAt(date, planItem.name, content)
+    }
+
+    private fun getContentText(
+        context: Context,
+        dt: LocalDateTime,
+        planItem: PlanItem
+    ): String {
+
+        val type = determineDateTimeType(dt, DateUtil.getEpoch(planItem))
+
+        with(planItem) {
+            return when (type) {
+                _1_DAY_BEFORE -> when (itemType) {
+                    PlanItem.TYPE_EXAM -> {
+                        context.getString(
+                            R.string.notif_1_day_before,
+                            context.getString(R.string.exam_label)
+                        )
+                    }
+                    PlanItem.TYPE_HOMEWORK -> {
+                        context.getString(
+                            R.string.notif_due_in_1_day,
+                            context.getString(R.string.homework_label)
+                        )
+                    }
+                    PlanItem.TYPE_EVENT -> {
+                        context.getString(
+                            R.string.notif_1_day_before,
+                            context.getString(R.string.event_label)
+                        )
+                    }
+                    else -> context.getString(R.string.starts_tomorrow)
+                }
+                _30_MIN_BEFORE -> when (itemType) {
+                    PlanItem.TYPE_EXAM -> {
+                        context.getString(
+                            R.string.notif_30_mins_before,
+                            context.getString(R.string.exam_label)
+                        )
+                    }
+                    PlanItem.TYPE_HOMEWORK -> {
+                        context.getString(
+                            R.string.notif_due_in_30_min,
+                            context.getString(R.string.homework_label)
+                        )
+                    }
+                    PlanItem.TYPE_EVENT -> {
+                        context.getString(
+                            R.string.notif_30_mins_before,
+                            context.getString(R.string.event_label)
+                        )
+                    }
+                    else -> context.getString(R.string.notif_30_mins_before)
+                }
+                else -> when (itemType) {
+                    PlanItem.TYPE_EXAM -> {
+                        DateUtil.getTimeStartEnd(
+                            startDate!!,
+                            endDate!!,
+                            context.resources
+                        )
+                    }
+                    PlanItem.TYPE_HOMEWORK -> {
+                        DateUtil.getHomeworkDueTime(date!!, context.resources)
+                    }
+                    PlanItem.TYPE_EVENT -> {
+                        DateUtil.getTimeStartEnd(
+                            startDate!!,
+                            endDate!!,
+                            context.resources
+                        )
+                    }
+                    else -> DateUtil.getFormattedTime(date!!)
+                }
+            }
+        }
+
+    }
+
+    private fun determineDateTimeType(
+        notifDateTime: LocalDateTime, planItemEpoch: Long
+    ): String {
+        val planItemDateTime = DateUtil.getDateTime(planItemEpoch)
+
+        return when (notifDateTime) {
+            planItemDateTime.minusDays(1) -> _1_DAY_BEFORE
+            planItemDateTime.minusMinutes(30) -> _30_MIN_BEFORE
+            else -> _NOW
         }
     }
 

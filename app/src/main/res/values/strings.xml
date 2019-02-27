@@ -72,5 +72,7 @@
     <string name="channel_name">Default Channel</string>
     <string name="channel_description">High priority channel</string>
     <string name="starts_tomorrow">Starts tomorrow</string>
+    <string name="notif_30_mins_before">%1$s starts in 30 minutes</string>
+    <string name="notif_due_in_30_min">%1$s is due in 30 minutes</string>
 
 </resources>
