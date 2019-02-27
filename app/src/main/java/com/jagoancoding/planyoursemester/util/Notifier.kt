@@ -85,7 +85,30 @@ object Notifier {
         }
     }
 
-    fun notifyUserOneDayBefore(context: Context, planItem: PlanItem) {
+    fun showNotificationAt(context: Context, planItem: PlanItem) {
+        when (planItem.itemType) {
+            PlanItem.TYPE_EXAM -> {
+                notifyUserOneDayBefore(context, planItem)
+                notify30MinsBefore(context, planItem)
+                notifyAtPlanDate(context, planItem)
+            }
+            PlanItem.TYPE_HOMEWORK -> {
+                notifyUserOneDayBefore(context, planItem)
+                notify30MinsBefore(context, planItem)
+                notifyAtPlanDate(context, planItem)
+            }
+            PlanItem.TYPE_EVENT -> {
+                notifyUserOneDayBefore(context, planItem)
+                notify30MinsBefore(context, planItem)
+                notifyAtPlanDate(context, planItem)
+            }
+            else -> {
+                notifyAtPlanDate(context, planItem)
+            }
+        }
+    }
+
+    private fun notifyUserOneDayBefore(context: Context, planItem: PlanItem) {
 
         val epoch: Long = DateUtil.getEpoch(planItem)
 
@@ -101,7 +124,7 @@ object Notifier {
         }
     }
 
-    fun notify30MinsBefore(context: Context, planItem: PlanItem) {
+    private fun notify30MinsBefore(context: Context, planItem: PlanItem) {
 
         val epoch: Long = DateUtil.getEpoch(planItem)
 
@@ -117,7 +140,7 @@ object Notifier {
         }
     }
 
-    fun notifyAtPlanDate(context: Context, planItem: PlanItem) {
+    private fun notifyAtPlanDate(context: Context, planItem: PlanItem) {
         val epoch = DateUtil.getEpoch(planItem)
         val date: LocalDateTime = DateUtil.getDateTime(epoch)
         val content = getContentText(context, date, planItem)

@@ -143,11 +143,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             validateInput()
             if (isValidated) {
                 view!!.clearFocus()
+
                 navigateToOverviewScreen(view!!)
 
-                Notifier.notifyUserOneDayBefore(
-                    context!!, vm.currentPlanItem!!
-                )
+                Notifier.showNotificationAt(context!!, vm.currentPlanItem!!)
             }
             true
         }
@@ -211,10 +210,6 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             ContextCompat.getDrawable(context!!, R.drawable.ic_arrow_back_24dp)
         toolbar?.setNavigationOnClickListener {
             navigateToOverviewScreen(view!!)
-
-            Notifier.notifyUserOneDayBefore(
-                context!!, vm.currentPlanItem!!
-            )
         }
 
         toolbar?.inflateMenu(R.menu.add_plan_menu)
