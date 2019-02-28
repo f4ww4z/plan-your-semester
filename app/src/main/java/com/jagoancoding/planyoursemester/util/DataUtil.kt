@@ -24,21 +24,22 @@ object DataUtil {
 
     private const val TAG = "DataUtil"
 
-    private const val MAP_SPLITTER = ","
-    private const val MAP_INT_LONG_FORMAT = "%d$MAP_SPLITTER%d"
-    private const val MAP_STRING_LONG_FORMAT = "%s$MAP_SPLITTER%d"
+    //TODO: Store plan type in hashmap
+    private const val SPLITTER = ","
+    private const val MAP_INT_PLAN_EPOCH_FORMAT = "%d$SPLITTER%s"
+    private const val MAP_STRING_PLAN_EPOCH_FORMAT = "%s$SPLITTER%s"
 
-    fun getNotificationsMap(context: Context): HashMap<Int, Long> {
+    fun getNotificationsMap(context: Context): HashMap<Int, PlanWithEpoch> {
         val data = readFile(Notifier.NOTIFICATIONS_MAP_FILE, context)
 
-        return toIntLongMap(data)
+        return toIntPlanEpoch(data)
     }
 
-    fun getNotificationWorksMap(context: Context): HashMap<String, Long> {
+    fun getNotificationWorksMap(context: Context): HashMap<String, PlanWithEpoch> {
         val data =
             readFile(Notifier.NOTIFICATION_WORKERS_MAP_FILE, context)
 
-        return toStringLongMap(data)
+        return toStringPlanEpochMap(data)
     }
 
     private fun readFile(filePath: String, context: Context): List<String> {
@@ -53,17 +54,21 @@ object DataUtil {
         return data
     }
 
-    fun setNotificationOfId(id: Int, epoch: Long, context: Context) {
+    fun setNotificationOfId(
+        id: Int, planEpoch: PlanWithEpoch, context: Context
+    ) {
         val updatedNotificationsMap = getNotificationsMap(context)
-        updatedNotificationsMap[id] = epoch
+        updatedNotificationsMap[id] = planEpoch
         val data = updatedNotificationsMap.toMappedString()
 
         writeListToFile(Notifier.NOTIFICATIONS_MAP_FILE, data, context)
     }
 
-    fun setNotificationWorkOfId(id: String, epoch: Long, context: Context) {
+    fun setNotificationWorkOfId(
+        id: String, planEpoch: PlanWithEpoch, context: Context
+    ) {
         val currentWorksMap = getNotificationWorksMap(context)
-        currentWorksMap[id] = epoch
+        currentWorksMap[id] = planEpoch
         val data = currentWorksMap.toMappedString()
 
         writeListToFile(Notifier.NOTIFICATION_WORKERS_MAP_FILE, data, context)
@@ -92,48 +97,59 @@ object DataUtil {
         }
     }
 
-    private fun <T> HashMap<T, Long>.toMappedString(): List<String> {
+    private fun <T> HashMap<T, PlanWithEpoch>.toMappedString(): List<String> {
         val data = mutableListOf<String>()
         forEach {
             val line =
                 if (it.key is Int)
-                    MAP_INT_LONG_FORMAT.format(it.key, it.value)
+                    MAP_INT_PLAN_EPOCH_FORMAT.format(
+                        it.key,
+                        it.value.toString()
+                    )
                 else
-                    MAP_STRING_LONG_FORMAT.format(it.key, it.value)
+                    MAP_STRING_PLAN_EPOCH_FORMAT.format(
+                        it.key,
+                        it.value.toString()
+                    )
 
             data.add(line)
         }
         return data
     }
 
-    private fun toIntLongMap(data: List<String>): HashMap<Int, Long> {
+    private fun toIntPlanEpoch(data: List<String>): HashMap<Int, PlanWithEpoch> {
         if (data.isNullOrEmpty() || data[0].isEmpty()) {
             return hashMapOf()
         }
 
-        val map = hashMapOf<Int, Long>()
+        val map = hashMapOf<Int, PlanWithEpoch>()
         data.forEach {
-            val parts = it.split(MAP_SPLITTER)
-            val key = parts[0].toInt()
-            val value = parts[1].toLong()
-            map[key] = value
+            val key = it.split(SPLITTER)[0].toInt()
+
+            map[key] = getPlanWithEpoch(it)
         }
         return map
     }
 
-    private fun toStringLongMap(data: List<String>): HashMap<String, Long> {
+    private fun toStringPlanEpochMap(data: List<String>): HashMap<String, PlanWithEpoch> {
         if (data.isNullOrEmpty() || data[0].isEmpty()) {
             return hashMapOf()
         }
 
-        val map = hashMapOf<String, Long>()
+        val map = hashMapOf<String, PlanWithEpoch>()
         data.forEach {
-            val parts = it.split(MAP_SPLITTER)
-            val key = parts[0]
-            val value = parts[1].toLong()
-            map[key] = value
+            val key = it.split(SPLITTER)[0]
+
+            map[key] = getPlanWithEpoch(it)
         }
         return map
+    }
+
+    private fun getPlanWithEpoch(string: String): PlanWithEpoch {
+        val parts = string.split(SPLITTER)
+        val id = parts[1].toLong()
+        val epoch = parts[2].toLong()
+        return PlanWithEpoch(id, epoch)
     }
 
     fun <T> LiveData<T>.observeOnce(observer: Observer<T>) {
@@ -145,5 +161,14 @@ object DataUtil {
                 removeObserver(this)
             }
         })
+    }
+
+    data class PlanWithEpoch(val planItemId: Long, val epoch: Long) {
+
+        companion object {
+            private const val splitter = "%d$SPLITTER%d"
+        }
+
+        override fun toString(): String = splitter.format(planItemId, epoch)
     }
 }

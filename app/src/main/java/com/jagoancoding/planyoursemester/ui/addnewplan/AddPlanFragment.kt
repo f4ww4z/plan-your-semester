@@ -201,6 +201,7 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         }
 
         if (vm.currentPlanItem != null) {
+            //TODO: Fix this
             vm.scrollToDate =
                 vm.currentPlanItem!!.date ?: vm.currentPlanItem!!.startDate!!
         }

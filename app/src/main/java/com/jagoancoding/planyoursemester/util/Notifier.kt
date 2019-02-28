@@ -48,6 +48,7 @@ object Notifier {
 
     private const val NORMAL_CHANNEL_ID = "Default High Priority Channel 101"
 
+    private const val NOTIF_PLAN_ID = "NOTIFICATION_PLAN_ID"
     private const val NOTIF_TITLE = "NOTIFICATION_TITLE"
     private const val NOTIF_CONTENT_TEXT = "NOTIFICATION_TEXT"
     private const val NOTIF_DATETIME = "NOTIFICATION_DATE_TIME"
@@ -85,6 +86,11 @@ object Notifier {
         }
     }
 
+    //TODO: On Click
+
+    //TODO: Update notification worker when plan item is updated
+    //TODO: Remove notification worker if: notification finished, plan item is deleted
+
     fun showNotificationAt(context: Context, planItem: PlanItem) {
         when (planItem.itemType) {
             PlanItem.TYPE_EXAM -> {
@@ -120,7 +126,7 @@ object Notifier {
         val content: String = getContentText(context, oneDayBefore, planItem)
 
         if (oneDayBefore.isAfter(now)) {
-            notifyUserAt(oneDayBefore, planItem.name, content)
+            notifyUserAt(planItem.id, oneDayBefore, planItem.name, content)
         }
     }
 
@@ -129,14 +135,14 @@ object Notifier {
         val epoch: Long = DateUtil.getEpoch(planItem)
 
         val date: LocalDateTime = DateUtil.getDateTime(epoch)
-        val oneDayBefore: LocalDateTime = date.minusMinutes(30)
+        val _30MinsBefore: LocalDateTime = date.minusMinutes(30)
         val now: LocalDateTime =
             ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime()
 
-        val content: String = getContentText(context, oneDayBefore, planItem)
+        val content: String = getContentText(context, _30MinsBefore, planItem)
 
-        if (oneDayBefore.isAfter(now)) {
-            notifyUserAt(oneDayBefore, planItem.name, content)
+        if (_30MinsBefore.isAfter(now)) {
+            notifyUserAt(planItem.id, _30MinsBefore, planItem.name, content)
         }
     }
 
@@ -145,7 +151,7 @@ object Notifier {
         val date: LocalDateTime = DateUtil.getDateTime(epoch)
         val content = getContentText(context, date, planItem)
 
-        notifyUserAt(date, planItem.name, content)
+        notifyUserAt(planItem.id, date, planItem.name, content)
     }
 
     private fun getContentText(
@@ -243,7 +249,9 @@ object Notifier {
      * @param title the notification's title
      * @param text the notification's description (appears below title)
      */
-    private fun notifyUserAt(dt: LocalDateTime, title: String, text: String) {
+    private fun notifyUserAt(
+        planItemId: Long, dt: LocalDateTime, title: String, text: String
+    ) {
         val epoch = DateUtil.toEpochMilli(dt)
         val now = DateUtil.toEpochMilli(
             ZonedDateTime.now(AppRepository.zoneId).toLocalDateTime()
@@ -251,6 +259,7 @@ object Notifier {
         val delay = epoch - now + 2
 
         val data: Data = Data.Builder()
+            .putLong(NOTIF_PLAN_ID, planItemId)
             .putString(NOTIF_TITLE, title)
             .putString(NOTIF_CONTENT_TEXT, text)
             .putLong(NOTIF_DATETIME, epoch)
@@ -278,12 +287,13 @@ object Notifier {
 
         override fun doWork(): Result {
             // Get data
+            val planItemId = inputData.getLong(NOTIF_PLAN_ID, 0)
             val title = inputData.getString(NOTIF_TITLE)
             val contentText = inputData.getString(NOTIF_CONTENT_TEXT)
             val epoch = inputData.getLong(NOTIF_DATETIME, 0)
 
             // Store the worker id
-            DataUtil.setNotificationWorkOfId("$id", epoch, context)
+            DataUtil.setNotificationWorkOfId("$id", planItemId, context)
             Log.i(
                 TAG,
                 "Notification workers: ${DataUtil.getNotificationWorksMap(
@@ -313,7 +323,7 @@ object Notifier {
                 .notify(id, mNotification)
 
             // Store the notification id for later use
-            DataUtil.setNotificationOfId(id, epoch, context)
+            DataUtil.setNotificationOfId(id, planItemId, context)
 
             Log.i(
                 TAG, "Notifications: ${DataUtil.getNotificationsMap(context)}"
