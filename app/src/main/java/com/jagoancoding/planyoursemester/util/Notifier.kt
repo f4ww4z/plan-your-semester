@@ -24,12 +24,16 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -40,6 +44,7 @@ import com.jagoancoding.planyoursemester.model.PlanItem
 import com.jagoancoding.planyoursemester.ui.overview.OverviewFragment
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZonedDateTime
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 object Notifier {
@@ -49,6 +54,7 @@ object Notifier {
     private const val NORMAL_CHANNEL_ID = "Default High Priority Channel 101"
 
     private const val NOTIF_PLAN_ID = "NOTIFICATION_PLAN_ID"
+    private const val NOTIF_PLAN_TYPE = "NOTIFICATION_PLAN_TYPE"
     private const val NOTIF_TITLE = "NOTIFICATION_TITLE"
     private const val NOTIF_CONTENT_TEXT = "NOTIFICATION_TEXT"
     private const val NOTIF_DATETIME = "NOTIFICATION_DATE_TIME"
@@ -66,27 +72,24 @@ object Notifier {
      * Create the NotificationChannel, but only on API 26+ because
      * the NotificationChannel class is new and not in the support library
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     fun createDefaultNotificationChannel(context: Context) {
         with(context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = getString(R.string.channel_name)
-                val descriptionText = getString(R.string.channel_description)
-                val importance = NotificationManager.IMPORTANCE_HIGH
-                val channel =
-                    NotificationChannel(
-                        NORMAL_CHANNEL_ID, name, importance
-                    ).apply {
-                        description = descriptionText
-                    }
-                // Register the channel with the system
-                val notificationManager: NotificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(channel)
-            }
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel =
+                NotificationChannel(
+                    NORMAL_CHANNEL_ID, name, importance
+                ).apply {
+                    description = descriptionText
+                }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
-
-    //TODO: On Click
 
     //TODO: Update notification worker when plan item is updated
     //TODO: Remove notification worker if: notification finished, plan item is deleted
@@ -126,7 +129,14 @@ object Notifier {
         val content: String = getContentText(context, oneDayBefore, planItem)
 
         if (oneDayBefore.isAfter(now)) {
-            notifyUserAt(planItem.id, oneDayBefore, planItem.name, content)
+            notifyUserAt(
+                context,
+                planItem.id,
+                planItem.itemType,
+                oneDayBefore,
+                planItem.name,
+                content
+            )
         }
     }
 
@@ -142,7 +152,14 @@ object Notifier {
         val content: String = getContentText(context, _30MinsBefore, planItem)
 
         if (_30MinsBefore.isAfter(now)) {
-            notifyUserAt(planItem.id, _30MinsBefore, planItem.name, content)
+            notifyUserAt(
+                context,
+                planItem.id,
+                planItem.itemType,
+                _30MinsBefore,
+                planItem.name,
+                content
+            )
         }
     }
 
@@ -151,7 +168,14 @@ object Notifier {
         val date: LocalDateTime = DateUtil.getDateTime(epoch)
         val content = getContentText(context, date, planItem)
 
-        notifyUserAt(planItem.id, date, planItem.name, content)
+        notifyUserAt(
+            context,
+            planItem.id,
+            planItem.itemType,
+            date,
+            planItem.name,
+            content
+        )
     }
 
     private fun getContentText(
@@ -250,7 +274,12 @@ object Notifier {
      * @param text the notification's description (appears below title)
      */
     private fun notifyUserAt(
-        planItemId: Long, dt: LocalDateTime, title: String, text: String
+        context: Context,
+        planItemId: Long,
+        planItemType: Int,
+        dt: LocalDateTime,
+        title: String,
+        text: String
     ) {
         val epoch = DateUtil.toEpochMilli(dt)
         val now = DateUtil.toEpochMilli(
@@ -260,6 +289,7 @@ object Notifier {
 
         val data: Data = Data.Builder()
             .putLong(NOTIF_PLAN_ID, planItemId)
+            .putInt(NOTIF_PLAN_TYPE, planItemType)
             .putString(NOTIF_TITLE, title)
             .putString(NOTIF_CONTENT_TEXT, text)
             .putLong(NOTIF_DATETIME, epoch)
@@ -280,6 +310,41 @@ object Notifier {
         //TODO: And remove the work if user removes plan
 
         WorkManager.getInstance().enqueue(notificationWork)
+
+        val planWithType = DataUtil.PlanWithType(planItemId, planItemType)
+        cancelNotifAndWorkWhenFinished(context, planWithType)
+    }
+
+    //TODO: Call this when item is updated
+    fun cancelNotifcation(
+        context: Context, planItemId: Long, planItemType: Int
+    ) {
+        val planWithType = DataUtil.PlanWithType(planItemId, planItemType)
+        cancelNotifAndWorkWhenFinished(context, planWithType)
+    }
+
+    private fun cancelNotifAndWorkWhenFinished(
+        context: Context, planWithType: DataUtil.PlanWithType
+    ) {
+        val entry = DataUtil.findNotificationWorkerEntry(context, planWithType)
+        if (entry != null) {
+            val notificationWorkId = UUID.fromString(entry.key)
+
+            WorkManager.getInstance()
+                .getWorkInfoByIdLiveData(notificationWorkId)
+                .observe(context as LifecycleOwner,
+                    Observer { workInfo ->
+                        // Check if notification is finished showing
+                        if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
+                            WorkManager.getInstance()
+                                .cancelWorkById(notificationWorkId)
+
+                            DataUtil.removeNotificationAndWorkFromData(
+                                context, planWithType
+                            )
+                        }
+                    })
+        }
     }
 
     class NotificationWorker(val context: Context, params: WorkerParameters) :
@@ -288,12 +353,18 @@ object Notifier {
         override fun doWork(): Result {
             // Get data
             val planItemId = inputData.getLong(NOTIF_PLAN_ID, 0)
+            val planItemType = inputData.getInt(NOTIF_PLAN_TYPE, 0)
             val title = inputData.getString(NOTIF_TITLE)
             val contentText = inputData.getString(NOTIF_CONTENT_TEXT)
             val epoch = inputData.getLong(NOTIF_DATETIME, 0)
 
             // Store the worker id
-            DataUtil.setNotificationWorkOfId("$id", planItemId, context)
+            DataUtil.setNotificationWorkOfId(
+                "$id",
+                planItemId,
+                planItemType,
+                context
+            )
             Log.i(
                 TAG,
                 "Notification workers: ${DataUtil.getNotificationWorksMap(
@@ -323,7 +394,7 @@ object Notifier {
                 .notify(id, mNotification)
 
             // Store the notification id for later use
-            DataUtil.setNotificationOfId(id, planItemId, context)
+            DataUtil.setNotificationOfId(id, planItemId, planItemType, context)
 
             Log.i(
                 TAG, "Notifications: ${DataUtil.getNotificationsMap(context)}"

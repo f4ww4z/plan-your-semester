@@ -559,6 +559,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                             getString(R.string.exam_label)
                         )
                     )
+
+                    Notifier.cancelNotifcation(
+                        context!!, id, vm.currentPlanItemType
+                    )
                 }
             }
             PlanItem.TYPE_HOMEWORK -> {
@@ -588,6 +592,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                             getString(R.string.homework_label)
                         )
                     )
+
+                    Notifier.cancelNotifcation(
+                        context!!, id, vm.currentPlanItemType
+                    )
                 }
             }
             PlanItem.TYPE_EVENT -> {
@@ -612,6 +620,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                             getString(R.string.event_label)
                         )
                     )
+
+                    Notifier.cancelNotifcation(
+                        context!!, id, vm.currentPlanItemType
+                    )
                 }
             }
             PlanItem.TYPE_REMINDER -> {
@@ -633,6 +645,10 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                             R.string.success_plan_update,
                             getString(R.string.reminder_label)
                         )
+                    )
+
+                    Notifier.cancelNotifcation(
+                        context!!, id, vm.currentPlanItemType
                     )
                 }
             }

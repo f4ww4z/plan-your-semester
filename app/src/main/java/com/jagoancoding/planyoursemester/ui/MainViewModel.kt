@@ -210,7 +210,8 @@ class MainViewModel : ViewModel() {
             currentPlanItem = ExamWithSubject(
                 exam_id,
                 subjectName,
-                currentPlanItem?.subject?.color ?: 0, // this color is NOT the real subject color
+                currentPlanItem?.subject?.color
+                    ?: 0, // this color is NOT the real subject color
                 name,
                 startDate,
                 endDate
