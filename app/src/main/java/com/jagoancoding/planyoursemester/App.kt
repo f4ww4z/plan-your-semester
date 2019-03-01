@@ -16,6 +16,9 @@
 package com.jagoancoding.planyoursemester
 
 import android.app.Application
+import android.os.Build
+import com.jagoancoding.planyoursemester.util.DataUtil
+import com.jagoancoding.planyoursemester.util.Notifier
 import com.jakewharton.threetenabp.AndroidThreeTen
 
 class App : Application() {
@@ -29,5 +32,8 @@ class App : Application() {
         super.onCreate()
         AndroidThreeTen.init(this)
         AppRepository.init(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notifier.createDefaultNotificationChannel(this)
+        }
     }
 }

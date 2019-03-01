@@ -46,7 +46,7 @@ class MainViewModel : ViewModel() {
 
     var currentPlanItemType: Int = 0
     var currentPlanItem: PlanItem? = null
-    var scrollToDate: LocalDate? = null
+    var scrollToDate: Long? = null
 
     private var _listItems = MutableLiveData<List<ListItem>>()
     val listItems: LiveData<List<ListItem>>
@@ -189,8 +189,6 @@ class MainViewModel : ViewModel() {
     fun reminder(id: Long): LiveData<Reminder> =
         AppRepository.getReminderById(id)
 
-//TODO: Add validation to all addOrUpdate methods e.g. startDate < endDate
-
     fun addSubject(name: String, color: Int) {
         val subject = Subject(name = name, color = color)
         AppRepository.insertSubject(subject)
@@ -208,7 +206,18 @@ class MainViewModel : ViewModel() {
             subjectName = subjectName,
             startDate = startDate,
             endDate = endDate
-        )
+        ).apply {
+            currentPlanItem = ExamWithSubject(
+                exam_id,
+                subjectName,
+                currentPlanItem?.subject?.color
+                    ?: 0, // this color is NOT the real subject color
+                name,
+                startDate,
+                endDate
+            ).toPlanItem()
+        }
+
         AppRepository.insertExam(exam)
     }
 
@@ -225,8 +234,19 @@ class MainViewModel : ViewModel() {
             subjectName = subjectName,
             startDate = startDate,
             endDate = endDate
-        )
+        ).apply {
+            currentPlanItem = ExamWithSubject(
+                exam_id,
+                subjectName,
+                currentPlanItem?.subject?.color ?: 0,
+                name,
+                startDate,
+                endDate
+            ).toPlanItem()
+        }
+
         AppRepository.updateExam(exam)
+        //TODO: Update notification
     }
 
     fun deleteExam(date: LocalDate, id: Long) {
@@ -247,7 +267,18 @@ class MainViewModel : ViewModel() {
             dueDate = dueDate,
             description = description,
             isDone = isDone
-        )
+        ).apply {
+            currentPlanItem = HomeworkWithSubject(
+                homework_id,
+                subjectName,
+                currentPlanItem?.subject?.color ?: 0,
+                name,
+                dueDate,
+                description,
+                isDone
+            ).toPlanItem()
+        }
+
         AppRepository.insertHomework(homework)
     }
 
@@ -266,7 +297,18 @@ class MainViewModel : ViewModel() {
             dueDate = dueDate,
             description = description,
             isDone = isDone
-        )
+        ).apply {
+            currentPlanItem = HomeworkWithSubject(
+                homework_id,
+                subjectName,
+                currentPlanItem?.subject?.color ?: 0,
+                name,
+                dueDate,
+                description,
+                isDone
+            ).toPlanItem()
+        }
+
         AppRepository.updateHomework(homework)
     }
 
@@ -284,6 +326,8 @@ class MainViewModel : ViewModel() {
             endDate = endDate,
             description = description
         )
+        currentPlanItem = event.toPlanItem()
+
         AppRepository.insertEvent(event)
     }
 
@@ -301,6 +345,8 @@ class MainViewModel : ViewModel() {
             endDate = endDate,
             description = description
         )
+        currentPlanItem = event.toPlanItem()
+
         AppRepository.updateEvent(event)
     }
 
@@ -310,9 +356,10 @@ class MainViewModel : ViewModel() {
     }
 
     fun addReminder(reminder: String, date: Long, isDone: Boolean) {
-        val reminderEntity =
-            Reminder(reminder = reminder, date = date, isDone = isDone)
-        AppRepository.insertReminder(reminderEntity)
+        val r = Reminder(reminder = reminder, date = date, isDone = isDone)
+        currentPlanItem = r.toPlanItem()
+
+        AppRepository.insertReminder(r)
     }
 
     fun updateReminder(
@@ -321,14 +368,12 @@ class MainViewModel : ViewModel() {
         date: Long,
         isDone: Boolean
     ) {
-        val reminderEntity =
-            Reminder(
-                reminder_id = id,
-                reminder = reminder,
-                date = date,
-                isDone = isDone
-            )
-        AppRepository.updateReminder(reminderEntity)
+        val r = Reminder(
+            reminder_id = id, reminder = reminder, date = date, isDone = isDone
+        )
+        currentPlanItem = r.toPlanItem()
+
+        AppRepository.updateReminder(r)
     }
 
     fun deleteReminder(date: LocalDate, id: Long) {

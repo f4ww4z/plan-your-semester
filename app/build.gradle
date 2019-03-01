@@ -67,6 +67,7 @@ dependencies {
     def room_version = "2.0.0"
     def nav_version = "1.0.0-beta01"
     def test_version = "1.1.0"
+    def work_version = "1.0.0-rc02"
 
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.core:core-ktx:1.1.0-alpha03'
@@ -80,18 +81,16 @@ dependencies {
 
     // Navigation
     implementation "android.arch.navigation:navigation-fragment-ktx:$nav_version"
-    // use -ktx for Kotlin
     implementation "android.arch.navigation:navigation-ui-ktx:$nav_version"
-    // use -ktx for Kotlin
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
-
-    // use kapt for Kotlin
-
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
 
-    // optional - Test helpers for LiveData
+    // WorkManager
+    implementation "android.arch.work:work-runtime-ktx:$work_version"
+    // Test helpers
+    androidTestImplementation "android.arch.work:work-testing:$work_version"
 
     // Testing
     testImplementation "androidx.arch.core:core-testing:$lifecycle_version"

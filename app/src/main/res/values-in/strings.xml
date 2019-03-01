@@ -59,4 +59,11 @@
     <string name="fail_subj_rm">Harap hapus semua ujian atau tugas dari mapel \'%1$s\' terlebih dahulu</string>
     <string name="no_subjects_found">Tidak ada mapel yang terdaftar!</string>
     <string name="subjects_empty">Setidaknya 1 mapel harus terdaftar</string>
+    <string name="notif_1_day_before">%1$s akan mulai besok</string>
+    <string name="notif_due_in_1_day">%1$s harus dikumpul besok</string>
+    <string name="channel_name">Saluran Standar</string>
+    <string name="channel_description">Saluran prioritas tinggi</string>
+    <string name="starts_tomorrow">Dimulai besok</string>
+    <string name="notif_30_mins_before">%1$s dimulai dalam waktu 30 menit</string>
+    <string name="notif_due_in_30_min">%1$s harus dikumpul 30 menit lagi</string>
 </resources>

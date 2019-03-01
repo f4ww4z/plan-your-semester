@@ -20,6 +20,7 @@ import com.jagoancoding.planyoursemester.AppRepository
 import com.jagoancoding.planyoursemester.R
 import com.jagoancoding.planyoursemester.model.DateItem
 import com.jagoancoding.planyoursemester.model.ListItem
+import com.jagoancoding.planyoursemester.model.PlanItem
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -99,6 +100,9 @@ object DateUtil {
         else -> 0L
     }
 
+    fun toEpochMilli(dateTime: LocalDateTime): Long =
+        dateTime.atZone(AppRepository.zoneId).toInstant().toEpochMilli()
+
     fun parseDateTime(date: String): LocalDateTime {
         val formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_STANDARD)
         return LocalDateTime.parse(date, formatter)
@@ -144,5 +148,24 @@ object DateUtil {
         val date: LocalDate = LocalDate.of(year, month, 1)
         val formatter = DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT)
         return formatter.format(date)
+    }
+
+    fun getEpoch(planItem: PlanItem): Long {
+        with(planItem) {
+            return when (itemType) {
+                PlanItem.TYPE_EXAM -> {
+                    startDate!!
+                }
+                PlanItem.TYPE_HOMEWORK -> {
+                    date!!
+                }
+                PlanItem.TYPE_EVENT -> {
+                    startDate!!
+                }
+                else -> {
+                    planItem.date!!
+                }
+            }
+        }
     }
 }
