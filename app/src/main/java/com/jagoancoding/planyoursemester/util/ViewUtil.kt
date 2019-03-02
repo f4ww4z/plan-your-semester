@@ -91,7 +91,7 @@ object ViewUtil {
         .setDateRange(minDate, maxDate)
         .setPreselectedDate(
             preselectedDate.year,
-            preselectedDate.month.value,
+            preselectedDate.monthValue - 1,
             preselectedDate.dayOfMonth
         )
 
@@ -122,7 +122,7 @@ object ViewUtil {
                                 // Time is selected, set it in EditText
                                 val dateTime = LocalDateTime.of(
                                     year,
-                                    monthOfYear,
+                                    monthOfYear + 1,
                                     dayOfMonth,
                                     hourOfDay,
                                     minute
