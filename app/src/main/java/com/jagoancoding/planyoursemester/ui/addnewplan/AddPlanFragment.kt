@@ -200,12 +200,6 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             }
         }
 
-        if (vm.currentPlanItem != null) {
-            //TODO: Fix this
-            vm.scrollToDate =
-                vm.currentPlanItem!!.date ?: vm.currentPlanItem!!.startDate!!
-        }
-
         // Handle up navigation
         toolbar?.navigationIcon =
             ContextCompat.getDrawable(context!!, R.drawable.ic_arrow_back_24dp)
@@ -219,12 +213,15 @@ class AddPlanFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     private fun navigateToOverviewScreen(currentView: View) {
         val navController = currentView.findNavController()
+
+        vm.scrollToDate =
+            vm.currentPlanItem?.date ?: vm.currentPlanItem?.startDate
+                    ?: DateUtil.toEpochMili(AppRepository.today)
+
         val bundle = Bundle().apply {
-            if (vm.scrollToDate != null) {
-                putLong(
-                    OverviewFragment.KEY_SCROLL_TO_DATE, vm.scrollToDate!!
-                )
-            }
+            putLong(
+                OverviewFragment.KEY_SCROLL_TO_DATE, vm.scrollToDate
+            )
         }
         navController.navigate(R.id.overviewFragment, bundle)
     }
